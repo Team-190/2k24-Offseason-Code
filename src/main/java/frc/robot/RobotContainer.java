@@ -18,7 +18,6 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -38,13 +37,13 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.drive.Drive;
+import frc.robot.subsystems.drive.drive.DriveConstants;
+import frc.robot.subsystems.drive.gyro.GyroIO;
+import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
+import frc.robot.subsystems.drive.module.ModuleIO;
+import frc.robot.subsystems.drive.module.ModuleIOSim;
+import frc.robot.subsystems.drive.module.ModuleIOTalonFX;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.HoodIO;
 import frc.robot.subsystems.hood.HoodIOSim;
@@ -65,8 +64,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
-import frc.robot.subsystems.vision.CameraIO;
-import frc.robot.subsystems.vision.CameraIOLimelight3;
+import frc.robot.subsystems.vision.CameraConstants.RobotCameras;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.TrackingMode;
@@ -120,12 +118,7 @@ public class RobotContainer {
           kicker = new Kicker(new KickerIOTalonFX());
           accelerator = new Accelerator(new AcceleratorIOTalonFX());
           climber = new Climber(new ClimberIOTalonFX());
-          vision =
-              new Vision(
-                  new CameraIOLimelight3(0),
-                  new CameraIOLimelight3(1),
-                  new CameraIOLimelight3(2),
-                  new CameraIOLimelight3(3));
+          vision = new Vision(RobotCameras.LIMELIGHT_CENTER);
           break;
         case ROBOT_2K24_TEST:
           // Test robot, instantiate hardware IO implementations
@@ -190,8 +183,7 @@ public class RobotContainer {
       climber = new Climber(new ClimberIO() {});
     }
     if (vision == null) {
-      vision =
-          new Vision(new CameraIO() {}, new CameraIO() {}, new CameraIO() {}, new CameraIO() {});
+      vision = new Vision();
     }
 
     // Configure autobuilder
@@ -201,8 +193,8 @@ public class RobotContainer {
         () -> DriveConstants.KINEMATICS.toChassisSpeeds(drive.getModuleStates()),
         drive::runVelocity,
         new HolonomicPathFollowerConfig(
-            DriveConstants.MAX_LINEAR_VELOCITY,
-            DriveConstants.DRIVE_BASE_RADIUS,
+            frc.robot.subsystems.drive.drive.DriveConstants.MAX_LINEAR_VELOCITY,
+            frc.robot.subsystems.drive.drive.DriveConstants.DRIVE_BASE_RADIUS,
             new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
@@ -232,13 +224,14 @@ public class RobotContainer {
     // Configure RobotState
     new RobotState(
         drive::getRotation,
+        drive::getYawVelocity,
         drive::getFieldRelativeVelocity,
         drive::getModulePositions,
-        vision::getCameraTypes,
+        vision::getCameras,
+        vision::getValidTarget,
         vision::getPrimaryVisionPoses,
         vision::getSecondaryVisionPoses,
-        vision::getPrimaryPoseTimestamps,
-        vision::getSecondaryPoseTimestamps);
+        vision::getFrameTimestamps);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -256,16 +249,6 @@ public class RobotContainer {
         .addNumber("Flywheel Offset", RobotState::getFlywheelOffset)
         .withPosition(0, 1)
         .withSize(1, 1);
-    Shuffleboard.getTab("Teleoperated")
-        .add("Shooter View", CameraServer.addSwitchedCamera("limelight-shooter").getSource())
-        .withPosition(1, 0)
-        .withSize(5, 5)
-        .withWidget("Camera Stream");
-    Shuffleboard.getTab("Teleoperated")
-        .add("Intake View", CameraServer.addSwitchedCamera("limelight-intake").getSource())
-        .withPosition(6, 0)
-        .withSize(5, 5)
-        .withWidget("Camera Stream");
   }
 
   private void configureButtonBindings() {

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -7,15 +8,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraType;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.util.Alert;
-import frc.robot.util.Alert.AlertType;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LimelightHelpers;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +33,6 @@ public class RobotState {
   private static final InterpolatingDoubleTreeMap timeOfFlightMap =
       new InterpolatingDoubleTreeMap();
 
-  private static final Alert secondaryPosesNullAlert =
-      new Alert("SECONDARY VISION POSES ARE NULL", AlertType.INFO);
-
   @Getter
   private static StateCache stateCache =
       new StateCache(new Rotation2d(), 0.0, 0.0, new Rotation2d());
@@ -42,13 +43,14 @@ public class RobotState {
   private static SwerveDrivePoseEstimator poseEstimator;
 
   private static Supplier<Rotation2d> robotHeadingSupplier;
+  private static DoubleSupplier robotYawVelocitySupplier;
   private static Supplier<Translation2d> robotFieldRelativeVelocitySupplier;
   private static Supplier<SwerveModulePosition[]> modulePositionSupplier;
-  private static Supplier<CameraType[]> camerasSupplier;
-  private static Supplier<Pose3d[]> visionPrimaryPosesSupplier;
-  private static Supplier<Pose3d[]> visionSecondaryPosesSupplier;
-  private static Supplier<double[]> visionPrimaryPoseTimestampsSupplier;
-  private static Supplier<double[]> visionSecondaryPoseTimestampsSupplier;
+  private static Supplier<Camera[]> camerasSupplier;
+  private static BooleanSupplier targetAquiredSupplier;
+  private static Supplier<Optional<Pose3d>[]> visionPrimaryPosesSupplier;
+  private static Supplier<Optional<Pose3d>[]> visionSecondaryPosesSupplier;
+  private static Supplier<double[]> visionFrameTimestampSupplier;
 
   static {
     // Units: radians per second
@@ -82,21 +84,23 @@ public class RobotState {
 
   public RobotState(
       Supplier<Rotation2d> robotHeadingSupplier,
+      DoubleSupplier robotYawVelocitySupplier,
       Supplier<Translation2d> robotFieldRelativeVelocitySupplier,
       Supplier<SwerveModulePosition[]> modulePositionSupplier,
-      Supplier<CameraType[]> camerasSupplier,
-      Supplier<Pose3d[]> visionPrimaryPosesSupplier,
-      Supplier<Pose3d[]> visionSecondaryPosesSupplier,
-      Supplier<double[]> visionPrimaryPoseTimestampsSupplier,
-      Supplier<double[]> visionSecondaryPoseTimestampsSupplier) {
+      Supplier<Camera[]> camerasSupplier,
+      BooleanSupplier targetAquiredSupplier,
+      Supplier<Optional<Pose3d>[]> visionPrimaryPosesSupplier,
+      Supplier<Optional<Pose3d>[]> visionSecondaryPosesSupplier,
+      Supplier<double[]> visionFrameTimestampSupplier) {
     RobotState.robotHeadingSupplier = robotHeadingSupplier;
+    RobotState.robotYawVelocitySupplier = robotYawVelocitySupplier;
     RobotState.robotFieldRelativeVelocitySupplier = robotFieldRelativeVelocitySupplier;
     RobotState.modulePositionSupplier = modulePositionSupplier;
     RobotState.camerasSupplier = camerasSupplier;
+    RobotState.targetAquiredSupplier = targetAquiredSupplier;
     RobotState.visionPrimaryPosesSupplier = visionPrimaryPosesSupplier;
     RobotState.visionSecondaryPosesSupplier = visionSecondaryPosesSupplier;
-    RobotState.visionPrimaryPoseTimestampsSupplier = visionPrimaryPoseTimestampsSupplier;
-    RobotState.visionSecondaryPoseTimestampsSupplier = visionSecondaryPoseTimestampsSupplier;
+    RobotState.visionFrameTimestampSupplier = visionFrameTimestampSupplier;
 
     poseEstimator =
         new SwerveDrivePoseEstimator(
@@ -105,29 +109,54 @@ public class RobotState {
             modulePositionSupplier.get(),
             new Pose2d(),
             DriveConstants.ODOMETRY_STANDARD_DEVIATIONS,
-            VisionConstants.DEFAULT_STANDARD_DEVIATIONS);
+            VecBuilder.fill(0.0, 0.0, 0.0));
   }
 
-  public static void periodic() {
+  public static final void periodic() {
+    Camera[] cameras = camerasSupplier.get();
+    for (Camera camera : cameras) {
+      if (camera.getCameraType() == CameraType.LIMELIGHT_3G
+          || camera.getCameraType() == CameraType.LIMELIGHT_3) {
+        LimelightHelpers.SetRobotOrientation(
+            camera.getName(), robotHeadingSupplier.get().getDegrees(), 0, 0, 0, 0, 0);
+      }
+    }
+    addVisionMeasurement();
     poseEstimator.updateWithTime(
         Timer.getFPGATimestamp(), robotHeadingSupplier.get(), modulePositionSupplier.get());
-    for (int i = 0; i < visionPrimaryPosesSupplier.get().length; i++) {
-      poseEstimator.addVisionMeasurement(
-          visionPrimaryPosesSupplier.get()[i].toPose2d(),
-          visionPrimaryPoseTimestampsSupplier.get()[i],
-          camerasSupplier.get()[i].primaryStandardDeviations);
-    }
-    if (!secondaryPosesNullAlert.isActive()) {
-      try {
-        for (int i = 0; i < visionSecondaryPosesSupplier.get().length; i++) {
+
+    Logger.recordOutput("RobotState/Estimated Pose", poseEstimator.getEstimatedPosition());
+    Logger.recordOutput("RobotState/Target Aquired", targetAquiredSupplier.getAsBoolean());
+  }
+
+  private static final void addVisionMeasurement() {
+    if (targetAquiredSupplier.getAsBoolean()
+        && robotYawVelocitySupplier.getAsDouble() < Units.degreesToRadians(720.0)) {
+      for (int i = 0; i < visionPrimaryPosesSupplier.get().length; i++) {
+        if (visionSecondaryPosesSupplier.get()[i].isPresent()) {
+          double xyStddev =
+              camerasSupplier.get()[i].getPrimaryXYStandardDeviationCoefficient()
+                  * Math.pow(camerasSupplier.get()[i].getAverageDistance(), 2.0)
+                  / camerasSupplier.get()[i].getTotalTargets()
+                  * camerasSupplier.get()[i].getHorizontalFOV();
           poseEstimator.addVisionMeasurement(
-              visionSecondaryPosesSupplier.get()[i].toPose2d(),
-              visionSecondaryPoseTimestampsSupplier.get()[i],
-              camerasSupplier.get()[i].secondaryStandardDeviations);
+              visionPrimaryPosesSupplier.get()[i].get().toPose2d(),
+              visionFrameTimestampSupplier.get()[i],
+              VecBuilder.fill(xyStddev, xyStddev, Double.POSITIVE_INFINITY));
         }
-        secondaryPosesNullAlert.set(false);
-      } catch (Exception e) {
-        secondaryPosesNullAlert.set(true);
+      }
+      for (int i = 0; i < visionSecondaryPosesSupplier.get().length; i++) {
+        if (visionSecondaryPosesSupplier.get()[i].isPresent()) {
+          double xyStddev =
+              camerasSupplier.get()[i].getSecondaryXYStandardDeviationCoefficient()
+                  * Math.pow(camerasSupplier.get()[i].getAverageDistance(), 2.0)
+                  / camerasSupplier.get()[i].getTotalTargets()
+                  * camerasSupplier.get()[i].getHorizontalFOV();
+          poseEstimator.addVisionMeasurement(
+              visionSecondaryPosesSupplier.get()[i].get().toPose2d(),
+              visionFrameTimestampSupplier.get()[i],
+              VecBuilder.fill(xyStddev, xyStddev, Double.POSITIVE_INFINITY));
+        }
       }
     }
 
@@ -156,8 +185,6 @@ public class RobotState {
             shooterSpeedMap.get(effectiveDistanceToSpeaker),
             new Rotation2d(shooterAngleMap.get(effectiveDistanceToSpeaker)));
 
-    Logger.recordOutput("RobotState/MegaTag 1 Pose", visionPrimaryPosesSupplier.get());
-    Logger.recordOutput("RobotState/MegaTag 2 Pose", visionSecondaryPosesSupplier.get());
     Logger.recordOutput("RobotState/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/StateCache/Robot Angle Setpoint", setpointAngle);
     Logger.recordOutput(

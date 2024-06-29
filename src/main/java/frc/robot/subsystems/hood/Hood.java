@@ -2,7 +2,6 @@ package frc.robot.subsystems.hood;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -67,10 +66,6 @@ public class Hood extends SubsystemBase {
             HoodConstants.MIN_POSITION.get(),
             HoodConstants.MAX_POSITION.get());
     profiledFeedback.setGoal(position);
-  }
-
-  public Rotation2d getPosition() {
-    return inputs.position;
   }
 
   public boolean atGoal() {

@@ -1,32 +1,55 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import frc.robot.subsystems.vision.VisionConstants.GenericPhotonVisionCameraConstants;
-import frc.robot.subsystems.vision.VisionConstants.Limelight3Constants;
-import frc.robot.subsystems.vision.VisionConstants.Limelight3GConstants;
+import frc.robot.subsystems.vision.CameraConstants.ArducamOV9281;
+import frc.robot.subsystems.vision.CameraConstants.Limelight3Constants;
+import frc.robot.subsystems.vision.CameraConstants.Limelight3GConstants;
 
 public enum CameraType {
   LIMELIGHT_3(
-      Limelight3Constants.MEGA_TAG_1_STANDARD_DEVIATIONS,
-      Limelight3Constants.MEGA_TAG_2_STANDARD_DEVIATIONS),
+      Limelight3Constants.HORIZONTAL_FOV,
+      Limelight3Constants.VERTICAL_FOV,
+      Limelight3Constants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+      Limelight3Constants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT),
   LIMELIGHT_3G(
-      Limelight3GConstants.MEGA_TAG_1_STANDARD_DEVIATIONS,
-      Limelight3GConstants.MEGA_TAG_2_STANDARD_DEVIATIONS),
-  GENERIC_PHOTON_VISION_CAMERA(GenericPhotonVisionCameraConstants.STANDARD_DEVIATIONS);
+      Limelight3GConstants.HORIZONTAL_FOV,
+      Limelight3GConstants.VERTICAL_FOV,
+      Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+      Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT),
+  ARDUCAM_OV9281(
+      ArducamOV9281.HORIZONTAL_FOV,
+      ArducamOV9281.VERTICAL_FOV,
+      ArducamOV9281.MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+      ArducamOV9281.AVERAGE_BEST_XY_STANDARD_DEVIATION_COEFFICIENT),
+  DEFAULT();
 
-  public final Matrix<N3, N1> primaryStandardDeviations;
-  public final Matrix<N3, N1> secondaryStandardDeviations;
+  public final double horizontalFOV;
+  public final double verticalFOV;
+  public final double primaryXYStandardDeviationCoefficient;
+  public final double secondaryXYStandardDeviationCoefficient;
 
   private CameraType(
-      Matrix<N3, N1> primaryStandardDeviations, Matrix<N3, N1> secondaryStandardDeviations) {
-    this.primaryStandardDeviations = primaryStandardDeviations;
-    this.secondaryStandardDeviations = secondaryStandardDeviations;
+      double horizontalFOV,
+      double verticalFOV,
+      double primaryXYStandardDeviationCoefficient,
+      double secondaryXYStandardDeviationCoefficient) {
+    this.horizontalFOV = horizontalFOV;
+    this.verticalFOV = verticalFOV;
+    this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
+    this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
   }
 
-  private CameraType(Matrix<N3, N1> standardDeviations) {
-    this.primaryStandardDeviations = standardDeviations;
-    this.secondaryStandardDeviations = null;
+  private CameraType(
+      double horizontalFOV, double verticalFOV, double xyStandardDeviationCoefficient) {
+    this.horizontalFOV = horizontalFOV;
+    this.verticalFOV = verticalFOV;
+    this.primaryXYStandardDeviationCoefficient = xyStandardDeviationCoefficient;
+    this.secondaryXYStandardDeviationCoefficient = xyStandardDeviationCoefficient;
+  }
+
+  private CameraType() {
+    this.horizontalFOV = 0.0;
+    this.verticalFOV = 0.0;
+    this.primaryXYStandardDeviationCoefficient = 0.0;
+    this.secondaryXYStandardDeviationCoefficient = 0.0;
   }
 }

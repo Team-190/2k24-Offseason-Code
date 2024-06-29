@@ -7,11 +7,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -252,5 +254,28 @@ public class FieldConstants {
         new Pose2d(3.05, 0.39, Rotation2d.fromDegrees(180.0));
     public static final Pose2d SUBWOOFER_CENTER_DROPPED_NOTE =
         new Pose2d(1.35, 5.53, Rotation2d.fromDegrees(0.0));
+  }
+
+  public class AprilTagConstants {
+    public static final List<AprilTag> APRIL_TAGS =
+        List.of(
+            new AprilTag(1, new Pose3d()),
+            new AprilTag(2, new Pose3d()),
+            new AprilTag(3, new Pose3d()),
+            new AprilTag(4, new Pose3d()),
+            new AprilTag(5, new Pose3d()),
+            new AprilTag(6, new Pose3d()),
+            new AprilTag(7, new Pose3d()),
+            new AprilTag(8, new Pose3d()),
+            new AprilTag(9, new Pose3d()),
+            new AprilTag(10, new Pose3d()),
+            new AprilTag(11, new Pose3d()),
+            new AprilTag(12, new Pose3d()),
+            new AprilTag(13, new Pose3d()),
+            new AprilTag(14, new Pose3d()),
+            new AprilTag(15, new Pose3d()),
+            new AprilTag(16, new Pose3d()));
+    public static final AprilTagFieldLayout FIELD_LAYOUT_2024 =
+        AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
   }
 }

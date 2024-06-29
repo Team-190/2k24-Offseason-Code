@@ -14,7 +14,7 @@ import frc.robot.Constants.RobotType;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.accelerator.Accelerator;
-import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.kicker.Kicker;
@@ -39,15 +39,9 @@ public class CompositeCommands {
   public static final Command getCollectCommand(
       Intake intake, Serializer serializer, Vision noteVision, Vision aprilTagVision) {
     return Commands.sequence(
-            intake.deployIntake(),
-            Commands.race(intake.runVoltage(), serializer.intake()),
-            Commands.parallel(
-                intake.retractIntake(), noteVision.blinkLEDs(), aprilTagVision.blinkLEDs()))
-        .finallyDo(
-            () -> {
-              noteVision.disableLEDs();
-              aprilTagVision.disableLEDs();
-            });
+        intake.deployIntake(),
+        Commands.race(intake.runVoltage(), serializer.intake()),
+        intake.retractIntake());
   }
 
   public static final Command getCollectCommand(Intake intake, Serializer serializer) {

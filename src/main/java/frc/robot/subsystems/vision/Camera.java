@@ -2,72 +2,73 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
 public class Camera {
   private final CameraIOInputsAutoLogged inputs = new CameraIOInputsAutoLogged();
 
   private final CameraIO io;
-  private final int index;
+  @Getter private final String name;
+  @Getter private final CameraType cameraType;
+  @Getter private final double horizontalFOV;
+  @Getter private final double verticalFOV;
+  @Getter private final double primaryXYStandardDeviationCoefficient;
+  @Getter private final double secondaryXYStandardDeviationCoefficient;
 
-  public Camera(CameraIO io, int index) {
+  public Camera(
+      CameraIO io,
+      double horizontalFOV,
+      double verticalFOV,
+      double primaryXYStandardDeviationCoefficient,
+      double secondaryXYStandardDeviationCoefficient) {
     this.io = io;
-    this.index = index;
-  }
-
-  public void updateInputs() {
-    io.updateInputs(inputs);
+    this.name = io.getName();
+    this.cameraType = io.getCameraType();
+    this.horizontalFOV = horizontalFOV;
+    this.verticalFOV = verticalFOV;
+    this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
+    this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
   }
 
   public void periodic() {
-    Logger.processInputs("Vision/Camera" + Integer.toString(index), inputs);
+    io.updateInputs(inputs);
+    Logger.processInputs("Vision/Cameras/" + io.toString(), inputs);
   }
 
-  public Rotation2d getTx() {
+  public Rotation2d getXOffset() {
     return inputs.xOffset;
   }
 
-  public Rotation2d getTy() {
+  public Rotation2d getYOffset() {
     return inputs.yOffset;
   }
 
-  public boolean getTv() {
+  public boolean getTargetAquired() {
     return inputs.targetAquired;
   }
 
-  public double getMegaTag1Timestamp() {
-    return inputs.primaryPoseTimestamp;
+  public int getTotalTargets() {
+    return inputs.totalTargets;
   }
 
-  public Pose3d getMegaTag1RobotPose() {
+  public double getAverageDistance() {
+    return inputs.averageDistance;
+  }
+
+  public double getFrameTimestamp() {
+    return inputs.frameTimestamp;
+  }
+
+  public Pose3d getPrimaryPose() {
     return inputs.primaryPose;
   }
 
-  public double getMegaTag2Timestamp() {
-    return inputs.secondaryPoseTimestamp;
-  }
-
-  public Pose3d getMegaTag2RobotPose() {
+  public Pose3d getSecondaryPose() {
     return inputs.secondaryPose;
-  }
-
-  public long getPipeline() {
-    return inputs.pipeline;
-  }
-
-  public CameraType getCameraType() {
-    return inputs.cameraType;
   }
 
   public void setPipeline(int pipeline) {
     io.setPipeline(pipeline);
-  }
-
-  public void enableLEDs() {
-    io.enableLEDs();
-  }
-
-  public void disableLEDs() {
-    io.disableLEDs();
   }
 }

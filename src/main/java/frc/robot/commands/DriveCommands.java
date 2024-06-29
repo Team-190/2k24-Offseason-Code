@@ -31,8 +31,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.drive.Drive;
+import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.TrackingMode;
 import java.util.Optional;
@@ -57,9 +57,9 @@ public final class DriveCommands {
     @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(
-            DriveConstants.AUTO_AIM_KP.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KP.get(),
             0,
-            DriveConstants.AUTO_AIM_KD.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KD.get(),
             Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -88,10 +88,10 @@ public final class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
-          //
+
           // Configure PID
-          aimController.setD(DriveConstants.AUTO_AIM_KD.get());
           aimController.setP(DriveConstants.AUTO_AIM_KP.get());
+          aimController.setD(DriveConstants.AUTO_AIM_KD.get());
 
           // Get robot relative vel
           boolean isFlipped =
@@ -102,7 +102,7 @@ public final class DriveCommands {
           double feedForwardRadialVelocity = 0.0;
 
           double robotRelativeXVel = linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY;
-          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_ANGULAR_VELOCITY;
+          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY;
 
           Pose2d visionPose = RobotState.getRobotPose();
           measuredGyroAngle = visionPose.getRotation();
@@ -131,17 +131,18 @@ public final class DriveCommands {
     @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(
-            DriveConstants.AUTO_AIM_KP.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KP.get(),
             0,
-            DriveConstants.AUTO_AIM_KD.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KD.get(),
             Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
     aimController.setTolerance(0.017);
 
     return Commands.run(
             () -> {
-              aimController.setD(DriveConstants.AUTO_AIM_KD.get());
+              // Configure PID
               aimController.setP(DriveConstants.AUTO_AIM_KP.get());
+              aimController.setD(DriveConstants.AUTO_AIM_KD.get());
 
               // Get robot relative vel
               boolean isFlipped =
@@ -187,9 +188,9 @@ public final class DriveCommands {
     @SuppressWarnings({"resource"})
     PIDController aimController =
         new PIDController(
-            DriveConstants.AUTO_AIM_KP.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KP.get(),
             0,
-            DriveConstants.AUTO_AIM_KD.get(),
+            frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_KD.get(),
             Constants.LOOP_PERIOD_SECS);
     aimController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -204,8 +205,9 @@ public final class DriveCommands {
     return Commands.run(
             () -> {
               // Configure PID
-              aimController.setD(DriveConstants.AUTO_AIM_KD.get());
+              // Configure PID
               aimController.setP(DriveConstants.AUTO_AIM_KP.get());
+              aimController.setD(DriveConstants.AUTO_AIM_KD.get());
 
               boolean isRed =
                   DriverStation.getAlliance().isPresent()
@@ -221,8 +223,8 @@ public final class DriveCommands {
                       1.0);
               double speed =
                   MathUtil.interpolate(
-                      DriveConstants.AUTO_AIM_X_VEL_MIN.get(),
-                      DriveConstants.AUTO_AIM_X_VEL_MAX.get(),
+                      frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_X_VEL_MIN.get(),
+                      frc.robot.subsystems.drive.drive.DriveConstants.AUTO_AIM_X_VEL_MAX.get(),
                       distanceT);
               drive.runVelocity(
                   new ChassisSpeeds(

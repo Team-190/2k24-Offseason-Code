@@ -10,19 +10,76 @@ public interface CameraIO {
     public Rotation2d xOffset = new Rotation2d();
     public Rotation2d yOffset = new Rotation2d();
     public boolean targetAquired = false;
-    public double primaryPoseTimestamp = 0.0;
+    public int totalTargets = 0;
+    public double averageDistance = 0.0;
+    public double frameTimestamp = 0.0;
     public Pose3d primaryPose = new Pose3d();
-    public double secondaryPoseTimestamp = 0.0;
     public Pose3d secondaryPose = new Pose3d();
-    public long pipeline = 0;
-    public CameraType cameraType = CameraType.GENERIC_PHOTON_VISION_CAMERA;
   }
 
   public default void updateInputs(CameraIOInputs inputs) {}
 
-  public default void enableLEDs() {}
+  public default Rotation2d getXOffset() {
+    return new Rotation2d();
+  }
 
-  public default void disableLEDs() {}
+  public default Rotation2d getYOffset() {
+    return new Rotation2d();
+  }
 
-  public default void setPipeline(double pipeline) {}
+  public default boolean getTargetAquired() {
+    return false;
+  }
+
+  public default int getTotalTargets() {
+    return 0;
+  }
+
+  public default double getAverageDistance() {
+    return 0.0;
+  }
+
+  public default double getFrameTimestamp() {
+    return 0.0;
+  }
+
+  public default Pose3d getPrimaryPose() {
+    return new Pose3d();
+  }
+
+  public default Pose3d getSecondaryPose() {
+    return new Pose3d();
+  }
+
+  public default long getPipeline() {
+    return 0;
+  }
+
+  public default String getName() {
+    return "";
+  }
+
+  public default CameraType getCameraType() {
+    return CameraType.DEFAULT;
+  }
+
+  public default double getHorizontalFOV() {
+    return 0.0;
+  }
+
+  public default double getVerticalFOV() {
+    return 0.0;
+  }
+
+  public default double getPrimaryXYStandardDeviationCoefficient() {
+    return 0.0;
+  }
+
+  public default double getSecondaryXYStandardDeviationCoefficient() {
+    return 0.0;
+  }
+
+  public default void setCameraMode(CameraMode cameraMode) {}
+
+  public default void setPipeline(int pipeline) {}
 }
