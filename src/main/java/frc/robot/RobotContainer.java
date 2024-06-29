@@ -260,7 +260,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper()));
-    driver.start().onTrue(CompositeCommands.resetHeading());
+    driver.start().onTrue(CompositeCommands.resetHeading(drive));
     driver
         .rightTrigger()
         .whileTrue(CompositeCommands.getSourceFeedCommand(shooter, hood, accelerator, kicker));

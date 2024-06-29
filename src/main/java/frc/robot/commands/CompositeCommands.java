@@ -28,12 +28,19 @@ public class CompositeCommands {
   public static final PathConstraints DEFAULT_PATH_CONSTRAINTS =
       new PathConstraints(5.0, 4.0, 540.0, 720.0);
 
-  public static final Command resetHeading() {
+  public static final Command resetHeading(Drive drive) {
     return Commands.runOnce(
-            () ->
-                RobotState.resetRobotPose(
-                    new Pose2d(RobotState.getRobotPose().getTranslation(), new Rotation2d())))
-        .ignoringDisable(true);
+            () -> {
+                      drive.setPose(
+                          new Pose2d(
+                              RobotState.getRobotPose().getTranslation(),
+                              AllianceFlipUtil.apply(new Rotation2d())));
+                      RobotState.resetRobotPose(
+                          new Pose2d(
+                              RobotState.getRobotPose().getTranslation(),
+                              AllianceFlipUtil.apply(new Rotation2d())));
+                    })
+                .ignoringDisable(true);
   }
 
   public static final Command getCollectCommand(
