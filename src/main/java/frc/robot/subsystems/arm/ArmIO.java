@@ -9,11 +9,11 @@ public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
 
-    public Rotation2d ArmPosition = new Rotation2d();
-    public double ArmVelocityRadPerSec = 0.0;
-    public double ArmAppliedVolts = 0.0;
-    public double ArmCurrentAmps = 0.0;
-    public double ArmTemperatureCelsius = 0.0;
+    public Rotation2d armPosition = new Rotation2d();
+    public double armVelocityRadPerSec = 0.0;
+    public double armAppliedVolts = 0.0;
+    public double armCurrentAmps = 0.0;
+    public double armTemperatureCelsius = 0.0;
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}
