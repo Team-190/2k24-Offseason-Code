@@ -22,6 +22,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final VoltageOut voltageControl;
   private final NeutralOut neutralControl;
 
+  /**
+   * Creates the TalonFX motor object and configures it.
+   * Sets the variables from the motor and optimizes the can bus utilization.
+   */
   public ClimberIOTalonFX() {
     motor = new TalonFX(ClimberConstants.CLIMBER_CAN_ID);
 
@@ -45,6 +49,13 @@ public class ClimberIOTalonFX implements ClimberIO {
     voltageControl = new VoltageOut(0);
   }
 
+  /**
+   * Updates inputs in AdvantageKit. Called in @see periodic().
+   *
+   * @param inputs are the input variables logged in AdvantageKit. These include applied voltage,
+   *     current in amps, position in meters, velocity in meters per second, and the motor
+   *     temperature in celsius
+   */
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
@@ -64,11 +75,18 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
   }
 
+  /** 
+   * Sets the output voltage to apply to the motor.
+   *  @param volts volts to apply to the motor as a double
+   */
   @Override
   public void setVoltage(double volts) {
     motor.setControl(voltageControl.withOutput(MathUtil.clamp(volts, -12.0, 12.0)));
   }
 
+    /** 
+   * Sets the volts to 0 and sets motor Control to neutral.
+   */
   @Override
   public void stop() {
     setVoltage(0);

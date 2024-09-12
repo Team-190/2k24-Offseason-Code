@@ -12,36 +12,60 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
+  
   /** Creates a new Climber. */
   public Climber(ClimberIO io) {
     inputs = new ClimberIOInputsAutoLogged();
     this.io = io;
   }
 
+  /** 
+   * Updates inputs every 20 ms
+   */
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
   }
 
+  /** 
+   * If the climber has reached the maximum height
+   * @return if the climber has reached the maximum height
+   */
   public boolean upperLimitReached() {
     return inputs.positionMeters >= ClimberConstants.MAX_HEIGHT;
   }
 
+  /** 
+   * If the climber has hit the minimum height
+  * @return if the climber has reached the minimum height
+  */
   public boolean lowerLimitReached() {
     return inputs.positionMeters <= ClimberConstants.MIN_HEIGHT;
   }
 
+  /** 
+   * Runs the climber motor at 12 volts until max height is reached. Then stops the motor.
+   * @return run climber motor at 12 volts until max height reached
+   */
   public Command climb() {
     return Commands.runEnd(() -> io.setVoltage(12), () -> io.stop(), this)
         .until(() -> upperLimitReached());
   }
 
+    /** 
+   * Runs the climber motor at -12 volts until minimum height is reached. Then stops the motor.
+   * @return run climber motor at -12 volts until minimum height reached
+   */
   public Command descend() {
     return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this)
         .until(() -> lowerLimitReached());
   }
 
+  /**
+   * Stop the motor
+   * @return command to stop motor
+   */
   public Command stop() {
     return Commands.runOnce(() -> io.stop(), this);
   }
