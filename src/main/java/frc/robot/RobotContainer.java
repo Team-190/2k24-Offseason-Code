@@ -19,6 +19,10 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
@@ -40,6 +44,7 @@ public class RobotContainer {
   private Drive drive;
   private Intake intake;
   private Vision vision;
+  private Climber climber;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -61,6 +66,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
           intake = new Intake(new IntakeIOTalonFX());
           vision = new Vision();
+          climber = new Climber(new ClimberIOTalonFX());
           break;
         case ROBOT_KRAKEN_X60_PRO:
           drive =
@@ -82,6 +88,7 @@ public class RobotContainer {
                   new ModuleIOSim());
           intake = new Intake(new IntakeIOSim());
           vision = new Vision();
+          climber = new Climber(new ClimberIOSim());
           break;
       }
     }
@@ -101,6 +108,9 @@ public class RobotContainer {
     }
     if (vision == null) {
       vision = new Vision();
+    }
+    if (climber == null) {
+      climber = new Climber(new ClimberIO() {});
     }
 
     // Configure auto choices.
