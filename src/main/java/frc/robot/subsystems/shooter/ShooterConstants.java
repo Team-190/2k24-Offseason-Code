@@ -11,6 +11,8 @@ public class ShooterConstants {
   public static final double TOP_GEAR_RATIO;
   public static final double BOTTOM_GEAR_RATIO;
   public static final double CURRENT_LIMIT;
+  public static final double TOP_MOMENT_OF_INERTIA;
+  public static final double BOTTOM_MOMENT_OF_INERTIA;
   public static final DCMotor TOP_MOTOR_CONFIG;
   public static final DCMotor BOTTOM_MOTOR_CONFIG;
   public static final LoggedTunableNumber KP;
@@ -39,6 +41,8 @@ public class ShooterConstants {
         TOP_GEAR_RATIO = 1.0;
         BOTTOM_GEAR_RATIO = 1.0;
         CURRENT_LIMIT = 40.0;
+        TOP_MOMENT_OF_INERTIA = 0.004;
+        BOTTOM_MOMENT_OF_INERTIA = 0.004;
         TOP_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         BOTTOM_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         KP.initDefault(0.0);

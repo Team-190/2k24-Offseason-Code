@@ -53,7 +53,7 @@ public interface ShooterIO {
   public default void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
   }
   
-  public default void SetBottomProfile(double MaxAccelerationRadiansPerSecondSquared) {
+  public default void setBottomProfile(double MaxAccelerationRadiansPerSecondSquared) {
   }
 
   public default boolean atSetPoint() {
