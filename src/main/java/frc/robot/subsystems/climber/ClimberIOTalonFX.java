@@ -28,6 +28,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     motorConfig = new TalonFXConfiguration();
     motorConfig.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CURRENT_LIMIT;
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ClimberConstants.MAX_HEIGHT;
+    motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ClimberConstants.MIN_HEIGHT;
     motor.getConfigurator().apply(motorConfig);
 
     tempCelsius = motor.getDeviceTemp();

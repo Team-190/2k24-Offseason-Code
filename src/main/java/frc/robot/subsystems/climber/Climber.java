@@ -4,11 +4,10 @@
 
 package frc.robot.subsystems.climber;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Climber extends SubsystemBase {
   private final ClimberIO io;
@@ -17,9 +16,7 @@ public class Climber extends SubsystemBase {
   public Climber(ClimberIO io) {
     inputs = new ClimberIOInputsAutoLogged();
     this.io = io;
-
   }
-
 
   @Override
   public void periodic() {
@@ -27,18 +24,24 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
   }
 
-  public boolean limitReached() {
-    return inputs.positionMeters >= ClimberConstants.MAX_HEIGHT || inputs.positionMeters <= ClimberConstants.MIN_HEIGHT;
+  public boolean upperLimitReached() {
+    return inputs.positionMeters >= ClimberConstants.MAX_HEIGHT;
+  }
+
+  public boolean lowerLimitReached() {
+    return inputs.positionMeters <= ClimberConstants.MIN_HEIGHT;
   }
 
   public Command climb() {
-    return Commands.runEnd(()-> io.setVoltage(12), ()->io.stop(), this).until(()->limitReached());
+    return Commands.runEnd(() -> io.setVoltage(12), () -> io.stop(), this)
+        .until(() -> upperLimitReached());
   }
 
   public Command descend() {
-    return Commands.runEnd(()-> io.setVoltage(-12), ()->io.stop(), this).until(()->limitReached());
+    return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this)
+        .until(() -> lowerLimitReached());
   }
-  
+
   public Command stop() {
     return Commands.runOnce(() -> io.stop(), this);
   }
