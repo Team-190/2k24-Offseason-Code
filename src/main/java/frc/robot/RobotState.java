@@ -75,6 +75,8 @@ public class RobotState {
             VecBuilder.fill(0.0, 0.0, 0.0));
   }
 
+  public RobotState() {}
+
   public static void periodic(
       Rotation2d robotHeading,
       double robotYawVelocity,
