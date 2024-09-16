@@ -1,6 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 
 public class ArmConstants {
@@ -13,6 +14,9 @@ public class ArmConstants {
     public static final double ARM_STOW_CONSTANT;
     public static final double ARM_INTAKE_CONSTANT;
     public static final double ARM_AMP_CONSTANT;
+    public static final Rotation2d ARM_ABSOLUTE_ENCODER_OFFSET;
+    public static final int ARM_ENCODER_ID;
+    public static final double GOAL_TOLERANCE;
 
   static {
     switch (Constants.ROBOT) {
@@ -33,6 +37,9 @@ public class ArmConstants {
         ARM_STOW_CONSTANT = 0.0;
         ARM_INTAKE_CONSTANT = 0.0;
         ARM_AMP_CONSTANT = 0.0;
+        ARM_ABSOLUTE_ENCODER_OFFSET = new Rotation2d(0.0);
+        ARM_ENCODER_ID = 0;
+        GOAL_TOLERANCE = 0.0;
         break;
     }
   }
