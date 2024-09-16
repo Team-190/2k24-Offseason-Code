@@ -67,7 +67,7 @@ public class Climber extends SubsystemBase {
      * @return command to unlock climber
      */
     public Command unlock() {
-      return Commands.runEnd(() -> io.setVoltage(-12),()-> io.stop(), this).withTimeout(.25); //trial and error the time
+      return Commands.runEnd(() -> io.setVoltage(-12),()-> io.stop(), this).withTimeout(.25); //TODO: trial and error the time
     }
 
   /**
