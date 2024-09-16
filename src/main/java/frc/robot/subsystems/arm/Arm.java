@@ -13,13 +13,13 @@ public class Arm extends SubsystemBase {
   private final ArmIOInputsAutoLogged inputs;
   private final ArmIO io;
   private Rotation2d desiredAngle;
-  private Rotation2d currentAngle;
 
 
   public Arm(ArmIO io) {
     inputs = new ArmIOInputsAutoLogged();
     this.io = io;
   }
+  
   @Override
   public void periodic() {
     io.updateInputs(inputs);

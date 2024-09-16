@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -16,7 +17,6 @@ public class ArmIOTalonFX implements ArmIO {
   private final TalonFX armMotor;
   private final CANcoder cancoder;
 
-
   private final StatusSignal<Double> armPositionRotations;
   private final StatusSignal<Double> armVelocityRotPerSec;
   private final StatusSignal<Double> armAppliedVolts;
@@ -24,6 +24,8 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Double> armTemperatureCelsius;
   private final StatusSignal<Double> armAbsolutePositionRotations;
 
+  private final MotionMagicVelocityVoltage armProfiledVelocityControl;
+  
   private final TalonFXConfiguration motorConfig;
 
   private final NeutralOut neutralControl;
@@ -72,7 +74,6 @@ public class ArmIOTalonFX implements ArmIO {
         Rotation2d.fromRotations(armAbsolutePositionRotations.getValueAsDouble())
             .minus(ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET);
   }
-  
 
   @Override
   public void setArmVoltage(double volts) {
@@ -87,5 +88,10 @@ public class ArmIOTalonFX implements ArmIO {
   @Override
   public double getCurrentAngle() {
     return armAbsolutePositionRotations.getValueAsDouble();
+  }
+  
+  @Override
+  public void shootAngle(){
+
   }
 }
