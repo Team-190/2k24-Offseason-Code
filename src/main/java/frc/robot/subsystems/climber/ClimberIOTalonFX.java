@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.MathUtil;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX motor;
@@ -81,7 +80,7 @@ public class ClimberIOTalonFX implements ClimberIO {
    */
   @Override
   public void setVoltage(double volts) {
-    motor.setControl(voltageControl.withOutput(MathUtil.clamp(volts, -12.0, 12.0)));
+    motor.setControl(voltageControl.withOutput(volts));
   }
 
     /** 
