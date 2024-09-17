@@ -1,12 +1,11 @@
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
 
   @AutoLog
-
   public static class ShooterIOInputs {
 
     public Rotation2d topPosition = new Rotation2d();
@@ -23,47 +22,32 @@ public interface ShooterIO {
 
     public double topVelocityErrorRadiansPerSec = 0.0;
     public double bottomVelocityErrorRadiansPerSec = 0.0;
-
   }
 
-  public default void updateInputs(ShooterIOInputs inputs) {
-  }
-  
-  public default void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-  }
-  
-  public default void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-  }
+  public default void updateInputs(ShooterIOInputs inputs) {}
 
-  public default void setVoltage(double volts) {
-  }
-  
-  public default void setTopPID(double kP, double kI, double kD) {
-  }
-  
-  public default void setBottomPID(double kP, double kI, double kD) {
-  }
+  public default void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {}
 
-  public default void setTopFeedForward(double kS, double kV, double kA) {
-  }
-  
-  public default void setBottomFeedForward(double kS, double kV, double kA) {
-  }
+  public default void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {}
 
-  public default void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
-  }
-  
-  public default void setBottomProfile(double MaxAccelerationRadiansPerSecondSquared) {
-  }
+  public default void setVoltage(double volts) {}
+
+  public default void setTopPID(double kP, double kI, double kD) {}
+
+  public default void setBottomPID(double kP, double kI, double kD) {}
+
+  public default void setTopFeedForward(double kS, double kV, double kA) {}
+
+  public default void setBottomFeedForward(double kS, double kV, double kA) {}
+
+  public default void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {}
+
+  public default void setBottomProfile(double MaxAccelerationRadiansPerSecondSquared) {}
 
   public default boolean atSetPoint() {
 
     return false;
-
   }
 
-  public default void stop() {
-  }
-  
-
+  public default void stop() {}
 }

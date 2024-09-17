@@ -22,8 +22,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final NeutralOut neutralControl;
 
   /**
-   * Creates the TalonFX motor object and configures it.
-   * Sets the variables from the motor and optimizes the can bus utilization.
+   * Creates the TalonFX motor object and configures it. Sets the variables from the motor and
+   * optimizes the can bus utilization.
    */
   public ClimberIOTalonFX() {
     motor = new TalonFX(ClimberConstants.CLIMBER_CAN_ID);
@@ -74,18 +74,17 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
   }
 
-  /** 
+  /**
    * Sets the output voltage to apply to the motor.
-   *  @param volts volts to apply to the motor as a double
+   *
+   * @param volts volts to apply to the motor as a double
    */
   @Override
   public void setVoltage(double volts) {
     motor.setControl(voltageControl.withOutput(volts));
   }
 
-    /** 
-   * Sets the volts to 0 and sets motor Control to neutral.
-   */
+  /** Sets the volts to 0 and sets motor Control to neutral. */
   @Override
   public void stop() {
     setVoltage(0);

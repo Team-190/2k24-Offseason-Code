@@ -1,11 +1,11 @@
 package frc.robot.subsystems.shooter;
 
-import frc.robot.Constants;
 import edu.wpi.first.math.system.plant.DCMotor;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterConstants {
-  
+
   public static final int TOP_CAN_ID;
   public static final int BOTTOM_CAN_ID;
   public static final double TOP_GEAR_RATIO;
@@ -24,17 +24,17 @@ public class ShooterConstants {
   public static final LoggedTunableNumber AMP_SPEED;
 
   static {
-
     KP = new LoggedTunableNumber("Shooter/kP");
     KD = new LoggedTunableNumber("Shooter/kD");
     KS = new LoggedTunableNumber("Shooter/kS");
     KV = new LoggedTunableNumber("Shooter/kV");
-    MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED = new LoggedTunableNumber("Shooter/Max Acceleration");
-    PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND = new LoggedTunableNumber("Shooter/Profile Speed Tolerance");
+    MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED =
+        new LoggedTunableNumber("Shooter/Max Acceleration");
+    PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND =
+        new LoggedTunableNumber("Shooter/Profile Speed Tolerance");
     AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
 
     switch (Constants.ROBOT) {
-
       default:
         TOP_CAN_ID = 0;
         BOTTOM_CAN_ID = 1;
@@ -52,10 +52,7 @@ public class ShooterConstants {
         MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.initDefault(0.0);
         PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.initDefault(0.0);
         AMP_SPEED.initDefault(300.0);
-      break;
-
+        break;
     }
-
   }
- 
 }

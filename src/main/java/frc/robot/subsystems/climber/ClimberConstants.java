@@ -28,12 +28,12 @@ public class ClimberConstants {
         CURRENT_LIMIT = 40.0;
         CLIMBER_MOTOR = DCMotor.getKrakenX60(1);
         GEAR_RATIO = 1.0;
-        DRUM_RADIUS = Units.inchesToMeters(.75/2); 
+        DRUM_RADIUS = Units.inchesToMeters(.75 / 2);
         DC_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         CARRIAGE_MASS = 0.1; // TODO: Update Values
-        STARTING_HEIGHT = 0; 
+        STARTING_HEIGHT = 0;
         MIN_HEIGHT = 0; // TODO: Update Values
-        MAX_HEIGHT = Units.inchesToMeters(29.043-7.043); // TODO: Update Values
+        MAX_HEIGHT = Units.inchesToMeters(29.043 - 7.043); // TODO: Update Values
         GRAVITY = false;
         break;
     }
