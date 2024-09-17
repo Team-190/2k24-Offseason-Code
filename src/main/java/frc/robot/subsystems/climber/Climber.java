@@ -50,17 +50,8 @@ public class Climber extends SubsystemBase {
    */
   public Command climb() {
     return Commands.runEnd(() -> io.setVoltage(12), () -> io.stop(), this)
-        .until(() -> upperLimitReached());
+        .until(() -> lowerLimitReached());
   }
-
-    /** 
-   * Runs the climber motor at -12 volts until minimum height is reached. Then stops the motor.
-   * @return run climber motor at -12 volts until minimum height reached
-   */
-    public Command descend() {
-      return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this)
-          .until(() -> lowerLimitReached());
-    }
   
     /**
      * Unlatch the climber by running it backwards for 1/4 second
