@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 
 public class ArmConstants {
 
@@ -17,8 +18,27 @@ public class ArmConstants {
     public static final Rotation2d ARM_ABSOLUTE_ENCODER_OFFSET;
     public static final int ARM_ENCODER_ID;
     public static final double GOAL_TOLERANCE;
+    public static final double ARM_LENGTH_METERS;
+    public static final double ARM_MIN_ANGLE;
+    public static final double ARM_MAX_ANGLE;
+    public static final LoggedTunableNumber ARM_KP;
+    public static final LoggedTunableNumber ARM_KD;
+    public static final LoggedTunableNumber ARM_KS;
+    public static final LoggedTunableNumber ARM_KG;
+    public static final LoggedTunableNumber ARM_KV;
+    public static final LoggedTunableNumber ARM_MAX_VELOCITY;
+    public static final LoggedTunableNumber ARM_MAX_ACCELERATION;
 
-  static {
+    static {
+    ARM_KP = new LoggedTunableNumber("Arm/KP");
+    ARM_KD = new LoggedTunableNumber("Arm/KD");
+    ARM_KS = new LoggedTunableNumber("Arm/KS");
+    ARM_KG = new LoggedTunableNumber("Arm/KG");
+    ARM_KV = new LoggedTunableNumber("Arm/KV");
+    ARM_MAX_VELOCITY = new LoggedTunableNumber("Arm/MAX_VELOCITY");
+    ARM_MAX_ACCELERATION = new LoggedTunableNumber("Arm/MAX_ACCELERATION");
+    
+
     switch (Constants.ROBOT) {
       case ROBOT_KRAKEN_X60:
       case ROBOT_KRAKEN_X60_PRO:
@@ -40,6 +60,16 @@ public class ArmConstants {
         ARM_ABSOLUTE_ENCODER_OFFSET = new Rotation2d(0.0);
         ARM_ENCODER_ID = 0;
         GOAL_TOLERANCE = 0.0;
+        ARM_LENGTH_METERS = 0.0;
+        ARM_MIN_ANGLE = 0.0;
+        ARM_MAX_ANGLE = 0.0;
+        ARM_KP.initDefault(0.0);
+        ARM_KD.initDefault(0.0);
+        ARM_KS.initDefault(0.0);
+        ARM_KG.initDefault(0.0);
+        ARM_KV.initDefault(0.0);
+        ARM_MAX_VELOCITY.initDefault(0.0);
+        ARM_MAX_ACCELERATION.initDefault(0.0);
         break;
     }
   }
