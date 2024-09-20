@@ -170,7 +170,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig, 0.01);
 
   }
- 
+  
   /**
    * Applies the S, V, and A gains to the Bottom Motor Feed Forward.
    * @param kS the voltage gain 
@@ -255,7 +255,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   }
   
-
    /**
    * Applies the P, I, and D gains to the Bottom Motor PID.
    * @param kP the proportional gain 

@@ -10,6 +10,7 @@ import frc.robot.RobotState;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  
 public class Shooter extends SubsystemBase{
+
   private final ShooterIOInputsAutoLogged inputs;
   private final ShooterIO io;
   private double velocitySetPointRadiansPerSecond;
@@ -17,6 +18,7 @@ public class Shooter extends SubsystemBase{
   private final SysIdRoutine characterizationRoutine;
   
   public Shooter(ShooterIO io) {
+
     inputs = new ShooterIOInputsAutoLogged();
     this.io = io;
     velocitySetPointRadiansPerSecond = 0.0;
@@ -30,6 +32,7 @@ public class Shooter extends SubsystemBase{
             (state) -> Logger.recordOutput("Shooter.sysIDState", state.toString())),
         new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
+
   
   @Override
   public void periodic() {
@@ -40,8 +43,7 @@ public class Shooter extends SubsystemBase{
       io.setTopVelocitySetPoint(velocitySetPointRadiansPerSecond);
       io.setBottomVelocitySetPoint(-velocitySetPointRadiansPerSecond);
 
-    }
-    
+    }    
   }
   
     /**
@@ -49,13 +51,13 @@ public class Shooter extends SubsystemBase{
      * @return a command to initialize the speaker velocity.
      */
   public Command setSpeakerVelocity() {
+
     return Commands.runOnce(() -> {
 
       velocitySetPointRadiansPerSecond = RobotState.getControlData().speakerShotSpeed();
       isClosedLoop = true;
 
     });
-
   }
   
     /**
@@ -87,7 +89,6 @@ public class Shooter extends SubsystemBase{
   }
     
     /**
-     * Returns whether or not the robot has reached a target value.
      * @return whether or not the robot has reached a target value.
      */
   public boolean atSetPoint() {
@@ -108,8 +109,6 @@ public class Shooter extends SubsystemBase{
       characterizationRoutine.dynamic(Direction.kForward),
       Commands.waitSeconds(10),
         characterizationRoutine.dynamic(Direction.kReverse));
-
   } 
-
-  }
+}
 

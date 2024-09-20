@@ -5,12 +5,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface ShooterIO {
 
-  @AutoLog
-
   /**
   * The ShooterIOInputs class 
   * @author Sriaditya Vaddadi
   */
+  @AutoLog
   public static class ShooterIOInputs {
 
     public Rotation2d topPosition = new Rotation2d();
