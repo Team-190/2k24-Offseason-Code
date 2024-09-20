@@ -19,23 +19,24 @@ public class Shooter extends SubsystemBase {
   private double velocitySetPointRadiansPerSecond;
   private boolean isClosedLoop;
   private final SysIdRoutine characterizationRoutine;
-
+  
   public Shooter(ShooterIO io) {
 
     inputs = new ShooterIOInputsAutoLogged();
     this.io = io;
     velocitySetPointRadiansPerSecond = 0.0;
     isClosedLoop = true;
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Seconds.of(1.0)),
-                Volts.of(3.5),
-                Seconds.of(3),
-                (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
+
+    characterizationRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.of(0.2).per(Seconds.of(1.0)),
+            Volts.of(3.5),
+            Seconds.of(10),
+            (state) -> Logger.recordOutput("Shooter.sysIDState", state.toString())),
+        new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
 
+  
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -92,6 +93,10 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+    /**
+     * Initializes the amp velocity.
+     * @return a command to initialize amp velocity.
+     */
   public Command setAmpVelocity() {
 
     return Commands.runOnce(
@@ -106,6 +111,10 @@ public class Shooter extends SubsystemBase {
     return io.atSetPoint();
   }
 
+     /**
+     * Runs quasistatic and dynamic tests with the motors moving both forwards and backwards to calculate the feedForward gains.
+     * @return the feedFoward gains calculated by the tests
+     */
   public Command runCharacterization() {
 
     return Commands.sequence(

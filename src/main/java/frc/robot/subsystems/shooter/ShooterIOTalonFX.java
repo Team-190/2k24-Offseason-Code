@@ -143,7 +143,11 @@ public class ShooterIOTalonFX implements ShooterIO {
                 / ShooterConstants.BOTTOM_GEAR_RATIO);
     inputs.bottomVelocityGoalRadiansPerSec = bottomGoalRadiansPerSecond;
   }
-
+  
+  /**
+   * Sets a target value for the Top Motor's velocity in rotations per second.
+   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to reach.
+   */
   @Override
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
@@ -153,6 +157,10 @@ public class ShooterIOTalonFX implements ShooterIO {
             Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
 
+  /**
+   * Sets a target value for the Bottom Motor's velocity in rotations per second.
+   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to reach.
+   */
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
@@ -161,7 +169,13 @@ public class ShooterIOTalonFX implements ShooterIO {
         bottomProfiledVelocityControl.withVelocity(
             Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
-
+  
+  /**
+   * Applies the S, V, and A gains to the Top Motor Feed Forward.
+   * @param kS the voltage gain 
+   * @param kV the velocity gain
+   * @param kA the acceleration gain
+   */
   @Override
   public void setTopFeedForward(double kS, double kV, double kA) {
 
@@ -170,7 +184,13 @@ public class ShooterIOTalonFX implements ShooterIO {
     topConfig.Slot0.kA = kA;
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
-
+  
+  /**
+   * Applies the S, V, and A gains to the Bottom Motor Feed Forward.
+   * @param kS the voltage gain 
+   * @param kV the velocity gain
+   * @param kA the acceleration gain
+   */
   @Override
   public void setBottomFeedForward(double kS, double kV, double kA) {
 
@@ -180,6 +200,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
 
+  /**
+   * Calculates the upper and lower bounds of the top and bottom motor velocities (in radians per second) 
+   * and then makes sure the current top and bottom motor velocities are within these bounds (i.e. at the target velocity).
+   */
   @Override
   public boolean atSetPoint() {
 
@@ -206,7 +230,12 @@ public class ShooterIOTalonFX implements ShooterIO {
         && currentBottomVelocityRadiansPerSecond < bottomSetPointRadiansPerSecondUpperBound
         && currentBottomVelocityRadiansPerSecond > bottomSetPointRadiansPerSecondLowerBound;
   }
-
+  
+  /**
+   * Sets the acceleration of the Top Motor in rotations per second squared.
+   * @param maxAccelerationRadiansPerSecondSquared the acceleration, in radians per second squared, 
+   * that will be applied to the Top Motor.
+   */
   @Override
   public void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
 
@@ -215,6 +244,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig);
   }
 
+  /**
+   * Sets the acceleration of the Bottom Motor in rotations per second squared.
+   * @param maxAccelerationRadiansPerSecondSquared the acceleration, in radians per second squared, 
+   * that will be applied to the Bottom Motor.
+   */
   @Override
   public void setBottomProfile(double maxAccelerationRadiansPerSecondSquared) {
 
@@ -223,6 +257,12 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomMotor.getConfigurator().apply(bottomConfig);
   }
 
+   /**
+   * Applies the P, I, and D gains to the Top Motor PID.
+   * @param kP the proportional gain 
+   * @param kI the integral gain
+   * @param kD the derivative gain
+   */
   @Override
   public void setTopPID(double kP, double kI, double kD) {
 
@@ -231,18 +271,23 @@ public class ShooterIOTalonFX implements ShooterIO {
     topConfig.Slot0.kD = kD;
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
+  
+   @Override
+   public void setBottomPID(double kP, double kI, double kD) {
 
-  @Override
-  public void setBottomPID(double kP, double kI, double kD) {
+     bottomConfig.Slot0.kP = kP;
+     bottomConfig.Slot0.kI = kI;
+     bottomConfig.Slot0.kD = kD;
+     bottomMotor.getConfigurator().apply(bottomConfig, 0.001);
 
-    bottomConfig.Slot0.kP = kP;
-    bottomConfig.Slot0.kI = kI;
-    bottomConfig.Slot0.kD = kD;
-    bottomMotor.getConfigurator().apply(bottomConfig, 0.01);
-  }
-
-  @Override
-  public void setVoltage(double volts) {
+   }
+  
+  /**
+   * Takes in a value volts, and sets the voltage of both the top and bottom motors to this value.
+   * @param volts the voltage that will be inputted as the input voltage for the top and bottom motors.
+   */
+   @Override
+   public void setVoltage(double volts) {
 
     topMotor.setControl(voltageControl.withOutput(volts));
     bottomMotor.setControl(voltageControl.withOutput(volts));
