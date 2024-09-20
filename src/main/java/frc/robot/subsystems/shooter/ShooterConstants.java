@@ -4,10 +4,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
-  /**
-  * The ShooterConstants class 
-  * @author Sriaditya Vaddadi
-  */
+/**
+ * The ShooterConstants class
+ *
+ * @author Sriaditya Vaddadi
+ */
 public class ShooterConstants {
 
   public static final int TOP_CAN_ID;

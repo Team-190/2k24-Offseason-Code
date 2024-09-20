@@ -1,7 +1,6 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ArmIO {
@@ -17,27 +16,20 @@ public interface ArmIO {
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}
-  
+
   public default void setArmVoltage(double volts) {}
-  
+
   public default void stop() {}
 
   public default double getCurrentAngle() {
     return 0;
   }
 
-  public default void setPID(double kp, double ki, double kd) {
+  public default void setPID(double kp, double ki, double kd) {}
 
-  }
+  public default void setFeedforward(double ks, double kg, double kv) {}
 
-  public default void setFeedforward(double ks, double kg, double kv) {
-
-  }
-  
-  public default void setProfile(double max_velocity, double max_acceleration) {
-
-  }
+  public default void setProfile(double max_velocity, double max_acceleration) {}
 
   public default void setArmPosition(double position) {}
 }
-
