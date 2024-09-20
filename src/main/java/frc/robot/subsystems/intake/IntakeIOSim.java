@@ -32,9 +32,9 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    topMotorSim.update(Constants.LOOP_PERIOD_SECS);
-    bottomMotorSim.update(Constants.LOOP_PERIOD_SECS);
-    acceleratorMotorSim.update(Constants.LOOP_PERIOD_SECS);
+    topMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    bottomMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    acceleratorMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.topPosition = Rotation2d.fromRadians(topMotorSim.getAngularPositionRad());
     inputs.topVelocityRadPerSec = topMotorSim.getAngularVelocityRadPerSec();

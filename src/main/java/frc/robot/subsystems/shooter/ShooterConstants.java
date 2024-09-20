@@ -19,19 +19,19 @@ public class ShooterConstants {
   public static final LoggedTunableNumber KD;
   public static final LoggedTunableNumber KS;
   public static final LoggedTunableNumber KV;
+  public static final LoggedTunableNumber KA;
   public static final LoggedTunableNumber MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
-  public static final LoggedTunableNumber PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND;
   public static final LoggedTunableNumber AMP_SPEED;
+  public static final double PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND;
 
   static {
     KP = new LoggedTunableNumber("Shooter/kP");
     KD = new LoggedTunableNumber("Shooter/kD");
     KS = new LoggedTunableNumber("Shooter/kS");
     KV = new LoggedTunableNumber("Shooter/kV");
+    KA = new LoggedTunableNumber("Shooter/kA");
     MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED =
         new LoggedTunableNumber("Shooter/Max Acceleration");
-    PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND =
-        new LoggedTunableNumber("Shooter/Profile Speed Tolerance");
     AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
 
     switch (Constants.ROBOT) {
@@ -45,12 +45,13 @@ public class ShooterConstants {
         BOTTOM_MOMENT_OF_INERTIA = 0.004;
         TOP_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         BOTTOM_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
-        KP.initDefault(0.0);
+        KP.initDefault(0.325);
         KD.initDefault(0.0);
         KS.initDefault(0.0);
-        KV.initDefault(0.0);
-        MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.initDefault(0.0);
-        PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.initDefault(0.0);
+        KV.initDefault(0.019005);
+        KA.initDefault(0.0067707);
+        MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.initDefault(10.0);
+        PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND = 1.0;
         AMP_SPEED.initDefault(300.0);
         break;
     }

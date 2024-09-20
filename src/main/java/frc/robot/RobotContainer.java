@@ -30,12 +30,14 @@ import frc.robot.subsystems.drive.module.ModuleConstants;
 import frc.robot.subsystems.drive.module.ModuleIO;
 import frc.robot.subsystems.drive.module.ModuleIOSim;
 import frc.robot.subsystems.drive.module.ModuleIOTalonFX;
-import frc.robot.subsystems.drive.module.ModuleIOTalonFXPRO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
-import frc.robot.subsystems.intake.IntakeIOTalonFXPRO;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -45,6 +47,7 @@ public class RobotContainer {
   private Intake intake;
   private Vision vision;
   private Climber climber;
+  private Shooter shooter;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -67,17 +70,8 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOTalonFX());
           vision = new Vision();
           climber = new Climber(new ClimberIOTalonFX());
+          shooter = new Shooter(new ShooterIOTalonFX());
           break;
-        case ROBOT_KRAKEN_X60_PRO:
-          drive =
-              new Drive(
-                  new GyroIOPigeon2(),
-                  new ModuleIOTalonFXPRO(ModuleConstants.FRONT_LEFT),
-                  new ModuleIOTalonFXPRO(ModuleConstants.FRONT_RIGHT),
-                  new ModuleIOTalonFXPRO(ModuleConstants.REAR_LEFT),
-                  new ModuleIOTalonFXPRO(ModuleConstants.REAR_RIGHT));
-          intake = new Intake(new IntakeIOTalonFXPRO());
-          vision = new Vision();
         case ROBOT_SIM:
           drive =
               new Drive(
@@ -89,6 +83,7 @@ public class RobotContainer {
           intake = new Intake(new IntakeIOSim());
           vision = new Vision();
           climber = new Climber(new ClimberIOSim());
+          shooter = new Shooter(new ShooterIOSim());
           break;
       }
     }
@@ -111,6 +106,9 @@ public class RobotContainer {
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
+    }
+    if (shooter == null) {
+      shooter = new Shooter(new ShooterIO() {});
     }
 
     // Configure auto choices.
@@ -145,6 +143,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutoRoutines.none();
+    return shooter.setAmpVelocity();
   }
 }

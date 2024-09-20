@@ -27,7 +27,6 @@ public final class DriveConstants {
   static {
     switch (Constants.ROBOT) {
       case ROBOT_KRAKEN_X60:
-      case ROBOT_KRAKEN_X60_PRO:
       case ROBOT_SIM:
       default:
         TRACK_WIDTH_X = Units.inchesToMeters(25.0);

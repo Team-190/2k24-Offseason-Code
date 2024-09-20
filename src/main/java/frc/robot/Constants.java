@@ -17,13 +17,12 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
   public static final boolean TUNING_MODE = true;
-  public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final double LOOP_PERIOD_SECONDS = 0.02;
   public static final RobotType ROBOT = RobotType.ROBOT_SIM;
 
   public static Mode getMode() {
     switch (ROBOT) {
       case ROBOT_KRAKEN_X60:
-      case ROBOT_KRAKEN_X60_PRO:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIM:
@@ -42,7 +41,6 @@ public final class Constants {
 
   public static enum RobotType {
     ROBOT_KRAKEN_X60,
-    ROBOT_KRAKEN_X60_PRO,
     ROBOT_SIM,
   }
 

@@ -20,8 +20,11 @@ public interface ShooterIO {
     public double bottomCurrentAmps = 0.0;
     public double bottomTemperatureCelsius = 0.0;
 
-    public double topVelocityErrorRadiansPerSec = 0.0;
-    public double bottomVelocityErrorRadiansPerSec = 0.0;
+    public double topVelocityGoalRadiansPerSec = 0.0;
+    public double bottomVelocityGoalRadiansPerSec = 0.0;
+
+    public double topVelocitySetpointRadiansPerSec = 0.0;
+    public double bottomVelocitySetpointRadiansPerSec = 0.0;
   }
 
   public default void updateInputs(ShooterIOInputs inputs) {}

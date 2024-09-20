@@ -55,13 +55,13 @@ public class ModuleIOSim implements ModuleIO {
             ModuleConstants.DRIVE_KP.get(),
             0.0,
             ModuleConstants.DRIVE_KD.get(),
-            Constants.LOOP_PERIOD_SECS);
+            Constants.LOOP_PERIOD_SECONDS);
     turnFeedback =
         new PIDController(
             ModuleConstants.TURN_KP.get(),
             0.0,
             ModuleConstants.TURN_KD.get(),
-            Constants.LOOP_PERIOD_SECS);
+            Constants.LOOP_PERIOD_SECONDS);
 
     turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
 
@@ -71,8 +71,8 @@ public class ModuleIOSim implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputs inputs) {
-    driveMotorSim.update(Constants.LOOP_PERIOD_SECS);
-    turnMotorSim.update(Constants.LOOP_PERIOD_SECS);
+    driveMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
+    turnMotorSim.update(Constants.LOOP_PERIOD_SECONDS);
 
     inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
     inputs.odometryDrivePositionsRad = new Rotation2d[] {inputs.drivePosition};

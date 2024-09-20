@@ -55,13 +55,12 @@ public class Climber extends SubsystemBase {
   }
 
   /**
-   * Unlatch the climber by running it backwards for 1/4 second
+   * Unlatch the climber by running it backwards for 1 rotation
    *
    * @return command to unlock climber
    */
   public Command unlock() {
-    return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this)
-        .withTimeout(.25); // TODO: trial and error the time
+    return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this).withTimeout(.25);
   }
 
   /**

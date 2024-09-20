@@ -47,7 +47,6 @@ public class ModuleConstants {
 
     switch (Constants.ROBOT) {
       case ROBOT_KRAKEN_X60:
-      case ROBOT_KRAKEN_X60_PRO:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
         DRIVE_KP.initDefault(0.13);
         DRIVE_KD.initDefault(0.0);

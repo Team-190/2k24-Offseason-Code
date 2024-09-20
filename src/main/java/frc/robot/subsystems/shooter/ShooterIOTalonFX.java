@@ -21,14 +21,14 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final StatusSignal<Double> topAppliedVolts;
   private final StatusSignal<Double> topCurrentAmps;
   private final StatusSignal<Double> topTemperatureCelsius;
-  private final StatusSignal<Double> topVelocityErrorRotationsPerSec;
+  private final StatusSignal<Double> topVelocitySetpointRotationsPerSec;
 
   private final StatusSignal<Double> bottomPositionRotations;
   private final StatusSignal<Double> bottomVelocityRotPerSec;
   private final StatusSignal<Double> bottomAppliedVolts;
   private final StatusSignal<Double> bottomCurrentAmps;
   private final StatusSignal<Double> bottomTemperatureCelsius;
-  private final StatusSignal<Double> bottomVelocityErrorRotationsPerSec;
+  private final StatusSignal<Double> bottomVelocitySetpointRotationsPerSec;
 
   private final TalonFXConfiguration topConfig;
   private final TalonFXConfiguration bottomConfig;
@@ -37,6 +37,9 @@ public class ShooterIOTalonFX implements ShooterIO {
   private final VoltageOut voltageControl;
   private final MotionMagicVelocityVoltage topProfiledVelocityControl;
   private final MotionMagicVelocityVoltage bottomProfiledVelocityControl;
+
+  private double topGoalRadiansPerSecond;
+  private double bottomGoalRadiansPerSecond;
 
   private double topSetPointRadiansPerSecond;
   private double bottomSetPointRadiansPerSecond;
@@ -86,8 +89,11 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomCurrentAmps = bottomMotor.getSupplyCurrent();
     bottomTemperatureCelsius = bottomMotor.getDeviceTemp();
 
-    topVelocityErrorRotationsPerSec = topMotor.getClosedLoopError();
-    bottomVelocityErrorRotationsPerSec = bottomMotor.getClosedLoopError();
+    topVelocitySetpointRotationsPerSec = topMotor.getClosedLoopReference();
+    bottomVelocitySetpointRotationsPerSec = bottomMotor.getClosedLoopReference();
+
+    topGoalRadiansPerSecond = 0.0;
+    bottomGoalRadiansPerSecond = 0.0;
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
@@ -115,14 +121,15 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void updateInputs(ShooterIOInputs inputs) {
 
     inputs.topPosition = Rotation2d.fromRotations(topPositionRotations.getValueAsDouble());
-    inputs.topVelocityRadPerSec =
-        Units.rotationsToRadians(topVelocityRotPerSec.getValueAsDouble());
+    inputs.topVelocityRadPerSec = Units.rotationsToRadians(topVelocityRotPerSec.getValueAsDouble());
     inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
     inputs.topCurrentAmps = topCurrentAmps.getValueAsDouble();
     inputs.topTemperatureCelsius = topTemperatureCelsius.getValueAsDouble();
-    inputs.topVelocityErrorRadiansPerSec =
+    inputs.topVelocitySetpointRadiansPerSec =
         Units.rotationsToRadians(
-            topVelocityErrorRotationsPerSec.getValueAsDouble() / ShooterConstants.TOP_GEAR_RATIO);
+            topVelocitySetpointRotationsPerSec.getValueAsDouble()
+                / ShooterConstants.TOP_GEAR_RATIO);
+    inputs.topVelocityGoalRadiansPerSec = topGoalRadiansPerSecond;
 
     inputs.bottomPosition = Rotation2d.fromRotations(bottomPositionRotations.getValueAsDouble());
     inputs.bottomVelocityRadPerSec =
@@ -130,28 +137,29 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
     inputs.bottomCurrentAmps = bottomCurrentAmps.getValueAsDouble();
     inputs.bottomTemperatureCelsius = bottomTemperatureCelsius.getValueAsDouble();
-    inputs.bottomVelocityErrorRadiansPerSec =
+    inputs.bottomVelocitySetpointRadiansPerSec =
         Units.rotationsToRadians(
-            bottomVelocityErrorRotationsPerSec.getValueAsDouble()
+            bottomVelocitySetpointRotationsPerSec.getValueAsDouble()
                 / ShooterConstants.BOTTOM_GEAR_RATIO);
+    inputs.bottomVelocityGoalRadiansPerSec = bottomGoalRadiansPerSecond;
   }
 
   @Override
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
-    topSetPointRadiansPerSecond = setPointVelocityRadiansPerSecond;
+    topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     topMotor.setControl(
         topProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(topSetPointRadiansPerSecond)));
+            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
 
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
-    bottomSetPointRadiansPerSecond = setPointVelocityRadiansPerSecond;
+    bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     bottomMotor.setControl(
         bottomProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(bottomSetPointRadiansPerSecond)));
+            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
 
   @Override
@@ -177,16 +185,16 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     double topSetPointRadiansPerSecondUpperBound =
         topSetPointRadiansPerSecond
-            + (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.get() / 2);
+            + (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND / 2);
     double topSetPointRadiansPerSecondLowerBound =
         topSetPointRadiansPerSecond
-            - (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.get() / 2);
+            - (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND / 2);
     double bottomSetPointRadiansPerSecondUpperBound =
         bottomSetPointRadiansPerSecond
-            + (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.get() / 2);
+            + (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND / 2);
     double bottomSetPointRadiansPerSecondLowerBound =
         bottomSetPointRadiansPerSecond
-            - (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND.get() / 2);
+            - (ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND / 2);
 
     double currentTopVelocityRadiansPerSecond =
         Units.rotationsToRadians(topVelocityRotPerSec.getValueAsDouble());

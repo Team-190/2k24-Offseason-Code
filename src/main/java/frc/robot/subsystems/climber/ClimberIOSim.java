@@ -25,7 +25,7 @@ public class ClimberIOSim implements ClimberIO {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    motorSim.update(Constants.LOOP_PERIOD_SECS);
+    motorSim.update(Constants.LOOP_PERIOD_SECONDS);
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = motorSim.getCurrentDrawAmps();
     inputs.positionMeters = motorSim.getPositionMeters();

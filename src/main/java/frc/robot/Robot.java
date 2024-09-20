@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   public Robot() {
-    super(Constants.LOOP_PERIOD_SECS);
+    super(Constants.LOOP_PERIOD_SECONDS);
   }
 
   /**

@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -29,7 +31,7 @@ public class Shooter extends SubsystemBase {
             new SysIdRoutine.Config(
                 Volts.of(0.2).per(Seconds.of(1.0)),
                 Volts.of(3.5),
-                Seconds.of(10),
+                Seconds.of(3),
                 (state) -> Logger.recordOutput("Shooter/sysIDState", state.toString())),
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
@@ -43,6 +45,33 @@ public class Shooter extends SubsystemBase {
       io.setTopVelocitySetPoint(velocitySetPointRadiansPerSecond);
       io.setBottomVelocitySetPoint(-velocitySetPointRadiansPerSecond);
     }
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        pid -> {
+          io.setTopPID(pid[0], 0.0, pid[1]);
+          io.setBottomPID(pid[0], 0.0, pid[1]);
+        },
+        ShooterConstants.KP,
+        ShooterConstants.KD);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        ff -> {
+          io.setTopFeedForward(ff[0], ff[1], ff[2]);
+          io.setBottomFeedForward(ff[0], ff[1], ff[2]);
+        },
+        ShooterConstants.KS,
+        ShooterConstants.KV,
+        ShooterConstants.KA);
+
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        profile -> {
+          io.setTopProfile(profile[0]);
+          io.setBottomProfile(profile[0]);
+        },
+        ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
   }
 
   public Command setSpeakerVelocity() {
@@ -72,8 +101,8 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  @AutoLogOutput(key = "Shooter/at setpoint")
   public boolean atSetPoint() {
-
     return io.atSetPoint();
   }
 
@@ -82,11 +111,11 @@ public class Shooter extends SubsystemBase {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false),
         characterizationRoutine.quasistatic(Direction.kForward),
-        Commands.waitSeconds(10),
+        Commands.waitSeconds(5),
         characterizationRoutine.quasistatic(Direction.kReverse),
-        Commands.waitSeconds(10),
+        Commands.waitSeconds(5),
         characterizationRoutine.dynamic(Direction.kForward),
-        Commands.waitSeconds(10),
+        Commands.waitSeconds(5),
         characterizationRoutine.dynamic(Direction.kReverse));
   }
 }
