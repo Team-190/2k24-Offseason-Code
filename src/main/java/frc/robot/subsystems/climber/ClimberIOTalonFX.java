@@ -11,8 +11,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX motor;
   private final StatusSignal<Double> tempCelsius;
-  private final StatusSignal<Double> velocityMPerSec;
-  private final StatusSignal<Double> positionMeters;
+  private final StatusSignal<Double> velocityRadiansPerSecond;
+  private final StatusSignal<Double> positionRadians;
   private final StatusSignal<Double> currentAmps;
   private final StatusSignal<Double> appliedVolts;
 
@@ -34,13 +34,13 @@ public class ClimberIOTalonFX implements ClimberIO {
     motor.getConfigurator().apply(motorConfig);
 
     tempCelsius = motor.getDeviceTemp();
-    velocityMPerSec = motor.getVelocity();
-    positionMeters = motor.getPosition();
+    velocityRadiansPerSecond = motor.getVelocity();
+    positionRadians = motor.getPosition();
     currentAmps = motor.getSupplyCurrent();
     appliedVolts = motor.getMotorVoltage();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, tempCelsius, velocityMPerSec, positionMeters, currentAmps, appliedVolts);
+        50.0, tempCelsius, velocityRadiansPerSecond, positionRadians, currentAmps, appliedVolts);
     motor.optimizeBusUtilization();
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0);
@@ -61,13 +61,13 @@ public class ClimberIOTalonFX implements ClimberIO {
         Math.PI
             * 2
             * ClimberConstants.DRUM_RADIUS
-            * positionMeters.getValueAsDouble()
+            * positionRadians.getValueAsDouble()
             / ClimberConstants.GEAR_RATIO;
     inputs.velocityMPerSec =
         Math.PI
             * 2
             * ClimberConstants.DRUM_RADIUS
-            * velocityMPerSec.getValueAsDouble()
+            * velocityRadiansPerSecond.getValueAsDouble()
             / ClimberConstants.GEAR_RATIO;
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
   }
@@ -80,6 +80,15 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void setVoltage(double volts) {
     motor.setControl(voltageControl.withOutput(volts));
+  }
+
+  @Override
+  public void setPosition(double position) {
+    if (positionRadians.getValueAsDouble() * ClimberConstants.GEAR_RATIO <= position) {
+      motor.setControl(voltageControl.withOutput(12.0));
+    } else {
+      motor.setControl(neutralControl);
+    }
   }
 
   /** Sets the volts to 0 and sets motor Control to neutral. */

@@ -27,40 +27,21 @@ public class Climber extends SubsystemBase {
   }
 
   /**
-   * If the climber has reached the maximum height
-   *
-   * @return if the climber has reached the maximum height
-   */
-  public boolean upperLimitReached() {
-    return inputs.positionMeters >= ClimberConstants.MAX_HEIGHT;
-  }
-
-  /**
-   * If the climber has hit the minimum height
-   *
-   * @return if the climber has reached the minimum height
-   */
-  public boolean lowerLimitReached() {
-    return inputs.positionMeters <= ClimberConstants.MIN_HEIGHT;
-  }
-
-  /**
    * Runs the climber motor at 12 volts until max height is reached. Then stops the motor.
    *
    * @return run climber motor at 12 volts until max height reached
    */
   public Command climb() {
-    return Commands.runEnd(() -> io.setVoltage(12), () -> io.stop(), this)
-        .until(() -> lowerLimitReached());
+    return Commands.runEnd(() -> io.setPosition(ClimberConstants.MAX_HEIGHT), () -> io.stop(), this);
   }
 
   /**
-   * Unlatch the climber by running it backwards for 1 rotation
+   * Unlatch the climber by running it backwards for 1 rotation of the spool
    *
    * @return command to unlock climber
    */
   public Command unlock() {
-    return Commands.runEnd(() -> io.setVoltage(-12), () -> io.stop(), this).withTimeout(.25);
+    return Commands.runEnd(() -> io.setPosition(Math.PI * 2.0 * ClimberConstants.DRUM_RADIUS), () -> io.stop(), this);
   }
 
   /**

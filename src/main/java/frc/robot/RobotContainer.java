@@ -143,6 +143,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return shooter.setAmpVelocity();
+    return climber.unlock();
   }
 }

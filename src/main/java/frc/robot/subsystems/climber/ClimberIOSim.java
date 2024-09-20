@@ -39,6 +39,17 @@ public class ClimberIOSim implements ClimberIO {
   }
 
   @Override
+  public void setPosition(double position) {
+    if (motorSim.getPositionMeters() <= position) {
+      appliedVolts = 12.0;
+      motorSim.setInputVoltage(appliedVolts);
+    } else {
+      appliedVolts = 0.0;
+      motorSim.setInputVoltage(appliedVolts);
+    }
+  }
+
+  @Override
   public void stop() {
     setVoltage(0);
   }

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -36,6 +37,7 @@ public class ArmIOTalonFX implements ArmIO {
     motorConfig = new TalonFXConfiguration();
 
     armMotor.getConfigurator().apply(motorConfig);
+    armMotor.setPosition(cancoder.getPosition().getValueAsDouble());
 
     armPositionRotations = armMotor.getPosition();
     armVelocityRotPerSec = armMotor.getVelocity();
@@ -62,9 +64,9 @@ public class ArmIOTalonFX implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble());
+    inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
     inputs.armVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(armVelocityRotPerSec.getValueAsDouble());
+        Units.rotationsPerMinuteToRadiansPerSecond(armVelocityRotPerSec.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
     inputs.armAppliedVolts = armAppliedVolts.getValueAsDouble();
     inputs.armCurrentAmps = armCurrentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
