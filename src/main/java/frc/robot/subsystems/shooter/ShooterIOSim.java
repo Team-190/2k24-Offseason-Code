@@ -49,6 +49,11 @@ public class ShooterIOSim implements ShooterIO {
 
   }
 
+  /**
+   * Sets the voltage of the Top Motor to a number between negative 12 and 12.
+   * Specifically, this number is calculated using the feedForward gains.
+   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to reach.
+   */
   @Override
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
@@ -59,6 +64,11 @@ public class ShooterIOSim implements ShooterIO {
 
   }
   
+   /**
+   * Sets the voltage of the Bottom Motor to a number between negative 12 and 12.
+   * Specifically, this number is calculated using the feedForward gains.
+   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to reach.
+   */
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
 
@@ -69,6 +79,11 @@ public class ShooterIOSim implements ShooterIO {
 
   }
   
+  /**
+   * Takes in a value volts, and sets the voltage of both the top and bottom motors to this value.
+   * The value volts is between negative 12 and 12.
+   * @param volts the voltage that will be inputted as the input voltage for the top and bottom motors.
+   */
   @Override
   public void setVoltage(double volts) {
 
@@ -128,6 +143,9 @@ public class ShooterIOSim implements ShooterIO {
 
   }
 
+  /**
+   * Stops the robot by setting the voltage of both motors to 0. 
+   */
   @Override
   public void stop() {
 
