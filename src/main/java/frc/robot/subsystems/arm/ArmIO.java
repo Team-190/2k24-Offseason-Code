@@ -13,6 +13,9 @@ public interface ArmIO {
     public double armCurrentAmps = 0.0;
     public double armTemperatureCelsius = 0.0;
     public Rotation2d armAbsolutePosition = new Rotation2d();
+
+    public Rotation2d positionSetpoint = new Rotation2d();
+    public Rotation2d positionGoal = new Rotation2d();
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}
@@ -20,10 +23,6 @@ public interface ArmIO {
   public default void setArmVoltage(double volts) {}
 
   public default void stop() {}
-
-  public default double getCurrentAngle() {
-    return 0;
-  }
 
   public default void setPID(double kp, double ki, double kd) {}
 

@@ -90,8 +90,8 @@ public class ModuleIOSim implements ModuleIO {
     inputs.turnAppliedVolts = turnAppliedVolts;
     inputs.turnCurrentAmps = Math.abs(turnMotorSim.getCurrentDrawAmps());
 
-    inputs.driveVelocityErrorRadPerSec = driveFeedback.getVelocityError();
-    inputs.turnPositionError = Rotation2d.fromRadians(turnFeedback.getPositionError());
+    inputs.driveVelocitySetpointRadPerSec = driveFeedback.getSetpoint();
+    inputs.turnPositionSetpoint = Rotation2d.fromRadians(turnFeedback.getSetpoint());
   }
 
   @Override

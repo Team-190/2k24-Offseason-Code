@@ -31,13 +31,15 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
+    desiredAngle = new Rotation2d();
+
     if (isClosedLoop) {
       io.setArmPosition(desiredAngle.getRadians());
     }
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        pid -> io.setPID(pid[0], pid[1], pid[2]),
+        pid -> io.setPID(pid[0], 0.0, pid[1]),
         ArmConstants.ARM_KP,
         ArmConstants.ARM_KD);
 
@@ -96,7 +98,7 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_AMP_CONSTANT);
+          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_AMP_CONSTANT.get());
         });
   }
 

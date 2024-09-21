@@ -42,7 +42,6 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
     if (isClosedLoop) {
-
       io.setTopVelocitySetPoint(velocitySetPointRadiansPerSecond);
       io.setBottomVelocitySetPoint(-velocitySetPointRadiansPerSecond);
     }

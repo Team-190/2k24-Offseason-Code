@@ -8,7 +8,6 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -29,6 +28,8 @@ public class ArmIOTalonFX implements ArmIO {
 
   private final NeutralOut neutralControl;
   private final VoltageOut voltageControl;
+
+  private Rotation2d positionGoal;
 
   public ArmIOTalonFX() {
     armMotor = new TalonFX(ArmConstants.ARM_CAN_ID);
@@ -60,13 +61,17 @@ public class ArmIOTalonFX implements ArmIO {
     voltageControl = new VoltageOut(0.0);
 
     armProfiledPositionControl = new MotionMagicVoltage(0.0);
+    positionGoal = new Rotation2d();
   }
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.armPosition = Rotation2d.fromRotations(armPositionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+    inputs.armPosition =
+        Rotation2d.fromRotations(
+            armPositionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
     inputs.armVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(armVelocityRotPerSec.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+        Units.rotationsPerMinuteToRadiansPerSecond(
+            armVelocityRotPerSec.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
     inputs.armAppliedVolts = armAppliedVolts.getValueAsDouble();
     inputs.armCurrentAmps = armCurrentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
@@ -74,6 +79,10 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armAbsolutePosition =
         Rotation2d.fromRotations(armAbsolutePositionRotations.getValueAsDouble())
             .minus(ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET);
+
+    inputs.positionSetpoint =
+        Rotation2d.fromRotations(armMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.positionGoal = positionGoal;
   }
 
   @Override
@@ -84,21 +93,6 @@ public class ArmIOTalonFX implements ArmIO {
   @Override
   public void stop() {
     armMotor.setControl(neutralControl);
-  }
-
-  /**
-   * Retrieves the current angle of the arm motor.
-   *
-   * <p>This function retrieves the current angle of the arm motor, measured in rotations, from the
-   * absolute position sensor. The absolute position sensor provides an accurate and reliable
-   * measurement of the arm motor's angle, even when the motor is not moving.
-   *
-   * @return The current angle of the arm motor in rotations. The angle is relative to the absolute
-   *     encoder offset, which is defined in the {@link ArmConstants} class.
-   */
-  @Override
-  public double getCurrentAngle() {
-    return armAbsolutePositionRotations.getValueAsDouble();
   }
 
   /**
@@ -118,6 +112,7 @@ public class ArmIOTalonFX implements ArmIO {
    */
   @Override
   public void setArmPosition(double position) {
+    positionGoal = Rotation2d.fromRadians(position);
     armMotor.setControl(armProfiledPositionControl.withPosition(position));
   }
 

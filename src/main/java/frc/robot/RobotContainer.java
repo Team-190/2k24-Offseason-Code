@@ -19,6 +19,10 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.CompositeCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -48,6 +52,7 @@ public class RobotContainer {
   private Vision vision;
   private Climber climber;
   private Shooter shooter;
+  private Arm arm;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -71,6 +76,7 @@ public class RobotContainer {
           vision = new Vision();
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
+          arm = new Arm(new ArmIOTalonFX());
           break;
         case ROBOT_SIM:
           drive =
@@ -84,6 +90,7 @@ public class RobotContainer {
           vision = new Vision();
           climber = new Climber(new ClimberIOSim());
           shooter = new Shooter(new ShooterIOSim());
+          arm = new Arm(new ArmIOSim());
           break;
       }
     }
@@ -109,6 +116,9 @@ public class RobotContainer {
     }
     if (shooter == null) {
       shooter = new Shooter(new ShooterIO() {});
+    }
+    if (arm == null) {
+      arm = new Arm(new ArmIO() {});
     }
 
     // Configure auto choices.
@@ -143,6 +153,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return climber.unlock();
+    return arm.ampAngle();
   }
 }

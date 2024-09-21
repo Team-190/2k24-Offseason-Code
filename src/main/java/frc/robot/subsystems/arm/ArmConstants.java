@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -14,7 +15,7 @@ public class ArmConstants {
   public static final DCMotor ARM_MOTOR_CONFIG;
   public static final double ARM_STOW_CONSTANT;
   public static final double ARM_INTAKE_CONSTANT;
-  public static final double ARM_AMP_CONSTANT;
+  public static final LoggedTunableNumber ARM_AMP_CONSTANT;
   public static final Rotation2d ARM_ABSOLUTE_ENCODER_OFFSET;
   public static final int ARM_ENCODER_ID;
   public static final double GOAL_TOLERANCE;
@@ -37,6 +38,7 @@ public class ArmConstants {
     ARM_KV = new LoggedTunableNumber("Arm/KV");
     ARM_MAX_VELOCITY = new LoggedTunableNumber("Arm/MAX_VELOCITY");
     ARM_MAX_ACCELERATION = new LoggedTunableNumber("Arm/MAX_ACCELERATION");
+    ARM_AMP_CONSTANT = new LoggedTunableNumber("Arm/Amp Angle");
 
     switch (Constants.ROBOT) {
       case ROBOT_KRAKEN_X60:
@@ -52,22 +54,22 @@ public class ArmConstants {
 
         ARM_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
 
-        ARM_STOW_CONSTANT = 0.0;
+        ARM_STOW_CONSTANT = Units.degreesToRadians(18.75);
         ARM_INTAKE_CONSTANT = 0.0;
-        ARM_AMP_CONSTANT = 0.0;
+        ARM_AMP_CONSTANT.initDefault(Units.degreesToRadians(50.0));
         ARM_ABSOLUTE_ENCODER_OFFSET = new Rotation2d(0.0);
         ARM_ENCODER_ID = 0;
         GOAL_TOLERANCE = 0.0;
         ARM_LENGTH_METERS = 0.0;
-        ARM_MIN_ANGLE = 0.0;
-        ARM_MAX_ANGLE = 0.0;
-        ARM_KP.initDefault(0.0);
+        ARM_MIN_ANGLE = Units.degreesToRadians(18.75);
+        ARM_MAX_ANGLE = Units.degreesToRadians(-110.0);
+        ARM_KP.initDefault(1.0);
         ARM_KD.initDefault(0.0);
         ARM_KS.initDefault(0.0);
         ARM_KG.initDefault(0.0);
         ARM_KV.initDefault(0.0);
-        ARM_MAX_VELOCITY.initDefault(0.0);
-        ARM_MAX_ACCELERATION.initDefault(0.0);
+        ARM_MAX_VELOCITY.initDefault(0.1);
+        ARM_MAX_ACCELERATION.initDefault(0.1);
         break;
     }
   }

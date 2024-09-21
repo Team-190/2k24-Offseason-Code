@@ -180,9 +180,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     inputs.turnCurrentAmps = turnCurrent.getValueAsDouble();
     inputs.turnTempCelcius = turnTemp.getValueAsDouble();
 
-    inputs.driveVelocityErrorRadPerSec =
+    inputs.driveVelocitySetpointRadPerSec =
         Units.rotationsToRadians(driveVelocityErrorRotPerSec.getValueAsDouble());
-    inputs.turnPositionError =
+    inputs.turnPositionSetpoint =
         Rotation2d.fromRotations(turnPositionErrorRotations.getValueAsDouble());
   }
 

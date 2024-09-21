@@ -32,7 +32,8 @@ public class Climber extends SubsystemBase {
    * @return run climber motor at 12 volts until max height reached
    */
   public Command climb() {
-    return Commands.runEnd(() -> io.setPosition(ClimberConstants.MAX_HEIGHT), () -> io.stop(), this);
+    return Commands.runEnd(
+        () -> io.setPosition(ClimberConstants.MAX_HEIGHT), () -> io.stop(), this);
   }
 
   /**
@@ -41,7 +42,8 @@ public class Climber extends SubsystemBase {
    * @return command to unlock climber
    */
   public Command unlock() {
-    return Commands.runEnd(() -> io.setPosition(Math.PI * 2.0 * ClimberConstants.DRUM_RADIUS), () -> io.stop(), this);
+    return Commands.runEnd(
+        () -> io.setPosition(Math.PI * 2.0 * ClimberConstants.DRUM_RADIUS), () -> io.stop(), this);
   }
 
   /**

@@ -51,6 +51,9 @@ public class ArmIOSim implements ArmIO {
     inputs.armCurrentAmps = sim.getCurrentDrawAmps();
 
     inputs.armAbsolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
+
+    inputs.positionSetpoint = Rotation2d.fromRadians(feedback.getSetpoint().position);
+    inputs.positionGoal = Rotation2d.fromRadians(feedback.getGoal().position);
   }
 
   @Override
