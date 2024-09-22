@@ -3,6 +3,13 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto Routines": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Auto Routines": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables Info": {

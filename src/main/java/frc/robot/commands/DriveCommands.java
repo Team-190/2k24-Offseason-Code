@@ -95,7 +95,10 @@ public final class DriveCommands {
   public static final Command runSysIdQuasistatic(Drive drive, Direction direction) {
     return new SysIdRoutine(
             new SysIdRoutine.Config(
-                null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .quasistatic(direction);
@@ -104,7 +107,10 @@ public final class DriveCommands {
   public static final Command runSysIdDynamic(Drive drive, Direction direction) {
     return new SysIdRoutine(
             new SysIdRoutine.Config(
-                null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .dynamic(direction);

@@ -77,10 +77,10 @@ public class ModuleConstants {
         break;
       case ROBOT_SIM:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KP.initDefault(0.039024);
+        DRIVE_KP.initDefault(0.0);
         DRIVE_KD.initDefault(0.0);
-        DRIVE_KS.initDefault(-0.0081157);
-        DRIVE_KV.initDefault(0.12821);
+        DRIVE_KS.initDefault(0.0);
+        DRIVE_KV.initDefault(0.0);
         TURN_KP.initDefault(10.0);
         TURN_KD.initDefault(0.0);
 
@@ -101,8 +101,8 @@ public class ModuleConstants {
         DRIVE_MOMENT_OF_INERTIA = 0.025;
         TURN_MOMENT_OF_INERTIA = 0.004;
 
-        DRIVE_MOTOR_CONFIG = DCMotor.getKrakenX60Foc(1);
-        TURN_MOTOR_CONFIG = DCMotor.getKrakenX60Foc(1);
+        DRIVE_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
+        TURN_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         break;
       default:
         WHEEL_RADIUS.initDefault(0.0);

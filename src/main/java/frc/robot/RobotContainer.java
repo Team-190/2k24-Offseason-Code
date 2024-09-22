@@ -121,27 +121,23 @@ public class RobotContainer {
     // Configure auto choices.
     autoChooser = new LoggedDashboardChooser<>("Auto Routines");
     autoChooser.addDefaultOption("None", AutoRoutines.none());
-    if (Constants.TUNING_MODE) {
-      autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
-      autoChooser.addOption(
-          "Arm Quasistatic Forward", arm.runQuasistaticCharacterization(Direction.kForward));
-      autoChooser.addOption(
-          "Arm Quasistatic Forward", arm.runQuasistaticCharacterization(Direction.kReverse));
-      autoChooser.addOption(
-          "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kForward));
-      autoChooser.addOption(
-          "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kReverse));
-      autoChooser.addOption(
-          "Drive Quasistatic Forward",
-          DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
-      autoChooser.addOption(
-          "Drive Quasistatic Reverse",
-          DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
-      autoChooser.addOption(
-          "Drive Dynamic Forward", DriveCommands.runSysIdDynamic(drive, Direction.kForward));
-      autoChooser.addOption(
-          "Drive Dynamic Forward", DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
-    }
+    autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
+    autoChooser.addOption(
+        "Arm Quasistatic Forward", arm.runQuasistaticCharacterization(Direction.kForward));
+    autoChooser.addOption(
+        "Arm Quasistatic Reverse", arm.runQuasistaticCharacterization(Direction.kReverse));
+    autoChooser.addOption(
+        "Arm Dynamic Forward", arm.runDynamicCharacterization(Direction.kForward));
+    autoChooser.addOption(
+        "Arm Dynamic Reverse", arm.runDynamicCharacterization(Direction.kReverse));
+    autoChooser.addOption(
+        "Drive Quasistatic Forward", DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
+    autoChooser.addOption(
+        "Drive Quasistatic Reverse", DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
+    autoChooser.addOption(
+        "Drive Dynamic Forward", DriveCommands.runSysIdDynamic(drive, Direction.kForward));
+    autoChooser.addOption(
+        "Drive Dynamic Reverse", DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
