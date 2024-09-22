@@ -100,6 +100,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Slot0.kP = ModuleConstants.DRIVE_KP.get();
     driveConfig.Slot0.kD = ModuleConstants.DRIVE_KD.get();
     driveConfig.Slot0.kS = ModuleConstants.DRIVE_KS.get();
@@ -109,6 +110,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig = new TalonFXConfiguration();
     turnConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.TURN_CURRENT_LIMIT;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.Slot0.kP = ModuleConstants.TURN_KP.get();
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
     turnTalon.getConfigurator().apply(turnConfig);

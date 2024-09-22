@@ -131,6 +131,16 @@ public class RobotContainer {
           "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kForward));
       autoChooser.addOption(
           "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kReverse));
+      autoChooser.addOption(
+          "Drive Quasistatic Forward",
+          DriveCommands.runSysIdQuasistatic(drive, Direction.kForward));
+      autoChooser.addOption(
+          "Drive Quasistatic Reverse",
+          DriveCommands.runSysIdQuasistatic(drive, Direction.kReverse));
+      autoChooser.addOption(
+          "Drive Dynamic Forward", DriveCommands.runSysIdDynamic(drive, Direction.kForward));
+      autoChooser.addOption(
+          "Drive Dynamic Forward", DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
     }
 
     // Configure the button bindings

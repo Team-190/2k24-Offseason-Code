@@ -55,10 +55,10 @@ public class ModuleConstants {
         TURN_KP.initDefault(9.0);
         TURN_KD.initDefault(0.0);
 
-        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(2.2304080655857224));
-        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(-1.4910293258248433));
-        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(-0.2132233295161041));
-        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(-1.4327380558851888));
+        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(0.0));
+        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(0.0));
+        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(0.0));
+        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(0.0));
 
         ODOMETRY_FREQUENCY = 250.0;
         OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
