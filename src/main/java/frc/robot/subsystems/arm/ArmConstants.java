@@ -60,7 +60,7 @@ public class ArmConstants {
         ARM_ABSOLUTE_ENCODER_OFFSET = new Rotation2d(0.0);
         ARM_ENCODER_ID = 0;
         GOAL_TOLERANCE = 0.0;
-        ARM_LENGTH_METERS = 0.0;
+        ARM_LENGTH_METERS = 1.0;
         ARM_MIN_ANGLE = Units.degreesToRadians(18.75);
         ARM_MAX_ANGLE = Units.degreesToRadians(-110.0);
         ARM_KP.initDefault(1.0);

@@ -1,9 +1,13 @@
 package frc.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -13,11 +17,22 @@ public class Arm extends SubsystemBase {
   private final ArmIO io;
   private Rotation2d desiredAngle;
   private boolean isClosedLoop;
+  private final SysIdRoutine characterizationRoutine;
 
   public Arm(ArmIO io) {
     inputs = new ArmIOInputsAutoLogged();
     this.io = io;
+    desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_MIN_ANGLE);
     isClosedLoop = true;
+
+    characterizationRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                Volts.of(0.2).per(Seconds.of(1.0)),
+                Volts.of(3.5),
+                Seconds.of(10),
+                (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
+            new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
   }
 
   /**
@@ -30,8 +45,6 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
-
-    desiredAngle = new Rotation2d();
 
     if (isClosedLoop) {
       io.setArmPosition(desiredAngle.getRadians());
@@ -132,5 +145,16 @@ public class Arm extends SubsystemBase {
           desiredAngle =
               Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
         });
+  }
+
+  public Command runQuasistaticCharacterization(Direction direction) {
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false),
+        characterizationRoutine.quasistatic(direction));
+  }
+
+  public Command runDynamicCharacterization(Direction direction) {
+    return Commands.sequence(
+        Commands.runOnce(() -> isClosedLoop = false), characterizationRoutine.dynamic(direction));
   }
 }

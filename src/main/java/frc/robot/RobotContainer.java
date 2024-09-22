@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.CompositeCommands;
@@ -22,11 +23,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
@@ -37,11 +36,9 @@ import frc.robot.subsystems.drive.module.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
-import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -72,11 +69,11 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
-          intake = new Intake(new IntakeIOTalonFX());
-          vision = new Vision();
-          climber = new Climber(new ClimberIOTalonFX());
-          shooter = new Shooter(new ShooterIOTalonFX());
-          arm = new Arm(new ArmIOTalonFX());
+          // intake = new Intake(new IntakeIOTalonFX());
+          // vision = new Vision();
+          // climber = new Climber(new ClimberIOTalonFX());
+          // shooter = new Shooter(new ShooterIOTalonFX());
+          // arm = new Arm(new ArmIOTalonFX());
           break;
         case ROBOT_SIM:
           drive =
@@ -124,6 +121,17 @@ public class RobotContainer {
     // Configure auto choices.
     autoChooser = new LoggedDashboardChooser<>("Auto Routines");
     autoChooser.addDefaultOption("None", AutoRoutines.none());
+    if (Constants.TUNING_MODE) {
+      autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
+      autoChooser.addOption(
+          "Arm Quasistatic Forward", arm.runQuasistaticCharacterization(Direction.kForward));
+      autoChooser.addOption(
+          "Arm Quasistatic Forward", arm.runQuasistaticCharacterization(Direction.kReverse));
+      autoChooser.addOption(
+          "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kForward));
+      autoChooser.addOption(
+          "Arm Quasistatic Forward", arm.runDynamicCharacterization(Direction.kReverse));
+    }
 
     // Configure the button bindings
     configureButtonBindings();
@@ -153,6 +161,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return arm.ampAngle();
+    return autoChooser.get();
   }
 }
