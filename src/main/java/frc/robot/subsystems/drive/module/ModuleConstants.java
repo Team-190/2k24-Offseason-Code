@@ -48,17 +48,25 @@ public class ModuleConstants {
     switch (Constants.ROBOT) {
       case WHIPLASH:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KP.initDefault(0.05);
+        DRIVE_KP.initDefault(0.2);
         DRIVE_KD.initDefault(0.0);
         DRIVE_KS.initDefault(0.13333);
         DRIVE_KV.initDefault(0.10108);
-        TURN_KP.initDefault(10.0);
-        TURN_KD.initDefault(0.0);
+        TURN_KP.initDefault(12.0);
+        TURN_KD.initDefault(0.05);
 
-        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(2.405281875404685));
-        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(2.4221556640714272));
-        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(1.6582332317043784));
-        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(2.6875343403756435));
+        FRONT_LEFT =
+            new ModuleConfig(
+                1, 2, 20, Rotation2d.fromRadians(2.405281875404685 - 0.015339807878856172));
+        FRONT_RIGHT =
+            new ModuleConfig(
+                3, 4, 21, Rotation2d.fromRadians(2.4221556640714272 - 0.0030679615757711457));
+        REAR_LEFT =
+            new ModuleConfig(
+                5, 6, 22, Rotation2d.fromRadians(1.6582332317043784 + 0.024543692606169964));
+        REAR_RIGHT =
+            new ModuleConfig(
+                7, 8, 23, Rotation2d.fromRadians(2.6875343403756435 - 0.015339807878856726));
 
         ODOMETRY_FREQUENCY = 250.0;
         OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
