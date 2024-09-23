@@ -146,7 +146,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX()));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(intake.intake());
     driver.rightBumper().whileTrue(intake.eject());

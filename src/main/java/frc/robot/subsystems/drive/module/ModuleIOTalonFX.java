@@ -191,6 +191,10 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnPositionSetpointRotations,
         driveVelocityErrorRotationsPerSecond,
         turnPositionErrorRotations);
+    driveVelocitySetpointRotationsPerSecond.refresh();
+    turnPositionSetpointRotations.refresh();
+    driveVelocityErrorRotationsPerSecond.refresh();
+    turnPositionErrorRotations.refresh();
 
     inputs.odometryTimestamps =
         timestampQueue.stream().mapToDouble((Double value) -> value).toArray();

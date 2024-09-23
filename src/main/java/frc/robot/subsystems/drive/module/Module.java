@@ -48,7 +48,7 @@ public class Module {
     this.io = io;
     this.index = index;
 
-    setBrakeMode(false);
+    setBrakeMode(true);
 
     String moduleName =
         switch (index) {
