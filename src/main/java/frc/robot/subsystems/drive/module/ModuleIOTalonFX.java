@@ -169,6 +169,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         new PIDController(ModuleConstants.DRIVE_KP.get(), 0, ModuleConstants.DRIVE_KD.get());
     turnFeedback =
         new PIDController(ModuleConstants.TURN_KP.get(), 0, ModuleConstants.TURN_KD.get());
+    turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   @Override
