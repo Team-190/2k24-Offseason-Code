@@ -55,16 +55,16 @@ public class ModuleConstants {
         TURN_KP.initDefault(10.0);
         TURN_KD.initDefault(0.0);
 
-        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(2.3792042020106297));
-        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(2.405281875404685));
-        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(1.6827769243105484));
-        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(2.705942109830271));
+        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(2.405281875404685));
+        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(2.4221556640714272));
+        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(1.6582332317043784));
+        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(2.6875343403756435));
 
         ODOMETRY_FREQUENCY = 250.0;
         OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
 
         DRIVE_GEAR_RATIO = (50.0 / 16.0) * (16.0 / 28.0) * (45.0 / 15.0);
-        TURN_GEAR_RATIO = 150.0 / 7.0;
+        TURN_GEAR_RATIO = 18.75;
 
         DRIVE_CURRENT_LIMIT = 40;
         TURN_CURRENT_LIMIT = 30;
