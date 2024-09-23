@@ -1,5 +1,6 @@
 {
   "download": {
+    "remoteDir": "/U/logs",
     "serverTeam": "10.99.90.2"
   }
 }

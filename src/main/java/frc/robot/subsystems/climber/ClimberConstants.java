@@ -21,7 +21,7 @@ public class ClimberConstants {
     switch (Constants.ROBOT) {
       case ROBOT_SIM:
 
-      case ROBOT_KRAKEN_X60:
+      case WHIPLASH:
 
       default:
         CLIMBER_CAN_ID = 0;

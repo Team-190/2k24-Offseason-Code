@@ -61,7 +61,7 @@ public class RobotContainer {
   public RobotContainer() {
     if (Constants.getMode() != Mode.REPLAY) {
       switch (Constants.ROBOT) {
-        case ROBOT_KRAKEN_X60:
+        case WHIPLASH:
           drive =
               new Drive(
                   new GyroIOPigeon2(),

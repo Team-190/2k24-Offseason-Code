@@ -62,6 +62,7 @@ public class ModuleIOSim implements ModuleIO {
             0.0,
             ModuleConstants.TURN_KD.get(),
             Constants.LOOP_PERIOD_SECONDS);
+    turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
 
     turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
 
@@ -92,6 +93,9 @@ public class ModuleIOSim implements ModuleIO {
 
     inputs.driveVelocitySetpointRadPerSec = driveFeedback.getSetpoint();
     inputs.turnPositionSetpoint = Rotation2d.fromRadians(turnFeedback.getSetpoint());
+
+    inputs.driveVelocityErrorRadPerSec = driveFeedback.getPositionError();
+    inputs.turnPositionError = Rotation2d.fromRadians(turnFeedback.getPositionError());
   }
 
   @Override

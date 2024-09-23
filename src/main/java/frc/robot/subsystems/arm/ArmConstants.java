@@ -41,7 +41,7 @@ public class ArmConstants {
     ARM_AMP_CONSTANT = new LoggedTunableNumber("Arm/Amp Angle");
 
     switch (Constants.ROBOT) {
-      case ROBOT_KRAKEN_X60:
+      case WHIPLASH:
       case ROBOT_SIM:
       default:
         ARM_CAN_ID = 1;

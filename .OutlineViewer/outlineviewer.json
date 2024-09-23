@@ -1,12 +1,12 @@
 {
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "127.0.0.1"
+    "serverTeam": "10.99.90.2"
   },
   "transitory": {
     "SmartDashboard": {
       "TunableNumbers": {
-        "Arm": {
+        "Drive": {
           "open": true
         },
         "open": true
