@@ -29,7 +29,9 @@ public class CompositeCommands {
 
   public static final Command shootSpeaker(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()), intake.shoot());
-    // .beforeStarting(Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint())));
+        Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()),
+        intake
+            .shoot()
+            .beforeStarting(Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint())));
   }
 }

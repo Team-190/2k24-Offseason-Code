@@ -59,6 +59,9 @@ public class ShooterIOSim implements ShooterIO {
 
     inputs.topVelocitySetpointRadiansPerSec = feedback.getSetpoint();
     inputs.bottomVelocitySetpointRadiansPerSec = feedback.getSetpoint();
+
+    inputs.topVelocityErrorRadiansPerSec = feedback.getPositionError();
+    inputs.bottomVelocityErrorRadiansPerSec = feedback.getPositionError();
   }
 
   /**
@@ -154,7 +157,8 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public boolean atSetPoint() {
     return (Math.abs(profile.getGoal() - feedback.getSetpoint())
-        <= ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND);
+            <= ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND)
+        && feedback.atSetpoint();
   }
 
   /** Stops the robot by setting the voltage of both motors to 0. */
