@@ -22,6 +22,9 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Double> armTemperatureCelsius;
   private final StatusSignal<Double> armAbsolutePositionRotations;
 
+  private final StatusSignal<Double> armSetpointRotations;
+  private final StatusSignal<Double> armErrorRotations;
+
   private final MotionMagicVoltage armProfiledPositionControl;
 
   private final TalonFXConfiguration motorConfig;
@@ -47,6 +50,9 @@ public class ArmIOTalonFX implements ArmIO {
     armTemperatureCelsius = armMotor.getDeviceTemp();
     armAbsolutePositionRotations = cancoder.getAbsolutePosition();
 
+    armSetpointRotations = armMotor.getClosedLoopReference();
+    armErrorRotations = armMotor.getClosedLoopError();
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
         armPositionRotations,
@@ -66,6 +72,17 @@ public class ArmIOTalonFX implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
+    BaseStatusSignal.refreshAll(
+        armPositionRotations,
+        armVelocityRotPerSec,
+        armAppliedVolts,
+        armCurrentAmps,
+        armTemperatureCelsius,
+        armSetpointRotations,
+        armErrorRotations);
+    armSetpointRotations.refresh();
+    armErrorRotations.refresh();
+
     inputs.armPosition =
         Rotation2d.fromRotations(
             armPositionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
@@ -80,8 +97,8 @@ public class ArmIOTalonFX implements ArmIO {
         Rotation2d.fromRotations(armAbsolutePositionRotations.getValueAsDouble())
             .minus(ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET);
 
-    inputs.positionSetpoint =
-        Rotation2d.fromRotations(armMotor.getClosedLoopReference().getValueAsDouble());
+    inputs.positionSetpoint = Rotation2d.fromRotations(armSetpointRotations.getValueAsDouble());
+    inputs.positionError = Rotation2d.fromRotations(armErrorRotations.getValueAsDouble());
     inputs.positionGoal = positionGoal;
   }
 
@@ -192,5 +209,10 @@ public class ArmIOTalonFX implements ArmIO {
     motorConfig.MotionMagic.MotionMagicCruiseVelocity = max_velocity;
     motorConfig.MotionMagic.MotionMagicAcceleration = max_acceleration;
     armMotor.getConfigurator().apply(motorConfig, 0.01);
+  }
+
+  @Override
+  public boolean atSetpoint() {
+    return Math.abs(armErrorRotations.getValueAsDouble()) <= ArmConstants.GOAL_TOLERANCE;
   }
 }

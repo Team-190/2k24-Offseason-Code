@@ -45,4 +45,10 @@ public class Intake extends SubsystemBase {
         Commands.runEnd(() -> io.setTopVoltage(12.0), () -> io.setTopVoltage(0.0)),
         Commands.runEnd(() -> io.setBottomVoltage(-12.0), () -> io.setBottomVoltage(0.0)));
   }
+
+  public Command shoot() {
+    return Commands.runEnd(
+            () -> io.setAcceleratorVoltage(12.0), () -> io.setAcceleratorVoltage(0.0))
+        .withTimeout(0.25);
+  }
 }

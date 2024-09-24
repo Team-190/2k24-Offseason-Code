@@ -34,6 +34,8 @@ public class ArmIOSim implements ArmIO {
             ArmConstants.ARM_KD.get(),
             new Constraints(
                 ArmConstants.ARM_MAX_VELOCITY.get(), ArmConstants.ARM_MAX_ACCELERATION.get()));
+    feedback.setTolerance(ArmConstants.GOAL_TOLERANCE);
+
     feedforward =
         new ArmFeedforward(
             ArmConstants.ARM_KS.get(), ArmConstants.ARM_KG.get(), ArmConstants.ARM_KV.get());
@@ -53,6 +55,7 @@ public class ArmIOSim implements ArmIO {
     inputs.armAbsolutePosition = Rotation2d.fromRadians(sim.getAngleRads());
 
     inputs.positionSetpoint = Rotation2d.fromRadians(feedback.getSetpoint().position);
+    inputs.positionError = Rotation2d.fromRadians(feedback.getPositionError());
     inputs.positionGoal = Rotation2d.fromRadians(feedback.getGoal().position);
   }
 
@@ -92,5 +95,10 @@ public class ArmIOSim implements ArmIO {
   @Override
   public void setProfile(double max_velocity, double max_acceleration) {
     feedback.setConstraints(new Constraints(max_velocity, max_acceleration));
+  }
+
+  @Override
+  public boolean atSetpoint() {
+    return feedback.atSetpoint();
   }
 }

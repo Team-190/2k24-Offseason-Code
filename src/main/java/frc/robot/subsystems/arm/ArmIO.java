@@ -15,6 +15,7 @@ public interface ArmIO {
     public Rotation2d armAbsolutePosition = new Rotation2d();
 
     public Rotation2d positionSetpoint = new Rotation2d();
+    public Rotation2d positionError = new Rotation2d();
     public Rotation2d positionGoal = new Rotation2d();
   }
 
@@ -31,4 +32,8 @@ public interface ArmIO {
   public default void setProfile(double max_velocity, double max_acceleration) {}
 
   public default void setArmPosition(double position) {}
+
+  public default boolean atSetpoint() {
+    return false;
+  }
 }
