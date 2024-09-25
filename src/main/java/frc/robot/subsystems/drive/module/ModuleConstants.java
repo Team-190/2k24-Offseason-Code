@@ -48,11 +48,11 @@ public class ModuleConstants {
     switch (Constants.ROBOT) {
       case WHIPLASH:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KP.initDefault(0.2);
+        DRIVE_KP.initDefault(2.0);
         DRIVE_KD.initDefault(0.0);
         DRIVE_KS.initDefault(0.13333);
         DRIVE_KV.initDefault(0.10108);
-        TURN_KP.initDefault(12.0);
+        TURN_KP.initDefault(50.0);
         TURN_KD.initDefault(0.05);
 
         FRONT_LEFT =

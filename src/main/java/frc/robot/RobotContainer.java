@@ -167,6 +167,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutoRoutines.CenterAuto(drive, intake, arm, shooter);
+    return autoChooser.get();
   }
 }

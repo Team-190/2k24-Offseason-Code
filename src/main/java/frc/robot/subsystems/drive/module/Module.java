@@ -111,11 +111,6 @@ public class Module {
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
-      // if (angleSetpoint.getRadians() > Math.PI) {
-      //   angleSetpoint = angleSetpoint.minus(Rotation2d.fromRadians(2.0 * Math.PI));
-      // } else if (angleSetpoint.getRadians() < -Math.PI) {
-      //   angleSetpoint = angleSetpoint.plus(Rotation2d.fromRadians(2.0 * Math.PI));
-      // }
       io.setTurnPositionSetpoint(getAngle(), angleSetpoint);
 
       // Run closed loop drive control
@@ -147,6 +142,7 @@ public class Module {
 
     Logger.recordOutput("Drive/Module " + index + " Turn Setpoint", angleSetpoint);
     Logger.recordOutput("Drive/Module " + index + " Current Angle", getAngle());
+    Logger.recordOutput("Drive/Position " + index, inputs.drivePosition.getRadians());
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */
