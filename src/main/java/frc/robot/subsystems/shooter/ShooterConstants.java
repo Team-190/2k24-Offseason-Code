@@ -6,8 +6,6 @@ import frc.robot.util.LoggedTunableNumber;
 
 /**
  * The ShooterConstants class
- *
- * @author Sriaditya Vaddadi
  */
 public class ShooterConstants {
 
