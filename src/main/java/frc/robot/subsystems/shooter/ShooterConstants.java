@@ -27,6 +27,7 @@ public class ShooterConstants {
   public static final LoggedTunableNumber KA;
   public static final LoggedTunableNumber MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
   public static final LoggedTunableNumber AMP_SPEED;
+  public static final LoggedTunableNumber SUBWOOFER_SPEED;
   public static final double PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND;
 
   static {
@@ -38,6 +39,7 @@ public class ShooterConstants {
     MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED =
         new LoggedTunableNumber("Shooter/Max Acceleration");
     AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
+    SUBWOOFER_SPEED = new LoggedTunableNumber("Shooter/Subwoofer Speed");
 
     switch (Constants.ROBOT) {
       default:
@@ -58,6 +60,7 @@ public class ShooterConstants {
         MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.initDefault(10.0);
         PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND = 1.0;
         AMP_SPEED.initDefault(300.0);
+        SUBWOOFER_SPEED.initDefault(1000.0);
         break;
     }
   }

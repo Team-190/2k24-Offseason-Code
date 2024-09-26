@@ -147,6 +147,14 @@ public class Arm extends SubsystemBase {
         });
   }
 
+  public Command subwooferAngle() {
+    return Commands.runOnce(
+        () -> {
+          isClosedLoop = true;
+          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_ANGLE.get());
+        });
+  }
+
   public boolean atSetpoint() {
     return io.atSetpoint();
   }

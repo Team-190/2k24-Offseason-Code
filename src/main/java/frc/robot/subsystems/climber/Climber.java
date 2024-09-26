@@ -38,6 +38,19 @@ public class Climber extends SubsystemBase {
   }
 
   /**
+   * Creates a command to descend the climber. The climber motor is run in reverse at 12 volts until
+   * the specified release position is reached. Once the release position is reached, the motor is
+   * stopped.
+   *
+   * @return a command to descend the climber
+   */
+  public Command descend() {
+    return Commands.runEnd(() -> io.setVoltage(-12.0), () -> io.stop(), this)
+        .until(
+            () -> inputs.position.getRadians() <= ClimberConstants.RELEASE_POSITION.getRadians());
+  }
+
+  /**
    * Unlatch the climber by running it backwards for 1 rotation of the spool
    *
    * @return command to unlock climber

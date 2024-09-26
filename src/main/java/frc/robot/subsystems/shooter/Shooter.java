@@ -37,6 +37,13 @@ public class Shooter extends SubsystemBase {
             new SysIdRoutine.Mechanism((volts) -> io.setVoltage(volts.in(Volts)), null, this));
   }
 
+  /**
+   * Performs periodic updates for the shooter subsystem. This method is called every 20ms by the
+   * WPILib framework. It updates the input values from the shooter IO, processes the inputs for
+   * logging, sets the velocity setpoint for the top and bottom motors if closed-loop control is
+   * enabled, and updates the PID, feedforward, and motion profile configurations based on tunable
+   * values.
+   */
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -74,6 +81,14 @@ public class Shooter extends SubsystemBase {
         ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
   }
 
+  /**
+   * Sets the shooter's velocity to the dynamic speaker shot speed. This command will run once and
+   * set the velocity setpoint to the speaker shot speed obtained from the {@link
+   * RobotState#getControlData()} method. It will also enable the closed-loop control of the shooter
+   * motors.
+   *
+   * @return a command to set the shooter's velocity to the speaker shot speed
+   */
   public Command setSpeakerVelocity() {
 
     return Commands.runOnce(
@@ -83,6 +98,13 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  /**
+   * Sets the shooter's velocity to the dynamic feed speed. This command will run once and set the
+   * velocity setpoint to the feed speed obtained from the {@link RobotState#getControlData()}
+   * method. It will also enable the closed-loop control of the shooter motors.
+   *
+   * @return a command to set the shooter's velocity to the feed speed
+   */
   public Command setFeedVelocity() {
 
     return Commands.runOnce(
@@ -93,9 +115,11 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Initializes the amp velocity.
+   * Sets the shooter's velocity to the pre-defined amplifier speed. This command will run once and
+   * set the velocity setpoint to the amplifier speed. It will also enable the closed-loop control
+   * of the shooter motors.
    *
-   * @return a command to initialize amp velocity.
+   * @return a command to set the shooter's velocity to the amplifier speed
    */
   public Command setAmpVelocity() {
 
@@ -106,6 +130,28 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  /**
+   * Sets the shooter's velocity to the pre-defined subwoofer speed. This command will run once and
+   * set the velocity setpoint to the subwoofer speed. It will also enable the closed-loop control
+   * of the shooter motors.
+   *
+   * @return a command to set the shooter's velocity to the subwoofer speed
+   */
+  public Command setSubwooferVelocity() {
+    return Commands.runOnce(
+        () -> {
+          velocitySetPointRadiansPerSecond = ShooterConstants.SUBWOOFER_SPEED.get();
+          isClosedLoop = true;
+        });
+  }
+
+  /**
+   * Checks if the shooter motors are at the velocity setpoint. This method is used to determine if
+   * the shooter is at the desired speed.
+   *
+   * @return true if the shooter motors are at the velocity setpoint, false otherwise. The method
+   *     returns the result of the {@link ShooterIO#atSetPoint()} method.
+   */
   @AutoLogOutput(key = "Shooter/at setpoint")
   public boolean atSetPoint() {
     return io.atSetPoint();

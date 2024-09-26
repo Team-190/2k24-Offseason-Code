@@ -114,10 +114,6 @@ public class ShooterIOTalonFX implements ShooterIO {
         bottomVelocitySetpointRotationsPerSec,
         topVelocityErrorRotationsPerSecond,
         bottomVelocityErrorRotationsPerSecond);
-    topVelocitySetpointRotationsPerSec.refresh();
-    bottomVelocitySetpointRotationsPerSec.refresh();
-    topVelocityErrorRotationsPerSecond.refresh();
-    bottomVelocityErrorRotationsPerSecond.refresh();
 
     topMotor.optimizeBusUtilization();
     bottomMotor.optimizeBusUtilization();
@@ -149,6 +145,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomVelocitySetpointRotationsPerSec.refresh();
     topVelocityErrorRotationsPerSecond.refresh();
     bottomVelocityErrorRotationsPerSecond.refresh();
+
     inputs.topPosition =
         Rotation2d.fromRotations(
             topPositionRotations.getValueAsDouble() / ShooterConstants.TOP_GEAR_RATIO);
