@@ -16,7 +16,6 @@ public class ClimberConstants {
   public static final double STARTING_HEIGHT;
   public static final double MIN_HEIGHT;
   public static final double MAX_HEIGHT;
-  public static final Rotation2d FORWARD_SOFT_LIMIT_THRESHOLD;
   public static final Rotation2d RELEASE_POSITION;
   public static final Rotation2d CLIMB_POSITION;
   public static final boolean GRAVITY;
@@ -24,10 +23,8 @@ public class ClimberConstants {
 
   static {
     switch (Constants.ROBOT) {
-      case ROBOT_SIM:
-
       case WHIPLASH:
-
+      case ROBOT_SIM:
       default:
         CLIMBER_CAN_ID = 9;
         CURRENT_LIMIT = 40.0;
@@ -39,7 +36,6 @@ public class ClimberConstants {
         STARTING_HEIGHT = 0;
         MIN_HEIGHT = 0; // TODO: Update Values
         MAX_HEIGHT = Units.inchesToMeters(29.043 - 7.043); // TODO: Update Values
-        FORWARD_SOFT_LIMIT_THRESHOLD = Rotation2d.fromRadians(49.0);
         GRAVITY = false;
         RELEASE_POSITION = Rotation2d.fromRadians(3.0);
         CLIMB_POSITION = Rotation2d.fromRadians(53);

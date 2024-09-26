@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX motor;
@@ -86,18 +85,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       hasSetPosition = motor.setPosition(0.0).isOK();
     }
     motor.setControl(voltageControl.withOutput(volts));
-  }
-
-  @Override
-  public void setPosition(double position) {
-    if (!hasSetPosition) {
-      hasSetPosition = motor.setPosition(0.0).isOK();
-    }
-    if (Units.rotationsToRadians(positionRotations.getValueAsDouble()) <= position) {
-      motor.setControl(voltageControl.withOutput(12.0));
-    } else {
-      motor.setControl(neutralControl);
-    }
   }
 
   /** Sets the volts to 0 and sets motor Control to neutral. */

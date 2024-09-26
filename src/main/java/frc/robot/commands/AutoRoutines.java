@@ -9,11 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
-import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.shooter.Shooter;
 
 public final class AutoRoutines {
   public static final Command none() {
@@ -59,23 +56,5 @@ public final class AutoRoutines {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         drive);
-  }
-
-  public static final Command test(Drive drive) {
-    return getInitialChoreoCommand(drive, "Test");
-  }
-
-  public static final Command CenterAuto(Drive drive, Intake intake, Arm arm, Shooter shooter) {
-    return Commands.sequence(
-        getInitialChoreoCommand(drive, "Center_Path_1"),
-        CompositeCommands.shootSpeaker(intake, arm, shooter),
-        Commands.race(
-            getChoreoCommand(drive, "Center_Path_2"), CompositeCommands.collect(intake, arm)),
-        getChoreoCommand(drive, "Center_Path_3"),
-        CompositeCommands.shootSpeaker(intake, arm, shooter),
-        Commands.race(
-            getChoreoCommand(drive, "Center_Path_4"), CompositeCommands.collect(intake, arm)),
-        getChoreoCommand(drive, "Center_Path_5"),
-        CompositeCommands.shootSpeaker(intake, arm, shooter));
   }
 }

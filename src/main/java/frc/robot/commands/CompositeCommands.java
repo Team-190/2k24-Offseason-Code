@@ -24,7 +24,7 @@ public class CompositeCommands {
   }
 
   public static final Command collect(Intake intake, Arm arm) {
-    return Commands.parallel(intake.intake(), arm.intakeAngle());
+    return Commands.deadline(intake.intake(), arm.intakeAngle());
   }
 
   public static final Command shootSpeaker(Intake intake, Arm arm, Shooter shooter) {
