@@ -33,7 +33,8 @@ public class Climber extends SubsystemBase {
    */
   public Command climb() {
     return Commands.runEnd(
-        () -> io.setPosition(ClimberConstants.MAX_HEIGHT), () -> io.stop(), this);
+            () -> io.setVoltage(12.0), () -> io.setVoltage(ClimberConstants.HOLD_VOLTAGE), this)
+        .until(() -> inputs.position.getRadians() >= ClimberConstants.CLIMB_POSITION.getRadians());
   }
 
   /**
@@ -42,8 +43,9 @@ public class Climber extends SubsystemBase {
    * @return command to unlock climber
    */
   public Command unlock() {
-    return Commands.runEnd(
-        () -> io.setPosition(Math.PI * 2.0 * ClimberConstants.DRUM_RADIUS), () -> io.stop(), this);
+    return Commands.runEnd(() -> io.setVoltage(12.0), () -> io.stop(), this)
+        .until(
+            () -> inputs.position.getRadians() >= ClimberConstants.RELEASE_POSITION.getRadians());
   }
 
   /**

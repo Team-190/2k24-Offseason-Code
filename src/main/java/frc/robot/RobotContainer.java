@@ -14,6 +14,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
@@ -71,7 +73,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
           // intake = new Intake(new IntakeIOTalonFX());
           // vision = new Vision();
-          // climber = new Climber(new ClimberIOTalonFX());
+          climber = new Climber(new ClimberIOTalonFX());
           // shooter = new Shooter(new ShooterIOTalonFX());
           // arm = new Arm(new ArmIOTalonFX());
           break;
@@ -150,6 +152,8 @@ public class RobotContainer {
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(intake.intake());
     driver.rightBumper().whileTrue(intake.eject());
+    driver.a().whileTrue(climber.unlock());
+    driver.b().whileTrue(climber.climb());
   }
 
   public void robotPeriodic() {
@@ -167,6 +171,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return Commands.none();
   }
 }

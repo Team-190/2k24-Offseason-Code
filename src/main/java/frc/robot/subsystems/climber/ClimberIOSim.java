@@ -28,8 +28,8 @@ public class ClimberIOSim implements ClimberIO {
     motorSim.update(Constants.LOOP_PERIOD_SECONDS);
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = motorSim.getCurrentDrawAmps();
-    inputs.positionMeters = motorSim.getPositionMeters();
-    inputs.velocityMPerSec = motorSim.getVelocityMetersPerSecond();
+    // inputs.position = motorSim.getPositionMeters();
+    inputs.velocityRadPerSec = motorSim.getVelocityMetersPerSecond();
   }
 
   @Override

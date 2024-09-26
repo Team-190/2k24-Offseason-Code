@@ -6,13 +6,16 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX motor;
   private final StatusSignal<Double> tempCelsius;
   private final StatusSignal<Double> velocityRadiansPerSecond;
-  private final StatusSignal<Double> positionRadians;
+  private final StatusSignal<Double> positionRotations;
   private final StatusSignal<Double> currentAmps;
   private final StatusSignal<Double> appliedVolts;
 
@@ -20,6 +23,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private final VoltageOut voltageControl;
   private final NeutralOut neutralControl;
+
+  private boolean hasSetPosition;
 
   /**
    * Creates the TalonFX motor object and configures it. Sets the variables from the motor and
@@ -31,19 +36,22 @@ public class ClimberIOTalonFX implements ClimberIO {
     motorConfig = new TalonFXConfiguration();
     motorConfig.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CURRENT_LIMIT;
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     motor.getConfigurator().apply(motorConfig);
 
     tempCelsius = motor.getDeviceTemp();
     velocityRadiansPerSecond = motor.getVelocity();
-    positionRadians = motor.getPosition();
+    positionRotations = motor.getPosition();
     currentAmps = motor.getSupplyCurrent();
     appliedVolts = motor.getMotorVoltage();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, tempCelsius, velocityRadiansPerSecond, positionRadians, currentAmps, appliedVolts);
+        50.0, tempCelsius, velocityRadiansPerSecond, positionRotations, currentAmps, appliedVolts);
     motor.optimizeBusUtilization();
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0);
+
+    hasSetPosition = false;
   }
 
   /**
@@ -55,20 +63,15 @@ public class ClimberIOTalonFX implements ClimberIO {
    */
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
+    BaseStatusSignal.refreshAll(
+        tempCelsius, velocityRadiansPerSecond, positionRotations, currentAmps, appliedVolts);
     inputs.appliedVolts = appliedVolts.getValueAsDouble();
     inputs.currentAmps = currentAmps.getValueAsDouble();
-    inputs.positionMeters =
-        Math.PI
-            * 2
-            * ClimberConstants.DRUM_RADIUS
-            * positionRadians.getValueAsDouble()
-            / ClimberConstants.GEAR_RATIO;
-    inputs.velocityMPerSec =
-        Math.PI
-            * 2
-            * ClimberConstants.DRUM_RADIUS
-            * velocityRadiansPerSecond.getValueAsDouble()
-            / ClimberConstants.GEAR_RATIO;
+    inputs.position =
+        Rotation2d.fromRotations(
+            positionRotations.getValueAsDouble() / ClimberConstants.GEAR_RATIO);
+    inputs.velocityRadPerSec =
+        velocityRadiansPerSecond.getValueAsDouble() / ClimberConstants.GEAR_RATIO;
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
   }
 
@@ -79,12 +82,18 @@ public class ClimberIOTalonFX implements ClimberIO {
    */
   @Override
   public void setVoltage(double volts) {
+    if (!hasSetPosition) {
+      hasSetPosition = motor.setPosition(0.0).isOK();
+    }
     motor.setControl(voltageControl.withOutput(volts));
   }
 
   @Override
   public void setPosition(double position) {
-    if (positionRadians.getValueAsDouble() * ClimberConstants.GEAR_RATIO <= position) {
+    if (!hasSetPosition) {
+      hasSetPosition = motor.setPosition(0.0).isOK();
+    }
+    if (Units.rotationsToRadians(positionRotations.getValueAsDouble()) <= position) {
       motor.setControl(voltageControl.withOutput(12.0));
     } else {
       motor.setControl(neutralControl);
