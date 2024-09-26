@@ -48,10 +48,12 @@ public class ArmConstants {
       default:
         ARM_CAN_ID = 13;
 
-        ARM_GEAR_RATIO = 1.0;
+        //Get
+        ARM_GEAR_RATIO = 60.666666666;
 
         CURRENT_LIMIT = 40.0;
 
+        //Get
         ARM_MOMENT_OF_INERTIA = 0.004;
 
         ARM_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
@@ -60,9 +62,10 @@ public class ArmConstants {
         ARM_INTAKE_CONSTANT = 0.0;
         ARM_AMP_CONSTANT.initDefault(Units.degreesToRadians(50.0));
         ARM_ABSOLUTE_ENCODER_OFFSET = new Rotation2d(0.0);
-        ARM_ENCODER_ID = 0;
+        ARM_ENCODER_ID = 24;
         GOAL_TOLERANCE = 0.0;
-        ARM_LENGTH_METERS = 1.0;
+        //Get
+        ARM_LENGTH_METERS = 0.381;
         ARM_MIN_ANGLE = Units.degreesToRadians(18.75);
         ARM_MAX_ANGLE = Units.degreesToRadians(-110.0);
         ARM_KP.initDefault(1.0);
