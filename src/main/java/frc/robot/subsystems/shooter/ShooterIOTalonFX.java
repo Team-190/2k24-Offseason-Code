@@ -114,6 +114,10 @@ public class ShooterIOTalonFX implements ShooterIO {
         bottomVelocitySetpointRotationsPerSec,
         topVelocityErrorRotationsPerSecond,
         bottomVelocityErrorRotationsPerSecond);
+    topVelocitySetpointRotationsPerSec.refresh();
+    bottomVelocitySetpointRotationsPerSec.refresh();
+    topVelocityErrorRotationsPerSecond.refresh();
+    bottomVelocityErrorRotationsPerSecond.refresh();
 
     topMotor.optimizeBusUtilization();
     bottomMotor.optimizeBusUtilization();
