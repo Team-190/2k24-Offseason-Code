@@ -7,8 +7,6 @@ public interface ShooterIO {
 
   /**
    * The ShooterIOInputs class
-   *
-   * @author Sriaditya Vaddadi
    */
   @AutoLog
   public static class ShooterIOInputs {
