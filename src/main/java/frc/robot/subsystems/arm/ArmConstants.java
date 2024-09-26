@@ -46,7 +46,7 @@ public class ArmConstants {
       case WHIPLASH:
       case ROBOT_SIM:
       default:
-        ARM_CAN_ID = 1;
+        ARM_CAN_ID = 13;
 
         ARM_GEAR_RATIO = 1.0;
 

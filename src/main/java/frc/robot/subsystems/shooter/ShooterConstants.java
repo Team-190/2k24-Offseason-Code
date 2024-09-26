@@ -43,8 +43,8 @@ public class ShooterConstants {
 
     switch (Constants.ROBOT) {
       default:
-        TOP_CAN_ID = 0;
-        BOTTOM_CAN_ID = 1;
+        TOP_CAN_ID = 14;
+        BOTTOM_CAN_ID = 15;
         TOP_GEAR_RATIO = 1.0;
         BOTTOM_GEAR_RATIO = 1.0;
         CURRENT_LIMIT = 40.0;

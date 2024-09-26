@@ -30,11 +30,11 @@ public class IntakeConstants {
       case WHIPLASH:
       case ROBOT_SIM:
       default:
-        TOP_CAN_ID = 1;
-        BOTTOM_CAN_ID = 2;
-        ACCELERATOR_CAN_ID = 3;
+        TOP_CAN_ID = 10;
+        BOTTOM_CAN_ID = 11;
+        ACCELERATOR_CAN_ID = 12;
 
-        INTAKE_SENSOR_CHANNEL = 0;
+        INTAKE_SENSOR_CHANNEL = 9;
         MIDDLE_SENSOR_CHANNEL = 0;
         FINAL_SENSOR_CHANNEL = 0;
 
