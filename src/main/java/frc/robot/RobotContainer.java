@@ -14,6 +14,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -23,6 +24,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
@@ -37,9 +39,11 @@ import frc.robot.subsystems.drive.module.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -54,6 +58,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandPS4Controller operator = new CommandPS4Controller(1);
 
   // Dashboard Inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -70,11 +75,11 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.FRONT_RIGHT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
-          // intake = new Intake(new IntakeIOTalonFX());
+          intake = new Intake(new IntakeIOTalonFX());
           // vision = new Vision();
           climber = new Climber(new ClimberIOTalonFX());
-          // shooter = new Shooter(new ShooterIOTalonFX());
-          // arm = new Arm(new ArmIOTalonFX());
+          shooter = new Shooter(new ShooterIOTalonFX());
+          arm = new Arm(new ArmIOTalonFX());
           break;
         case ROBOT_SIM:
           drive =
@@ -157,10 +162,14 @@ public class RobotContainer {
         DriveCommands.joystickDrive(
             drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
-    driver.leftBumper().whileTrue(intake.intake());
-    driver.rightBumper().whileTrue(intake.eject());
-    driver.a().whileTrue(climber.unlock());
-    driver.b().whileTrue(climber.climb());
+    driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
+    driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
+    driver.rightBumper().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
+    driver.rightTrigger().whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
+    driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
+    operator.povUp().whileTrue(climber.unlock());
+    operator.povDown().whileFalse(climber.climb());
+    driver.a().whileTrue(intake.shoot());
   }
 
   public void robotPeriodic() {

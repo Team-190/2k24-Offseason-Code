@@ -3,10 +3,11 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -38,11 +39,13 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   private final NeutralOut neutralControl;
   private final VoltageOut voltageControl;
-  private final MotionMagicVelocityVoltage topProfiledVelocityControl;
-  private final MotionMagicVelocityVoltage bottomProfiledVelocityControl;
+  private final VelocityVoltage topProfiledVelocityControl;
+  private final VelocityVoltage bottomProfiledVelocityControl;
 
   private double topGoalRadiansPerSecond;
   private double bottomGoalRadiansPerSecond;
+
+  private boolean hasResetPosition;
 
   public ShooterIOTalonFX() {
 
@@ -59,9 +62,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     topConfig.Slot0.kD = ShooterConstants.KD.get();
     topConfig.Slot0.kS = ShooterConstants.KS.get();
     topConfig.Slot0.kV = ShooterConstants.KV.get();
-    topConfig.MotionMagic.MotionMagicAcceleration =
-        Units.radiansToRotations(
-            ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.get());
+    topConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     bottomConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.CURRENT_LIMIT;
     bottomConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -70,9 +71,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomConfig.Slot0.kD = ShooterConstants.KD.get();
     bottomConfig.Slot0.kS = ShooterConstants.KS.get();
     bottomConfig.Slot0.kV = ShooterConstants.KV.get();
-    bottomConfig.MotionMagic.MotionMagicAcceleration =
-        Units.radiansToRotations(
-            ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.get());
 
     topMotor.getConfigurator().apply(topConfig);
     bottomMotor.getConfigurator().apply(bottomConfig);
@@ -120,8 +118,10 @@ public class ShooterIOTalonFX implements ShooterIO {
 
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0.0);
-    topProfiledVelocityControl = new MotionMagicVelocityVoltage(0);
-    bottomProfiledVelocityControl = new MotionMagicVelocityVoltage(0);
+    topProfiledVelocityControl = new VelocityVoltage(0);
+    bottomProfiledVelocityControl = new VelocityVoltage(0);
+
+    hasResetPosition = false;
   }
 
   @Override
@@ -146,44 +146,29 @@ public class ShooterIOTalonFX implements ShooterIO {
     topVelocityErrorRotationsPerSecond.refresh();
     bottomVelocityErrorRotationsPerSecond.refresh();
 
-    inputs.topPosition =
-        Rotation2d.fromRotations(
-            topPositionRotations.getValueAsDouble() / ShooterConstants.TOP_GEAR_RATIO);
-    inputs.topVelocityRadPerSec =
-        Units.rotationsToRadians(
-            topVelocityRotPerSec.getValueAsDouble() / ShooterConstants.TOP_GEAR_RATIO);
+    inputs.topPosition = Rotation2d.fromRotations(topPositionRotations.getValueAsDouble());
+    inputs.topVelocityRadPerSec = Units.rotationsToRadians(topVelocityRotPerSec.getValueAsDouble());
     inputs.topAppliedVolts = topAppliedVolts.getValueAsDouble();
     inputs.topCurrentAmps = topCurrentAmps.getValueAsDouble();
     inputs.topTemperatureCelsius = topTemperatureCelsius.getValueAsDouble();
     inputs.topVelocitySetpointRadiansPerSec =
-        Units.rotationsToRadians(
-            topVelocitySetpointRotationsPerSec.getValueAsDouble()
-                / ShooterConstants.TOP_GEAR_RATIO);
+        Units.rotationsToRadians(topVelocitySetpointRotationsPerSec.getValueAsDouble());
     inputs.topVelocityGoalRadiansPerSec = topGoalRadiansPerSecond;
 
-    inputs.bottomPosition =
-        Rotation2d.fromRotations(
-            bottomPositionRotations.getValueAsDouble() / ShooterConstants.BOTTOM_GEAR_RATIO);
+    inputs.bottomPosition = Rotation2d.fromRotations(bottomPositionRotations.getValueAsDouble());
     inputs.bottomVelocityRadPerSec =
-        Units.rotationsToRadians(
-            bottomVelocityRotPerSec.getValueAsDouble() / ShooterConstants.BOTTOM_GEAR_RATIO);
+        Units.rotationsToRadians(bottomVelocityRotPerSec.getValueAsDouble());
     inputs.bottomAppliedVolts = bottomAppliedVolts.getValueAsDouble();
     inputs.bottomCurrentAmps = bottomCurrentAmps.getValueAsDouble();
     inputs.bottomTemperatureCelsius = bottomTemperatureCelsius.getValueAsDouble();
     inputs.bottomVelocitySetpointRadiansPerSec =
-        Units.rotationsToRadians(
-            bottomVelocitySetpointRotationsPerSec.getValueAsDouble()
-                / ShooterConstants.BOTTOM_GEAR_RATIO);
+        Units.rotationsToRadians(bottomVelocitySetpointRotationsPerSec.getValueAsDouble());
     inputs.bottomVelocityGoalRadiansPerSec = bottomGoalRadiansPerSecond;
 
     inputs.topVelocityErrorRadiansPerSec =
-        Units.rotationsToRadians(
-            topVelocityErrorRotationsPerSecond.getValueAsDouble()
-                / ShooterConstants.TOP_GEAR_RATIO);
+        Units.rotationsToRadians(topVelocityErrorRotationsPerSecond.getValueAsDouble());
     inputs.bottomVelocityErrorRadiansPerSec =
-        Units.rotationsToRadians(
-            bottomVelocityErrorRotationsPerSecond.getValueAsDouble()
-                / ShooterConstants.BOTTOM_GEAR_RATIO);
+        Units.rotationsToRadians(bottomVelocityErrorRotationsPerSecond.getValueAsDouble());
   }
 
   /**
@@ -194,7 +179,9 @@ public class ShooterIOTalonFX implements ShooterIO {
    */
   @Override
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-
+    if (!hasResetPosition) {
+      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
+    }
     topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     topMotor.setControl(
         topProfiledVelocityControl.withVelocity(
@@ -209,7 +196,9 @@ public class ShooterIOTalonFX implements ShooterIO {
    */
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-
+    if (!hasResetPosition) {
+      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
+    }
     bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     bottomMotor.setControl(
         bottomProfiledVelocityControl.withVelocity(
@@ -256,27 +245,13 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public boolean atSetPoint() {
     return Math.abs(
-                topGoalRadiansPerSecond
-                    - Units.rotationsToRadians(
-                        topVelocitySetpointRotationsPerSec.getValueAsDouble()
-                            / ShooterConstants.TOP_GEAR_RATIO))
-            < ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND
+                Units.radiansToRotations(topGoalRadiansPerSecond)
+                    - topVelocityRotPerSec.getValueAsDouble())
+            <= Units.radiansToRotations(ShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND)
         && Math.abs(
-                bottomGoalRadiansPerSecond
-                    - Units.rotationsToRadians(
-                        bottomVelocitySetpointRotationsPerSec.getValueAsDouble()
-                            / ShooterConstants.TOP_GEAR_RATIO))
-            < ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND
-        && Math.abs(
-                Units.rotationsToRadians(
-                    topVelocityErrorRotationsPerSecond.getValueAsDouble()
-                        / ShooterConstants.TOP_GEAR_RATIO))
-            > ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND
-        && Math.abs(
-                Units.rotationsToRadians(
-                    bottomVelocityErrorRotationsPerSecond.getValueAsDouble()
-                        / ShooterConstants.TOP_GEAR_RATIO))
-            > ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND;
+                Units.radiansToRotations(bottomGoalRadiansPerSecond)
+                    - bottomVelocityRotPerSec.getValueAsDouble())
+            <= Units.radiansToRotations(ShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND);
   }
 
   /**
@@ -340,7 +315,9 @@ public class ShooterIOTalonFX implements ShooterIO {
    */
   @Override
   public void setVoltage(double volts) {
-
+    if (!hasResetPosition) {
+      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
+    }
     topMotor.setControl(voltageControl.withOutput(volts));
     bottomMotor.setControl(voltageControl.withOutput(volts));
   }

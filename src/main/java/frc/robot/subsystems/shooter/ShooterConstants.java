@@ -4,15 +4,11 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
-/**
- * The ShooterConstants class
- */
+/** The ShooterConstants class */
 public class ShooterConstants {
 
   public static final int TOP_CAN_ID;
   public static final int BOTTOM_CAN_ID;
-  public static final double TOP_GEAR_RATIO;
-  public static final double BOTTOM_GEAR_RATIO;
   public static final double CURRENT_LIMIT;
   public static final double TOP_MOMENT_OF_INERTIA;
   public static final double BOTTOM_MOMENT_OF_INERTIA;
@@ -24,9 +20,11 @@ public class ShooterConstants {
   public static final LoggedTunableNumber KV;
   public static final LoggedTunableNumber KA;
   public static final LoggedTunableNumber MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED;
-  public static final LoggedTunableNumber AMP_SPEED;
+  public static final LoggedTunableNumber TOP_AMP_SPEED;
+  public static final LoggedTunableNumber BOTTOM_AMP_SPEED;
   public static final LoggedTunableNumber SUBWOOFER_SPEED;
-  public static final double PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND;
+  public static final LoggedTunableNumber FEED_SPEED;
+  public static final double SPEED_TOLERANCE_RADIANS_PER_SECOND;
 
   static {
     KP = new LoggedTunableNumber("Shooter/kP");
@@ -36,15 +34,15 @@ public class ShooterConstants {
     KA = new LoggedTunableNumber("Shooter/kA");
     MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED =
         new LoggedTunableNumber("Shooter/Max Acceleration");
-    AMP_SPEED = new LoggedTunableNumber("Shooter/Amp Speed");
+    TOP_AMP_SPEED = new LoggedTunableNumber("Shooter/Top Amp Speed");
+    BOTTOM_AMP_SPEED = new LoggedTunableNumber("Shooter/Bottom Amp Speed");
     SUBWOOFER_SPEED = new LoggedTunableNumber("Shooter/Subwoofer Speed");
+    FEED_SPEED = new LoggedTunableNumber("Shooter/Feed Speed");
 
     switch (Constants.ROBOT) {
       default:
         TOP_CAN_ID = 14;
         BOTTOM_CAN_ID = 15;
-        TOP_GEAR_RATIO = 1.0;
-        BOTTOM_GEAR_RATIO = 1.0;
         CURRENT_LIMIT = 40.0;
         TOP_MOMENT_OF_INERTIA = 0.004;
         BOTTOM_MOMENT_OF_INERTIA = 0.004;
@@ -52,13 +50,15 @@ public class ShooterConstants {
         BOTTOM_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         KP.initDefault(0.325);
         KD.initDefault(0.0);
-        KS.initDefault(0.0);
-        KV.initDefault(0.019005);
-        KA.initDefault(0.0067707);
-        MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.initDefault(10.0);
-        PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND = 1.0;
-        AMP_SPEED.initDefault(300.0);
-        SUBWOOFER_SPEED.initDefault(1000.0);
+        KS.initDefault(0.090597);
+        // KV.initDefault(0.017284);
+        KV.initDefault(12.0 / 103.4508);
+        KA.initDefault(0.0014107);
+        SPEED_TOLERANCE_RADIANS_PER_SECOND = 15.0;
+        TOP_AMP_SPEED.initDefault(80.0);
+        BOTTOM_AMP_SPEED.initDefault(20.0);
+        SUBWOOFER_SPEED.initDefault(600.0);
+        FEED_SPEED.initDefault(400);
         break;
     }
   }

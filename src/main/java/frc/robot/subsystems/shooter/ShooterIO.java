@@ -5,9 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
 
-  /**
-   * The ShooterIOInputs class
-   */
+  /** The ShooterIOInputs class */
   @AutoLog
   public static class ShooterIOInputs {
 

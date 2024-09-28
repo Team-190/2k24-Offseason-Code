@@ -4,8 +4,6 @@ import com.choreo.lib.Choreo;
 import com.choreo.lib.ChoreoTrajectory;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
@@ -14,6 +12,7 @@ import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.util.AllianceFlipUtil;
 
 public final class AutoRoutines {
   public static final Command none() {
@@ -33,14 +32,9 @@ public final class AutoRoutines {
     ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
     return Commands.sequence(
         Commands.runOnce(
-            () -> {
-              if (DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red) {
-                RobotState.resetRobotPose(choreoTrajectory.getFlippedInitialPose());
-              } else {
-                RobotState.resetRobotPose(choreoTrajectory.getInitialPose());
-              }
-            }),
+            () ->
+                RobotState.resetRobotPose(
+                    AllianceFlipUtil.apply(choreoTrajectory.getInitialPose()))),
         Choreo.choreoSwerveCommand(
             choreoTrajectory,
             RobotState::getRobotPose,
@@ -49,9 +43,7 @@ public final class AutoRoutines {
             new PIDController(
                 DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get()),
             (ChassisSpeeds speeds) -> drive.runVelocity(speeds),
-            () ->
-                DriverStation.getAlliance().isPresent()
-                    && DriverStation.getAlliance().get() == Alliance.Red,
+            () -> AllianceFlipUtil.shouldFlip(),
             drive));
   }
 
@@ -75,9 +67,7 @@ public final class AutoRoutines {
         new PIDController(
             DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get()),
         (ChassisSpeeds speeds) -> drive.runVelocity(speeds),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
+        () -> AllianceFlipUtil.shouldFlip(),
         drive);
   }
 
@@ -85,7 +75,8 @@ public final class AutoRoutines {
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
-        Commands.race(getInitialChoreoCommand(drive, "Auto_1_Amp"), intake.intake()),
+        Commands.race(
+            getInitialChoreoCommand(drive, "Auto_1_Amp"), CompositeCommands.collect(intake, arm)),
         getChoreoCommand(drive, "Auto_2_Amp"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
   }
@@ -94,7 +85,9 @@ public final class AutoRoutines {
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
-        Commands.race(getInitialChoreoCommand(drive, "Auto_1_Source"), intake.intake()),
+        Commands.race(
+            getInitialChoreoCommand(drive, "Auto_1_Source"),
+            CompositeCommands.collect(intake, arm)),
         getChoreoCommand(drive, "Auto_2_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
   }

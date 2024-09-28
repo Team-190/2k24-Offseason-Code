@@ -16,7 +16,9 @@ public class Shooter extends SubsystemBase {
 
   private final ShooterIOInputsAutoLogged inputs;
   private final ShooterIO io;
-  private double velocitySetPointRadiansPerSecond;
+  private double topVelocitySetPointRadiansPerSecond;
+  private double bottomVelocitySetPointRadiansPerSecond;
+
   private boolean isClosedLoop;
   private final SysIdRoutine characterizationRoutine;
 
@@ -24,7 +26,7 @@ public class Shooter extends SubsystemBase {
 
     inputs = new ShooterIOInputsAutoLogged();
     this.io = io;
-    velocitySetPointRadiansPerSecond = 0.0;
+    topVelocitySetPointRadiansPerSecond = 0.0;
     isClosedLoop = true;
 
     characterizationRoutine =
@@ -49,8 +51,8 @@ public class Shooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
     if (isClosedLoop) {
-      io.setTopVelocitySetPoint(velocitySetPointRadiansPerSecond);
-      io.setBottomVelocitySetPoint(-velocitySetPointRadiansPerSecond);
+      io.setTopVelocitySetPoint(topVelocitySetPointRadiansPerSecond);
+      io.setBottomVelocitySetPoint(-bottomVelocitySetPointRadiansPerSecond);
     }
 
     LoggedTunableNumber.ifChanged(
@@ -79,6 +81,10 @@ public class Shooter extends SubsystemBase {
           io.setBottomProfile(profile[0]);
         },
         ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+
+    Logger.recordOutput("Shooter/Position", inputs.topPosition.getRadians());
+    Logger.recordOutput(
+        "Shooter/Error", inputs.topVelocityGoalRadiansPerSec - inputs.topVelocityRadPerSec);
   }
 
   /**
@@ -93,7 +99,8 @@ public class Shooter extends SubsystemBase {
 
     return Commands.runOnce(
         () -> {
-          velocitySetPointRadiansPerSecond = RobotState.getControlData().speakerShotSpeed();
+          topVelocitySetPointRadiansPerSecond = RobotState.getControlData().speakerShotSpeed();
+          bottomVelocitySetPointRadiansPerSecond = topVelocitySetPointRadiansPerSecond;
           isClosedLoop = true;
         });
   }
@@ -109,7 +116,8 @@ public class Shooter extends SubsystemBase {
 
     return Commands.runOnce(
         () -> {
-          velocitySetPointRadiansPerSecond = RobotState.getControlData().feedShotSpeed();
+          topVelocitySetPointRadiansPerSecond = ShooterConstants.FEED_SPEED.get();
+          bottomVelocitySetPointRadiansPerSecond = topVelocitySetPointRadiansPerSecond;
           isClosedLoop = true;
         });
   }
@@ -125,7 +133,8 @@ public class Shooter extends SubsystemBase {
 
     return Commands.runOnce(
         () -> {
-          velocitySetPointRadiansPerSecond = ShooterConstants.AMP_SPEED.get();
+          topVelocitySetPointRadiansPerSecond = ShooterConstants.TOP_AMP_SPEED.get();
+          bottomVelocitySetPointRadiansPerSecond = ShooterConstants.BOTTOM_AMP_SPEED.get();
           isClosedLoop = true;
         });
   }
@@ -140,7 +149,8 @@ public class Shooter extends SubsystemBase {
   public Command setSubwooferVelocity() {
     return Commands.runOnce(
         () -> {
-          velocitySetPointRadiansPerSecond = ShooterConstants.SUBWOOFER_SPEED.get();
+          topVelocitySetPointRadiansPerSecond = ShooterConstants.SUBWOOFER_SPEED.get();
+          bottomVelocitySetPointRadiansPerSecond = topVelocitySetPointRadiansPerSecond;
           isClosedLoop = true;
         });
   }

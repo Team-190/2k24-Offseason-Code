@@ -24,14 +24,32 @@ public class CompositeCommands {
   }
 
   public static final Command collect(Intake intake, Arm arm) {
-    return Commands.deadline(intake.intake(), arm.intakeAngle());
+    return Commands.sequence(
+        arm.intakeAngle(), Commands.waitUntil(() -> arm.atSetpoint()), intake.intake());
+  }
+
+  public static final Command eject(Intake intake, Arm arm) {
+    return Commands.sequence(arm.ejectCommand(), intake.eject());
   }
 
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
-        intake
-            .shoot()
-            .beforeStarting(Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint())));
+        Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+        intake.shoot());
+  }
+
+  public static final Command shootAmp(Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
+        Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+        intake.shoot());
+  }
+
+  public static final Command shootFeed(Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        Commands.parallel(shooter.setFeedVelocity(), arm.stowAngle()),
+        Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+        intake.shoot());
   }
 }

@@ -35,8 +35,8 @@ public class IntakeConstants {
         ACCELERATOR_CAN_ID = 12;
 
         INTAKE_SENSOR_CHANNEL = 9;
-        MIDDLE_SENSOR_CHANNEL = 0;
-        FINAL_SENSOR_CHANNEL = 0;
+        MIDDLE_SENSOR_CHANNEL = 7;
+        FINAL_SENSOR_CHANNEL = 8;
 
         TOP_GEAR_RATIO = 1.0;
         BOTTOM_GEAR_RATIO = 1.0;
