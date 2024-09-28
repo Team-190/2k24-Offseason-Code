@@ -2,217 +2,232 @@ package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 public class ArmIOTalonFX implements ArmIO {
-  private final TalonFX armMotor;
+  private final TalonFX motor;
   private final CANcoder cancoder;
 
-  private final StatusSignal<Double> armPositionRotations;
-  private final StatusSignal<Double> armVelocityRotPerSec;
-  private final StatusSignal<Double> armAppliedVolts;
-  private final StatusSignal<Double> armCurrentAmps;
-  private final StatusSignal<Double> armTemperatureCelsius;
-  private final StatusSignal<Double> armAbsolutePositionRotations;
+  private final StatusSignal<Double> positionRotations;
+  private final StatusSignal<Double> velocityRotationsPerSecond;
+  private final StatusSignal<Double> appliedVolts;
+  private final StatusSignal<Double> currentAmps;
+  private final StatusSignal<Double> temperatureCelcius;
+  private final StatusSignal<Double> positionSetpointRotations;
+  private final StatusSignal<Double> positionErrorRotations;
 
-  private final StatusSignal<Double> armSetpointRotations;
-  private final StatusSignal<Double> armErrorRotations;
+  private final StatusSignal<Double> absolutePosition;
 
-  private final MotionMagicVoltage armProfiledPositionControl;
+  // private final MotionMagicVoltage positionControl;
+  private final VoltageOut voltageControl;
+  private final NeutralOut neutralControl;
+
+  private final ProfiledPIDController rioPositionControl;
+  private ArmFeedforward rioFeedforward;
 
   private final TalonFXConfiguration motorConfig;
-
-  private final NeutralOut neutralControl;
-  private final VoltageOut voltageControl;
+  private final CANcoderConfiguration cancoderConfig;
 
   private Rotation2d positionGoal;
 
+  private boolean hasResetPosition;
+
   public ArmIOTalonFX() {
-    armMotor = new TalonFX(ArmConstants.ARM_CAN_ID);
-    cancoder = new CANcoder(ArmConstants.ARM_ENCODER_ID);
+    motor = new TalonFX(ArmConstants.ARM_CAN_ID);
+    cancoder = new CANcoder(ArmConstants.CANCODER_CAN_ID);
 
     motorConfig = new TalonFXConfiguration();
+    motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    motorConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity =
+        Units.radiansToRotations(ArmConstants.ARM_MAX_VELOCITY.get());
+    motorConfig.MotionMagic.MotionMagicAcceleration =
+        Units.radiansToRotations(ArmConstants.ARM_MAX_ACCELERATION.get());
+    motorConfig.Slot0.kP = ArmConstants.ARM_KP.get();
+    motorConfig.Slot0.kD = ArmConstants.ARM_KD.get();
+    motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    motorConfig.Slot0.kS = ArmConstants.ARM_KS.get();
+    motorConfig.Slot0.kV = ArmConstants.ARM_KV.get();
+    motorConfig.Slot0.kG = ArmConstants.ARM_KG.get();
+    motor.getConfigurator().apply(motorConfig);
 
-    armMotor.getConfigurator().apply(motorConfig);
-    armMotor.setPosition(cancoder.getPosition().getValueAsDouble());
+    cancoderConfig = new CANcoderConfiguration();
+    cancoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    cancoder.getConfigurator().apply(cancoderConfig);
 
-    armPositionRotations = armMotor.getPosition();
-    armVelocityRotPerSec = armMotor.getVelocity();
-    armAppliedVolts = armMotor.getMotorVoltage();
-    armCurrentAmps = armMotor.getSupplyCurrent();
-    armTemperatureCelsius = armMotor.getDeviceTemp();
-    armAbsolutePositionRotations = cancoder.getAbsolutePosition();
+    positionRotations = motor.getPosition();
+    velocityRotationsPerSecond = motor.getVelocity();
+    appliedVolts = motor.getMotorVoltage();
+    currentAmps = motor.getSupplyCurrent();
+    temperatureCelcius = motor.getDeviceTemp();
+    positionSetpointRotations = motor.getClosedLoopReference();
+    positionErrorRotations = motor.getClosedLoopError();
 
-    armSetpointRotations = armMotor.getClosedLoopReference();
-    armErrorRotations = armMotor.getClosedLoopError();
+    absolutePosition = cancoder.getAbsolutePosition();
+
+    // positionControl = new MotionMagicVoltage(0.0).withUpdateFreqHz(0.0);
+    voltageControl = new VoltageOut(0.0).withUpdateFreqHz(0.0);
+    neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
+
+    rioPositionControl =
+        new ProfiledPIDController(
+            ArmConstants.ARM_KP.get(),
+            0.0,
+            ArmConstants.ARM_KD.get(),
+            new Constraints(
+                ArmConstants.ARM_MAX_VELOCITY.get(), ArmConstants.ARM_MAX_ACCELERATION.get()));
+    rioFeedforward =
+        new ArmFeedforward(
+            ArmConstants.ARM_KS.get(), ArmConstants.ARM_KG.get(), ArmConstants.ARM_KV.get());
+    positionGoal = new Rotation2d();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0,
-        armPositionRotations,
-        armVelocityRotPerSec,
-        armAppliedVolts,
-        armCurrentAmps,
-        armTemperatureCelsius,
-        armAbsolutePositionRotations);
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVolts,
+        currentAmps,
+        temperatureCelcius,
+        positionSetpointRotations,
+        positionErrorRotations,
+        absolutePosition);
 
-    armMotor.optimizeBusUtilization();
-    neutralControl = new NeutralOut();
-    voltageControl = new VoltageOut(0.0);
+    motor.optimizeBusUtilization();
+    cancoder.optimizeBusUtilization();
 
-    armProfiledPositionControl = new MotionMagicVoltage(0.0);
-    positionGoal = new Rotation2d();
+    hasResetPosition = false;
   }
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        armPositionRotations,
-        armVelocityRotPerSec,
-        armAppliedVolts,
-        armCurrentAmps,
-        armTemperatureCelsius,
-        armSetpointRotations,
-        armErrorRotations);
-    armSetpointRotations.refresh();
-    armErrorRotations.refresh();
+        positionRotations,
+        velocityRotationsPerSecond,
+        appliedVolts,
+        currentAmps,
+        temperatureCelcius,
+        positionSetpointRotations,
+        positionErrorRotations,
+        absolutePosition);
+    positionSetpointRotations.refresh();
+    positionErrorRotations.refresh();
 
     inputs.armPosition =
         Rotation2d.fromRotations(
-            armPositionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+            positionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
     inputs.armVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(
-            armVelocityRotPerSec.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
-    inputs.armAppliedVolts = armAppliedVolts.getValueAsDouble();
-    inputs.armCurrentAmps = armCurrentAmps.getValueAsDouble();
-    inputs.armTemperatureCelsius = armTemperatureCelsius.getValueAsDouble();
+        Units.rotationsToRadians(
+            velocityRotationsPerSecond.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+    inputs.armAppliedVolts = appliedVolts.getValueAsDouble();
+    inputs.armCurrentAmps = currentAmps.getValueAsDouble();
+    inputs.armTemperatureCelsius = temperatureCelcius.getValueAsDouble();
 
     inputs.armAbsolutePosition =
-        Rotation2d.fromRotations(armAbsolutePositionRotations.getValueAsDouble())
+        Rotation2d.fromRotations(absolutePosition.getValueAsDouble())
             .minus(ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET);
 
-    inputs.positionSetpoint = Rotation2d.fromRotations(armSetpointRotations.getValueAsDouble());
-    inputs.positionError = Rotation2d.fromRotations(armErrorRotations.getValueAsDouble());
+    // inputs.positionSetpoint =
+    //     Rotation2d.fromRotations(
+    //         positionSetpointRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+    // inputs.positionError =
+    //     Rotation2d.fromRotations(
+    //         positionErrorRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+
+    inputs.positionSetpoint = Rotation2d.fromRadians(rioPositionControl.getSetpoint().position);
+    inputs.positionError = Rotation2d.fromRadians(rioPositionControl.getPositionError());
     inputs.positionGoal = positionGoal;
   }
 
   @Override
-  public void setArmVoltage(double volts) {
-    armMotor.setControl(voltageControl.withOutput(volts));
-  }
-
-  @Override
   public void stop() {
-    armMotor.setControl(neutralControl);
+    motor.setControl(neutralControl);
   }
 
-  /**
-   * Sets the position setpoint for the arm motor using motion magic control.
-   *
-   * <p>This function sets the position setpoint for the arm motor using motion magic control.
-   * Motion magic control allows the arm motor to follow a trajectory defined by a set of setpoints,
-   * providing smoother and more efficient motion compared to position or velocity control.
-   *
-   * <p>The motion magic control algorithm continuously calculates the error between the current
-   * position and the setpoint, and applies a control signal to the motor based on the proportional,
-   * integral, and derivative gains. Additionally, the algorithm takes into account the maximum
-   * velocity and acceleration of the motor to ensure that the motion is smooth and efficient.
-   *
-   * @param position The desired position setpoint for the arm motor in rotations. This value should
-   *     be within the motor's specified range of motion.
-   */
   @Override
-  public void setArmPosition(double position) {
-    positionGoal = Rotation2d.fromRadians(position);
-    armMotor.setControl(armProfiledPositionControl.withPosition(position));
+  public void setArmVoltage(double volts) {
+    if (!hasResetPosition) {
+      hasResetPosition =
+          motor
+              .setPosition(
+                  (absolutePosition.getValueAsDouble()
+                          - ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET.getRotations())
+                      * ArmConstants.ARM_GEAR_RATIO
+                      * -1.0)
+              .isOK();
+    }
+    motor.setControl(voltageControl.withOutput(volts));
   }
 
-  /**
-   * Sets the PID gains for the arm motor.
-   *
-   * <p>PID control is a widely used technique in control systems to improve the performance of the
-   * system. It compensates for the dynamics of the system, such as inertia and friction, by
-   * continuously adjusting the control signal based on the error between the setpoint and the
-   * current position. This helps to achieve faster response times and better tracking of the
-   * setpoints.
-   *
-   * <p>This function sets the proportional (kp), integral (ki), and derivative (kd) gains for the
-   * arm motor. The PID gains are used in conjunction with the feedforward gains to compute the
-   * control signal for the motor.
-   *
-   * @param kp The proportional gain. This gain is multiplied by the error between the setpoint and
-   *     the current position to generate a proportional control signal. A higher kp value increases
-   *     the sensitivity to the error, but may cause overshoot.
-   * @param ki The integral gain. This gain is multiplied by the integral of the error between the
-   *     setpoint and the current position to generate an integral control signal. A higher ki value
-   *     reduces the steady-state error, but may cause oscillations.
-   * @param kd The derivative gain. This gain is multiplied by the derivative of the error between
-   *     the setpoint and the current position to generate a derivative control signal. A higher kd
-   *     value reduces the settling time, but may cause overshoot.
-   */
+  @Override
+  public void setArmPosition(Rotation2d currentPosition, Rotation2d setpointPosition) {
+    if (!hasResetPosition) {
+      hasResetPosition =
+          motor
+              .setPosition(
+                  (absolutePosition.getValueAsDouble()
+                          - ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET.getRotations())
+                      * ArmConstants.ARM_GEAR_RATIO
+                      * -1.0)
+              .isOK();
+    }
+    positionGoal = setpointPosition;
+    // motor.setControl(
+    //     positionControl.withPosition(position.getRotations() * ArmConstants.ARM_GEAR_RATIO));
+    motor.setControl(
+        voltageControl.withOutput(
+            rioPositionControl.calculate(
+                    currentPosition.getRadians(), setpointPosition.getRadians())
+                + rioFeedforward.calculate(
+                    setpointPosition.getRadians(), rioPositionControl.getSetpoint().velocity)));
+  }
+
   @Override
   public void setPID(double kp, double ki, double kd) {
     motorConfig.Slot0.kP = kp;
     motorConfig.Slot0.kI = ki;
     motorConfig.Slot0.kD = kd;
-    armMotor.getConfigurator().apply(motorConfig, 0.01);
+    motor.getConfigurator().apply(motorConfig);
+    rioPositionControl.setPID(kp, ki, kd);
   }
 
-  /**
-   * Sets the feedforward gains for the arm motor.
-   *
-   * <p>Feedforward control is a technique used in control systems to improve the performance of the
-   * system. It compensates for the dynamics of the system, such as inertia and friction, by
-   * directly applying control signals based on the desired setpoints. This helps to achieve faster
-   * response times and better tracking of the setpoints.
-   *
-   * <p>This function sets the proportional (kS), integral (kG), and velocity (kV) feedforward gains
-   * for the arm motor. The feedforward gains are used in conjunction with the PID gains to compute
-   * the control signal for the motor.
-   *
-   * @param ks The proportional feedforward gain. This gain is multiplied by the error between the
-   *     setpoint and the current position to generate a proportional control signal.
-   * @param kg The integral feedforward gain. This gain is multiplied by the integral of the error
-   *     between the setpoint and the current position to generate an integral control signal.
-   * @param kv The velocity feedforward gain. This gain is multiplied by the desired velocity
-   *     setpoint to generate a velocity control signal.
-   */
   @Override
   public void setFeedforward(double ks, double kg, double kv) {
     motorConfig.Slot0.kS = ks;
-    motorConfig.Slot0.kG = kg;
     motorConfig.Slot0.kV = kv;
-    armMotor.getConfigurator().apply(motorConfig, 0.01);
+    motorConfig.Slot0.kG = kg;
+    motor.getConfigurator().apply(motorConfig);
+    rioFeedforward = new ArmFeedforward(ks, kg, kv);
   }
 
-  /**
-   * Sets the motion profile parameters for the arm motor.
-   *
-   * <p>This function configures the maximum velocity and acceleration for the arm motor's motion
-   * profile. The motion profile allows the arm motor to follow a trajectory defined by a set of
-   * setpoints, providing smoother and more efficient motion compared to position or velocity
-   * control.
-   *
-   * @param max_velocity The maximum velocity of the arm motor in rotations per minute. This value
-   *     should be within the motor's specified maximum velocity.
-   * @param max_acceleration The maximum acceleration of the arm motor in rotations per minute
-   *     squared. This value should be within the motor's specified maximum acceleration.
-   */
   @Override
-  public void setProfile(double max_velocity, double max_acceleration) {
-    motorConfig.MotionMagic.MotionMagicCruiseVelocity = max_velocity;
-    motorConfig.MotionMagic.MotionMagicAcceleration = max_acceleration;
-    armMotor.getConfigurator().apply(motorConfig, 0.01);
+  public void setProfile(double maxVelocity, double maxAcceleration) {
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
+    motorConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
+    motor.getConfigurator().apply(motorConfig);
+    rioPositionControl.setConstraints(new Constraints(maxVelocity, maxAcceleration));
   }
 
   @Override
   public boolean atSetpoint() {
-    return Math.abs(armErrorRotations.getValueAsDouble()) <= ArmConstants.GOAL_TOLERANCE;
+    return Math.abs(
+            positionGoal.getRotations()
+                - positionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO)
+        <= Units.degreesToRotations(ArmConstants.GOAL_TOLERANCE.get());
   }
 }

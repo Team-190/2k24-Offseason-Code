@@ -139,10 +139,6 @@ public class Module {
               turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
-
-    Logger.recordOutput("Drive/Module " + index + " Turn Setpoint", angleSetpoint);
-    Logger.recordOutput("Drive/Module " + index + " Current Angle", getAngle());
-    Logger.recordOutput("Drive/Position " + index, inputs.drivePosition.getRadians());
   }
 
   /** Runs the module with the specified setpoint state. Returns the optimized state. */

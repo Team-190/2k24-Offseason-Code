@@ -22,21 +22,17 @@ public class ShooterIOSim implements ShooterIO {
 
     topMotorSim =
         new DCMotorSim(
-            ShooterConstants.TOP_MOTOR_CONFIG,
-            ShooterConstants.TOP_GEAR_RATIO,
-            ShooterConstants.TOP_MOMENT_OF_INERTIA);
+            ShooterConstants.TOP_MOTOR_CONFIG, 1.0, ShooterConstants.TOP_MOMENT_OF_INERTIA);
     bottomMotorSim =
         new DCMotorSim(
-            ShooterConstants.BOTTOM_MOTOR_CONFIG,
-            ShooterConstants.BOTTOM_GEAR_RATIO,
-            ShooterConstants.BOTTOM_MOMENT_OF_INERTIA);
+            ShooterConstants.BOTTOM_MOTOR_CONFIG, 1.0, ShooterConstants.BOTTOM_MOMENT_OF_INERTIA);
     feedForward = new SimpleMotorFeedforward(ShooterConstants.KS.get(), ShooterConstants.KV.get());
     feedback = new PIDController(ShooterConstants.KP.get(), 0.0, ShooterConstants.KD.get());
     profile =
         new LinearProfile(
             ShooterConstants.MAX_ACCELERATION_RADIANS_PER_SECOND_SQUARED.get(),
             Constants.LOOP_PERIOD_SECONDS);
-    feedback.setTolerance(ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND);
+    feedback.setTolerance(ShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND);
     topAppliedVolts = 0.0;
     bottomAppliedVolts = 0.0;
   }
@@ -157,7 +153,7 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public boolean atSetPoint() {
     return (Math.abs(profile.getGoal() - feedback.getSetpoint())
-            <= ShooterConstants.PROFILE_SPEED_TOLERANCE_RADIANS_PER_SECOND)
+            <= ShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND)
         && feedback.atSetpoint();
   }
 

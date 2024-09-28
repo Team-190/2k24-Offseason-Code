@@ -64,7 +64,7 @@ public final class DriveConstants {
 
         AUTO_X_KP.initDefault(1.0);
         AUTO_Y_KP.initDefault(1.0);
-        AUTO_THETA_KP.initDefault(1.0);
+        AUTO_THETA_KP.initDefault(0.0);
 
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);

@@ -34,7 +34,7 @@ public class ArmIOSim implements ArmIO {
             ArmConstants.ARM_KD.get(),
             new Constraints(
                 ArmConstants.ARM_MAX_VELOCITY.get(), ArmConstants.ARM_MAX_ACCELERATION.get()));
-    feedback.setTolerance(ArmConstants.GOAL_TOLERANCE);
+    feedback.setTolerance(ArmConstants.GOAL_TOLERANCE.get());
 
     feedforward =
         new ArmFeedforward(
@@ -72,11 +72,12 @@ public class ArmIOSim implements ArmIO {
   }
 
   @Override
-  public void setArmPosition(double position) {
+  public void setArmPosition(Rotation2d currentPosition, Rotation2d setpointPosition) {
     AppliedVolts =
         MathUtil.clamp(
-            feedback.calculate(sim.getAngleRads(), position)
-                + feedforward.calculate(position, feedback.getSetpoint().velocity),
+            feedback.calculate(sim.getAngleRads(), setpointPosition.getRadians())
+                + feedforward.calculate(
+                    setpointPosition.getRadians(), feedback.getSetpoint().velocity),
             -12.0,
             12.0);
     sim.setInputVoltage(AppliedVolts);

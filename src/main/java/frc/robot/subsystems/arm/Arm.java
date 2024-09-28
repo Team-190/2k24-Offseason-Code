@@ -15,20 +15,20 @@ import org.littletonrobotics.junction.Logger;
 public class Arm extends SubsystemBase {
   private final ArmIOInputsAutoLogged inputs;
   private final ArmIO io;
-  private Rotation2d desiredAngle;
+  private Rotation2d positionSetpoint;
   private boolean isClosedLoop;
   private final SysIdRoutine characterizationRoutine;
 
   public Arm(ArmIO io) {
     inputs = new ArmIOInputsAutoLogged();
     this.io = io;
-    desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_MIN_ANGLE);
+    positionSetpoint = ArmConstants.ARM_STOW_CONSTANT;
     isClosedLoop = true;
 
     characterizationRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
-                Volts.of(0.2).per(Seconds.of(1.0)),
+                Volts.of(0.5).per(Seconds.of(1.0)),
                 Volts.of(3.5),
                 Seconds.of(10),
                 (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
@@ -47,7 +47,7 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     if (isClosedLoop) {
-      io.setArmPosition(desiredAngle.getRadians());
+      io.setArmPosition(inputs.armPosition, positionSetpoint);
     }
 
     LoggedTunableNumber.ifChanged(
@@ -68,6 +68,10 @@ public class Arm extends SubsystemBase {
         profile -> io.setProfile(profile[0], profile[1]),
         ArmConstants.ARM_MAX_ACCELERATION,
         ArmConstants.ARM_MAX_VELOCITY);
+
+    Logger.recordOutput("Arm/Position", inputs.armPosition.getRadians());
+    Logger.recordOutput("Arm/Desired Position", positionSetpoint);
+    Logger.recordOutput("Arm/At Setpoint", atSetpoint());
   }
 
   /**
@@ -81,7 +85,7 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_STOW_CONSTANT);
+          positionSetpoint = ArmConstants.ARM_STOW_CONSTANT;
         });
   }
 
@@ -96,7 +100,7 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_INTAKE_CONSTANT);
+          positionSetpoint = ArmConstants.ARM_INTAKE_CONSTANT;
         });
   }
 
@@ -111,7 +115,15 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle = Rotation2d.fromRadians(ArmConstants.ARM_AMP_CONSTANT.get());
+          positionSetpoint = Rotation2d.fromRadians(ArmConstants.ARM_AMP_CONSTANT.get());
+        });
+  }
+
+  public Command ejectCommand() {
+    return Commands.runOnce(
+        () -> {
+          isClosedLoop = true;
+          positionSetpoint = ArmConstants.ARM_EJECT_ANGLE;
         });
   }
 
@@ -126,7 +138,7 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle =
+          positionSetpoint =
               Rotation2d.fromRadians(RobotState.getControlData().speakerArmAngle().getRadians());
         });
   }
@@ -142,8 +154,16 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          desiredAngle =
+          positionSetpoint =
               Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
+        });
+  }
+
+  public Command subwooferAngle() {
+    return Commands.runOnce(
+        () -> {
+          isClosedLoop = true;
+          positionSetpoint = Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_ANGLE.get());
         });
   }
 
@@ -160,5 +180,9 @@ public class Arm extends SubsystemBase {
   public Command runDynamicCharacterization(Direction direction) {
     return Commands.sequence(
         Commands.runOnce(() -> isClosedLoop = false), characterizationRoutine.dynamic(direction));
+  }
+
+  public Command runVoltage(double volts) {
+    return Commands.run(() -> io.setArmVoltage(volts));
   }
 }

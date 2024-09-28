@@ -67,12 +67,7 @@ public class RobotState {
 
     poseEstimator =
         new SwerveDrivePoseEstimator(
-            DriveConstants.KINEMATICS,
-            new Rotation2d(),
-            modulePositions,
-            new Pose2d(),
-            DriveConstants.ODOMETRY_STANDARD_DEVIATIONS,
-            VecBuilder.fill(0.0, 0.0, 0.0));
+            DriveConstants.KINEMATICS, new Rotation2d(), modulePositions, new Pose2d());
   }
 
   public RobotState() {}

@@ -31,7 +31,7 @@ public interface ArmIO {
 
   public default void setProfile(double max_velocity, double max_acceleration) {}
 
-  public default void setArmPosition(double position) {}
+  public default void setArmPosition(Rotation2d currentPosition, Rotation2d setpointPosition) {}
 
   public default boolean atSetpoint() {
     return false;

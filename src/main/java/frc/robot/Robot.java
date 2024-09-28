@@ -164,6 +164,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
+
+    Shuffleboard.selectTab("Autonomous");
   }
 
   /** This function is called periodically during autonomous. */

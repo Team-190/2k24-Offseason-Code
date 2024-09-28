@@ -21,29 +21,33 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasNote() {
-    return inputs.intakeSensor || inputs.middleSensor || inputs.finalSensor;
+    return inputs.middleSensor || inputs.finalSensor;
   }
 
   public Command intake() {
     return Commands.sequence(
-        Commands.parallel(
-                Commands.runEnd(() -> io.setTopVoltage(-12.0), () -> io.setTopVoltage(0.0)),
-                Commands.runEnd(() -> io.setBottomVoltage(12.0), () -> io.setBottomVoltage(0.0)),
-                Commands.runEnd(
-                    () -> io.setAcceleratorVoltage(12.0), () -> io.setAcceleratorVoltage(0.0)))
-            .until(() -> inputs.middleSensor),
-        Commands.parallel(
-                Commands.runEnd(() -> io.setTopVoltage(-3.0), () -> io.setTopVoltage(0.0)),
-                Commands.runEnd(() -> io.setBottomVoltage(3.0), () -> io.setBottomVoltage(0.0)),
-                Commands.runEnd(
-                    () -> io.setAcceleratorVoltage(3.0), () -> io.setAcceleratorVoltage(0.0)))
-            .until(() -> inputs.finalSensor));
+            Commands.parallel(
+                    Commands.runEnd(() -> io.setTopVoltage(-12.0), () -> io.setTopVoltage(0.0)),
+                    Commands.runEnd(
+                        () -> io.setBottomVoltage(12.0), () -> io.setBottomVoltage(0.0)),
+                    Commands.runEnd(
+                        () -> io.setAcceleratorVoltage(12.0), () -> io.setAcceleratorVoltage(0.0)))
+                .until(() -> inputs.middleSensor),
+            Commands.parallel(
+                    Commands.runEnd(() -> io.setTopVoltage(-1.5), () -> io.setTopVoltage(0.0)),
+                    Commands.runEnd(() -> io.setBottomVoltage(1.5), () -> io.setBottomVoltage(0.0)),
+                    Commands.runEnd(
+                        () -> io.setAcceleratorVoltage(1.5), () -> io.setAcceleratorVoltage(0.0)))
+                .until(() -> inputs.finalSensor))
+        .until(() -> inputs.finalSensor);
   }
 
   public Command eject() {
     return Commands.parallel(
         Commands.runEnd(() -> io.setTopVoltage(12.0), () -> io.setTopVoltage(0.0)),
-        Commands.runEnd(() -> io.setBottomVoltage(-12.0), () -> io.setBottomVoltage(0.0)));
+        Commands.runEnd(() -> io.setBottomVoltage(-12.0), () -> io.setBottomVoltage(0.0)),
+        Commands.runEnd(
+            () -> io.setAcceleratorVoltage(-12.0), () -> io.setAcceleratorVoltage(0.0)));
   }
 
   public Command shoot() {
