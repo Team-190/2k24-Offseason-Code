@@ -183,9 +183,11 @@ public class ShooterIOTalonFX implements ShooterIO {
       hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
     }
     topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
-    topMotor.setControl(
-        topProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+    if (hasResetPosition) {
+      topMotor.setControl(
+          topProfiledVelocityControl.withVelocity(
+              Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+    }
   }
 
   /**
@@ -200,9 +202,11 @@ public class ShooterIOTalonFX implements ShooterIO {
       hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
     }
     bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
-    bottomMotor.setControl(
-        bottomProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+    if (hasResetPosition) {
+      bottomMotor.setControl(
+          bottomProfiledVelocityControl.withVelocity(
+              Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+    }
   }
 
   /**
@@ -318,8 +322,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     if (!hasResetPosition) {
       hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
     }
-    topMotor.setControl(voltageControl.withOutput(volts));
-    bottomMotor.setControl(voltageControl.withOutput(volts));
+    if (hasResetPosition) {
+      topMotor.setControl(voltageControl.withOutput(volts));
+      bottomMotor.setControl(voltageControl.withOutput(volts));
+    }
   }
 
   @Override

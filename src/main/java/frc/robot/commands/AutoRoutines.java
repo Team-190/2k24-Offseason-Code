@@ -29,6 +29,14 @@ public final class AutoRoutines {
    * @return A command sequence for autonomous driving.
    */
   public static final Command getInitialChoreoCommand(Drive drive, String trajectory) {
+    PIDController xFeedback =
+        new PIDController(DriveConstants.AUTO_X_KP.get(), 0.0, DriveConstants.AUTO_X_KD.get());
+    PIDController yFeedback =
+        new PIDController(DriveConstants.AUTO_Y_KP.get(), 0.0, DriveConstants.AUTO_Y_KD.get());
+    PIDController thetaFeedback =
+        new PIDController(
+            DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get());
+    thetaFeedback.enableContinuousInput(-Math.PI, Math.PI);
     ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
     return Commands.sequence(
         Commands.runOnce(
@@ -38,10 +46,9 @@ public final class AutoRoutines {
         Choreo.choreoSwerveCommand(
             choreoTrajectory,
             RobotState::getRobotPose,
-            new PIDController(DriveConstants.AUTO_X_KP.get(), 0.0, DriveConstants.AUTO_X_KD.get()),
-            new PIDController(DriveConstants.AUTO_Y_KP.get(), 0.0, DriveConstants.AUTO_Y_KD.get()),
-            new PIDController(
-                DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get()),
+            xFeedback,
+            yFeedback,
+            thetaFeedback,
             (ChassisSpeeds speeds) -> drive.runVelocity(speeds),
             () -> AllianceFlipUtil.shouldFlip(),
             drive));
@@ -59,13 +66,21 @@ public final class AutoRoutines {
    *     the robot during autonomous mode.
    */
   public static final Command getChoreoCommand(Drive drive, String trajectory) {
-    return Choreo.choreoSwerveCommand(
-        Choreo.getTrajectory(trajectory),
-        RobotState::getRobotPose,
-        new PIDController(DriveConstants.AUTO_X_KP.get(), 0.0, DriveConstants.AUTO_X_KD.get()),
-        new PIDController(DriveConstants.AUTO_Y_KP.get(), 0.0, DriveConstants.AUTO_Y_KD.get()),
+    PIDController xFeedback =
+        new PIDController(DriveConstants.AUTO_X_KP.get(), 0.0, DriveConstants.AUTO_X_KD.get());
+    PIDController yFeedback =
+        new PIDController(DriveConstants.AUTO_Y_KP.get(), 0.0, DriveConstants.AUTO_Y_KD.get());
+    PIDController thetaFeedback =
         new PIDController(
-            DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get()),
+            DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get());
+    thetaFeedback.enableContinuousInput(-Math.PI, Math.PI);
+    ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
+    return Choreo.choreoSwerveCommand(
+        choreoTrajectory,
+        RobotState::getRobotPose,
+        xFeedback,
+        yFeedback,
+        thetaFeedback,
         (ChassisSpeeds speeds) -> drive.runVelocity(speeds),
         () -> AllianceFlipUtil.shouldFlip(),
         drive);

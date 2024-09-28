@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -76,7 +77,7 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
           intake = new Intake(new IntakeIOTalonFX());
-          // vision = new Vision();
+          vision = new Vision();
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
@@ -153,6 +154,15 @@ public class RobotContainer {
           "Drive Dynamic Reverse", DriveCommands.runSysIdDynamic(drive, Direction.kReverse));
     }
 
+    Shuffleboard.getTab("Autonomous")
+        .add("Autonomous Mode", autoChooser.getSendableChooser())
+        .withPosition(0, 0)
+        .withSize(2, 2);
+    Shuffleboard.getTab("Teleoperated")
+        .addBoolean("Note?", intake::hasNote)
+        .withPosition(0, 0)
+        .withSize(5, 5);
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -160,7 +170,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
+            drive,
+            () -> Math.copySign(Math.pow(-driver.getLeftY(), 2), -driver.getLeftY()),
+            () -> Math.copySign(Math.pow(-driver.getLeftX(), 2), -driver.getLeftX()),
+            () -> Math.copySign(Math.pow(driver.getRightX(), 2), driver.getRightX())));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
@@ -168,7 +181,7 @@ public class RobotContainer {
     driver.rightTrigger().whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
-    operator.povDown().whileFalse(climber.climb());
+    operator.povDown().whileTrue(climber.climb());
     driver.a().whileTrue(intake.shoot());
   }
 

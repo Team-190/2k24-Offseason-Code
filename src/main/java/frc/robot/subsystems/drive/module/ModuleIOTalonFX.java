@@ -102,12 +102,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
 
     for (int i = 0; i < 4; i++) {
-      boolean error = driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
+      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1) == StatusCode.OK;
+      error = driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
       error = error && (turnTalon.getConfigurator().apply(turnConfig, 0.1) == StatusCode.OK);
       if (!error) break;
     }
-
-    cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1);
 
     timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
     drivePositionQueue =
@@ -236,8 +235,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     if (!hasResetDrivePosition) {
       hasResetDrivePosition = driveTalon.setPosition(0.0).isOK();
     }
-    driveTalon.setControl(
-        velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
+    if (hasResetDrivePosition) {
+      driveTalon.setControl(
+          velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
+    }
   }
 
   @Override
@@ -250,7 +251,9 @@ public class ModuleIOTalonFX implements ModuleIO {
                       - absoluteEncoderOffset.getRotations()))
               .isOK();
     }
-    turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
+    if (hasResetTurnPosition) {
+      turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
+    }
   }
 
   @Override
@@ -258,7 +261,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     if (!hasResetDrivePosition) {
       hasResetDrivePosition = driveTalon.setPosition(0.0).isOK();
     }
-    driveTalon.setControl(voltageControl.withOutput(volts));
+    if (hasResetDrivePosition) {
+      driveTalon.setControl(voltageControl.withOutput(volts));
+    }
   }
 
   @Override
@@ -271,7 +276,9 @@ public class ModuleIOTalonFX implements ModuleIO {
                       - absoluteEncoderOffset.getRotations()))
               .isOK();
     }
-    turnTalon.setControl(voltageControl.withOutput(volts));
+    if (hasResetTurnPosition) {
+      turnTalon.setControl(voltageControl.withOutput(volts));
+    }
   }
 
   @Override

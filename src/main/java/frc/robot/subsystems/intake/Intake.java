@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasNote() {
-    return inputs.intakeSensor || inputs.middleSensor || inputs.finalSensor;
+    return inputs.middleSensor || inputs.finalSensor;
   }
 
   public Command intake() {
