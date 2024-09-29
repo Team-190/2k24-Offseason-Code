@@ -46,26 +46,33 @@ public class ModuleConstants {
     TURN_KD = new LoggedTunableNumber("Drive/Turn kD");
 
     switch (Constants.ROBOT) {
-      case ROBOT_KRAKEN_X60:
-      case ROBOT_KRAKEN_X60_PRO:
+      case WHIPLASH:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KP.initDefault(0.13);
+        DRIVE_KP.initDefault(2.0);
         DRIVE_KD.initDefault(0.0);
-        DRIVE_KS.initDefault(0.063566);
-        DRIVE_KV.initDefault(0.11799);
-        TURN_KP.initDefault(9.0);
-        TURN_KD.initDefault(0.0);
+        DRIVE_KS.initDefault(0.13333);
+        DRIVE_KV.initDefault(0.10108);
+        TURN_KP.initDefault(50.0);
+        TURN_KD.initDefault(0.05);
 
-        FRONT_LEFT = new ModuleConfig(1, 2, 20, Rotation2d.fromRadians(2.2304080655857224));
-        FRONT_RIGHT = new ModuleConfig(3, 4, 21, Rotation2d.fromRadians(-1.4910293258248433));
-        REAR_LEFT = new ModuleConfig(5, 6, 22, Rotation2d.fromRadians(-0.2132233295161041));
-        REAR_RIGHT = new ModuleConfig(7, 8, 23, Rotation2d.fromRadians(-1.4327380558851888));
+        FRONT_LEFT =
+            new ModuleConfig(
+                1, 2, 20, Rotation2d.fromRadians(2.405281875404685 - 0.015339807878856172));
+        FRONT_RIGHT =
+            new ModuleConfig(
+                3, 4, 21, Rotation2d.fromRadians(2.4221556640714272 - 0.0030679615757711457));
+        REAR_LEFT =
+            new ModuleConfig(
+                5, 6, 22, Rotation2d.fromRadians(1.6582332317043784 + 0.024543692606169964));
+        REAR_RIGHT =
+            new ModuleConfig(
+                7, 8, 23, Rotation2d.fromRadians(2.6875343403756435 - 0.015339807878856726));
 
         ODOMETRY_FREQUENCY = 250.0;
         OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
 
         DRIVE_GEAR_RATIO = (50.0 / 16.0) * (16.0 / 28.0) * (45.0 / 15.0);
-        TURN_GEAR_RATIO = 150.0 / 7.0;
+        TURN_GEAR_RATIO = 18.75;
 
         DRIVE_CURRENT_LIMIT = 40;
         TURN_CURRENT_LIMIT = 30;
@@ -78,10 +85,10 @@ public class ModuleConstants {
         break;
       case ROBOT_SIM:
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
-        DRIVE_KP.initDefault(0.039024);
+        DRIVE_KP.initDefault(0.05);
         DRIVE_KD.initDefault(0.0);
-        DRIVE_KS.initDefault(-0.0081157);
-        DRIVE_KV.initDefault(0.12821);
+        DRIVE_KS.initDefault(0.0);
+        DRIVE_KV.initDefault(0.10108);
         TURN_KP.initDefault(10.0);
         TURN_KD.initDefault(0.0);
 
@@ -102,11 +109,11 @@ public class ModuleConstants {
         DRIVE_MOMENT_OF_INERTIA = 0.025;
         TURN_MOMENT_OF_INERTIA = 0.004;
 
-        DRIVE_MOTOR_CONFIG = DCMotor.getKrakenX60Foc(1);
-        TURN_MOTOR_CONFIG = DCMotor.getKrakenX60Foc(1);
+        DRIVE_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
+        TURN_MOTOR_CONFIG = DCMotor.getKrakenX60(1);
         break;
       default:
-        WHEEL_RADIUS.initDefault(0.0);
+        WHEEL_RADIUS.initDefault(2.0);
         DRIVE_KP.initDefault(0.0);
         DRIVE_KD.initDefault(0.0);
         DRIVE_KS.initDefault(0.0);

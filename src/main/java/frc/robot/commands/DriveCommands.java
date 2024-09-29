@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.RobotState;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
 import java.util.function.DoubleSupplier;
@@ -79,8 +80,8 @@ public final class DriveCommands {
                   robotRelativeYVel,
                   omega * DriveConstants.MAX_ANGULAR_VELOCITY,
                   isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation());
+                      ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                      : RobotState.getRobotPose().getRotation());
 
           // Convert to field relative speeds & send command
           drive.runVelocity(chassisSpeeds);
@@ -95,7 +96,10 @@ public final class DriveCommands {
   public static final Command runSysIdQuasistatic(Drive drive, Direction direction) {
     return new SysIdRoutine(
             new SysIdRoutine.Config(
-                null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .quasistatic(direction);
@@ -104,7 +108,10 @@ public final class DriveCommands {
   public static final Command runSysIdDynamic(Drive drive, Direction direction) {
     return new SysIdRoutine(
             new SysIdRoutine.Config(
-                null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .dynamic(direction);

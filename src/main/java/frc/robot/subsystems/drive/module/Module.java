@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -75,18 +76,21 @@ public class Module {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
     // Adjust models based on tunable numbers
-    if (ModuleConstants.DRIVE_KS.hasChanged(hashCode())
-        || ModuleConstants.DRIVE_KV.hasChanged(hashCode())) {
-      io.setDriveFeedforward(ModuleConstants.DRIVE_KS.get(), ModuleConstants.DRIVE_KV.get(), 0.0);
-    }
-    if (ModuleConstants.DRIVE_KP.hasChanged(hashCode())
-        || ModuleConstants.DRIVE_KD.hasChanged(hashCode())) {
-      io.setDrivePID(ModuleConstants.DRIVE_KP.get(), 0.0, ModuleConstants.DRIVE_KD.get());
-    }
-    if (ModuleConstants.TURN_KP.hasChanged(hashCode())
-        || ModuleConstants.TURN_KD.hasChanged(hashCode())) {
-      io.setTurnPID(ModuleConstants.TURN_KP.get(), 0.0, ModuleConstants.TURN_KD.get());
-    }
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        pid -> io.setDrivePID(pid[0], 0.0, pid[1]),
+        ModuleConstants.DRIVE_KP,
+        ModuleConstants.DRIVE_KD);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        pid -> io.setTurnPID(pid[0], 0.0, pid[1]),
+        ModuleConstants.TURN_KP,
+        ModuleConstants.TURN_KD);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        ff -> io.setDriveFeedforward(ff[0], ff[1], 0.0),
+        ModuleConstants.DRIVE_KS,
+        ModuleConstants.DRIVE_KV);
 
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
@@ -107,7 +111,7 @@ public class Module {
 
     // Run closed loop turn control
     if (angleSetpoint != null) {
-      io.setTurnPositionSetpoint(inputs.turnPosition, angleSetpoint);
+      io.setTurnPositionSetpoint(getAngle(), angleSetpoint);
 
       // Run closed loop drive control
       // Only allowed if closed loop turn control is running

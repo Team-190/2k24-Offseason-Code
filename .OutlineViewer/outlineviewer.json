@@ -1,0 +1,20 @@
+{
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "10.99.90.2"
+  },
+  "transitory": {
+    "SmartDashboard": {
+      "TunableNumbers": {
+        "Arm": {
+          "open": true
+        },
+        "Shooter": {
+          "open": true
+        },
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

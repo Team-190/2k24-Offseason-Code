@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
   private RobotContainer robotContainer;
 
   public Robot() {
-    super(Constants.LOOP_PERIOD_SECS);
+    super(Constants.LOOP_PERIOD_SECONDS);
   }
 
   /**
@@ -164,6 +164,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
     }
+
+    Shuffleboard.selectTab("Autonomous");
   }
 
   /** This function is called periodically during autonomous. */

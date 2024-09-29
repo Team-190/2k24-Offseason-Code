@@ -32,8 +32,11 @@ public interface ModuleIO {
     public double turnCurrentAmps = 0.0;
     public double turnTempCelcius = 0.0;
 
+    public double driveVelocitySetpointRadPerSec = 0.0;
+    public Rotation2d turnPositionSetpoint = new Rotation2d();
+
     public double driveVelocityErrorRadPerSec = 0.0;
-    public Rotation2d turnPositionError = new Rotation2d();
+    public Rotation2d turnPositionError;
 
     public double[] odometryTimestamps = new double[] {};
     public Rotation2d[] odometryDrivePositionsRad = new Rotation2d[] {};

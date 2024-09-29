@@ -4,19 +4,11 @@
       "window": {
         "visible": false
       }
-    },
-    "Timing": {
-      "window": {
-        "visible": false
-      }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/Shuffleboard/Autonomous/Autonomous Mode": "String Chooser",
-      "/SmartDashboard/Alliance Color": "String Chooser",
-      "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Auto Routines": "String Chooser"
     },
     "windows": {
@@ -27,23 +19,7 @@
       }
     }
   },
-  "NetworkTables": {
-    "Retained Values": {
-      "open": false
-    },
-    "Transitory Values": {
-      "open": false
-    },
-    "transitory": {
-      "SmartDashboard": {
-        "open": true
-      }
-    }
-  },
   "NetworkTables Info": {
-    "Connections": {
-      "open": true
-    },
     "visible": true
   }
 }

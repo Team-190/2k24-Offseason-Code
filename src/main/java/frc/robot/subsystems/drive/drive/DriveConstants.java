@@ -8,6 +8,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,10 +25,22 @@ public final class DriveConstants {
   public static final double DRIVER_DEADBAND;
   public static final Lock ODOMETRY_LOCK;
 
+  public static final LoggedTunableNumber AUTO_X_KP;
+  public static final LoggedTunableNumber AUTO_Y_KP;
+  public static final LoggedTunableNumber AUTO_THETA_KP;
+  public static final LoggedTunableNumber AUTO_X_KD;
+  public static final LoggedTunableNumber AUTO_Y_KD;
+  public static final LoggedTunableNumber AUTO_THETA_KD;
+
   static {
+    AUTO_X_KP = new LoggedTunableNumber("Drive/Auto X KP");
+    AUTO_Y_KP = new LoggedTunableNumber("Drive/Auto Y KP");
+    AUTO_THETA_KP = new LoggedTunableNumber("Drive/Auto Theta KP");
+    AUTO_X_KD = new LoggedTunableNumber("Drive/Auto X KD");
+    AUTO_Y_KD = new LoggedTunableNumber("Drive/Auto Y KD");
+    AUTO_THETA_KD = new LoggedTunableNumber("Drive/Auto Theta KD");
     switch (Constants.ROBOT) {
-      case ROBOT_KRAKEN_X60:
-      case ROBOT_KRAKEN_X60_PRO:
+      case WHIPLASH:
       case ROBOT_SIM:
       default:
         TRACK_WIDTH_X = Units.inchesToMeters(25.0);
@@ -48,6 +61,14 @@ public final class DriveConstants {
         ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
         DRIVER_DEADBAND = 0.25;
         ODOMETRY_LOCK = new ReentrantLock();
+
+        AUTO_X_KP.initDefault(1.0);
+        AUTO_Y_KP.initDefault(1.0);
+        AUTO_THETA_KP.initDefault(0.0);
+
+        AUTO_X_KD.initDefault(0.0);
+        AUTO_Y_KD.initDefault(0.0);
+        AUTO_THETA_KD.initDefault(0.0);
         break;
     }
   }
