@@ -102,7 +102,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
 
     for (int i = 0; i < 4; i++) {
-      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1) == StatusCode.OK;
+      boolean error =
+          cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1) == StatusCode.OK;
       error = driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
       error = error && (turnTalon.getConfigurator().apply(turnConfig, 0.1) == StatusCode.OK);
       if (!error) break;
@@ -151,14 +152,14 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocityErrorRotationsPerSecond,
         turnPositionErrorRotations);
 
-    driveTalon.optimizeBusUtilization(0.0, 1.0);
-    turnTalon.optimizeBusUtilization(0.0, 1.0);
-    cancoder.optimizeBusUtilization(0.0, 1.0);
+    driveTalon.optimizeBusUtilization();
+    turnTalon.optimizeBusUtilization();
+    cancoder.optimizeBusUtilization();
 
-    neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
-    voltageControl = new VoltageOut(0.0).withUpdateFreqHz(0.0);
-    velocityControl = new VelocityVoltage(0.0).withUpdateFreqHz(0.0);
-    positionControl = new PositionVoltage(0.0).withUpdateFreqHz(0.0);
+    neutralControl = new NeutralOut();
+    voltageControl = new VoltageOut(0.0);
+    velocityControl = new VelocityVoltage(0.0);
+    positionControl = new PositionVoltage(0.0);
 
     hasResetDrivePosition = false;
     hasResetTurnPosition = false;

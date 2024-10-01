@@ -161,7 +161,7 @@ public class RobotContainer {
     Shuffleboard.getTab("Teleoperated")
         .addBoolean("Note?", intake::hasNote)
         .withPosition(0, 0)
-        .withSize(5, 5);
+        .withSize(8, 5);
 
     // Configure the button bindings
     configureButtonBindings();

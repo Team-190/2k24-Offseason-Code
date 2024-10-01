@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive.module;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.LoggedTunableNumber;
@@ -110,7 +111,7 @@ public class Module {
     }
 
     // Run closed loop turn control
-    if (angleSetpoint != null) {
+    if (angleSetpoint != null && DriverStation.isEnabled()) {
       io.setTurnPositionSetpoint(getAngle(), angleSetpoint);
 
       // Run closed loop drive control
