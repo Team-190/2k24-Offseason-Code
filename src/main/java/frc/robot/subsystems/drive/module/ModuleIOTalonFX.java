@@ -104,7 +104,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     for (int i = 0; i < 4; i++) {
       boolean error =
           cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1) == StatusCode.OK;
-      error = driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
+      error = error && driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
       error = error && (turnTalon.getConfigurator().apply(turnConfig, 0.1) == StatusCode.OK);
       if (!error) break;
     }
