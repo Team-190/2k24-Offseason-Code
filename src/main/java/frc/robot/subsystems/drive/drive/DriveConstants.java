@@ -59,7 +59,7 @@ public final class DriveConstants {
         CANIVORE = "drive";
         PIGEON_2_DEVICE_ID = 1;
         ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
-        DRIVER_DEADBAND = 0.25;
+        DRIVER_DEADBAND = 0.025;
         ODOMETRY_LOCK = new ReentrantLock();
 
         AUTO_X_KP.initDefault(1.0);
