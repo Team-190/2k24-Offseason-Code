@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public final class DriveConstants {
   public static final double TRACK_WIDTH_X;
   public static final double TRACK_WIDTH_Y;
-  public static final double MAX_LINEAR_VELOCITY;
+  public static final LoggedTunableNumber MAX_LINEAR_VELOCITY;
   public static final double MAX_ANGULAR_VELOCITY;
   public static final double DRIVE_BASE_RADIUS;
   public static final SwerveDriveKinematics KINEMATICS;
@@ -39,23 +39,23 @@ public final class DriveConstants {
     AUTO_X_KD = new LoggedTunableNumber("Drive/Auto X KD");
     AUTO_Y_KD = new LoggedTunableNumber("Drive/Auto Y KD");
     AUTO_THETA_KD = new LoggedTunableNumber("Drive/Auto Theta KD");
+    MAX_LINEAR_VELOCITY = new LoggedTunableNumber("Drive/Max Linear Velocity");
+
     switch (Constants.ROBOT) {
       case WHIPLASH:
       case ROBOT_SIM:
       default:
         TRACK_WIDTH_X = Units.inchesToMeters(25.0);
         TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(17.5);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
-        MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS;
-        KINEMATICS =
-            new SwerveDriveKinematics(
-                new Translation2d[] {
-                  new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-                  new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-                  new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-                  new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
-                });
+        MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY.getAsDouble() / DRIVE_BASE_RADIUS;
+        KINEMATICS = new SwerveDriveKinematics(
+            new Translation2d[] {
+                new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
+                new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
+                new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
+                new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
+            });
         CANIVORE = "drive";
         PIGEON_2_DEVICE_ID = 1;
         ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
@@ -69,6 +69,8 @@ public final class DriveConstants {
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);
         AUTO_THETA_KD.initDefault(0.0);
+
+        MAX_LINEAR_VELOCITY.initDefault(Units.feetToMeters(17.5));
         break;
     }
   }
