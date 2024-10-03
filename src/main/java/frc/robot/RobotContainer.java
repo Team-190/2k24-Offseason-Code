@@ -159,7 +159,7 @@ public class RobotContainer {
         .withPosition(0, 0)
         .withSize(2, 2);
     Shuffleboard.getTab("Teleoperated")
-        .addBoolean("Note?", intake::hasNote)
+        .addBoolean("Note?", intake::hasNoteLocked)
         .withPosition(0, 0)
         .withSize(8, 5);
 
@@ -196,7 +196,7 @@ public class RobotContainer {
         vision.getPrimaryVisionPoses(),
         vision.getSecondaryVisionPoses(),
         vision.getFrameTimestamps(),
-        intake.hasNote());
+        intake.hasNoteLocked());
   }
 
   public Command getAutonomousCommand() {

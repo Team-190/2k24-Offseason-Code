@@ -20,8 +20,12 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
   }
 
-  public boolean hasNote() {
+  public boolean hasNoteLocked() {
     return inputs.middleSensor || inputs.finalSensor;
+  }
+
+  public boolean hasNoteStaged() {
+    return inputs.intakeSensor;
   }
 
   public Command intake() {

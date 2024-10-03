@@ -98,6 +98,8 @@ public class Module {
     cycleCount += 1;
     if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
       turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+      io.setTurnPosition(getAngle());
+      io.setDrivePosition(0.0);
     }
     if (cycleCount >= 50) {
       unitializedAlert.set(turnRelativeOffset == null);

@@ -14,7 +14,6 @@
 package frc.robot.subsystems.drive.module;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -73,9 +72,6 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final VelocityVoltage velocityControl;
   private final PositionVoltage positionControl;
 
-  private boolean hasResetDrivePosition;
-  private boolean hasResetTurnPosition;
-
   public ModuleIOTalonFX(ModuleConfig moduleConfig) {
     driveTalon = new TalonFX(moduleConfig.drive(), DriveConstants.CANIVORE);
     turnTalon = new TalonFX(moduleConfig.turn(), DriveConstants.CANIVORE);
@@ -102,10 +98,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
 
     for (int i = 0; i < 4; i++) {
-      boolean error =
-          cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1) == StatusCode.OK;
-      error = error && driveTalon.getConfigurator().apply(driveConfig, 0.1) == StatusCode.OK;
-      error = error && (turnTalon.getConfigurator().apply(turnConfig, 0.1) == StatusCode.OK);
+      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1).isOK();
+      error = error || driveTalon.getConfigurator().apply(driveConfig, 0.1).isOK();
+      error = error || (turnTalon.getConfigurator().apply(turnConfig, 0.1).isOK());
       if (!error) break;
     }
 
@@ -139,11 +134,11 @@ public class ModuleIOTalonFX implements ModuleIO {
         drivePositionRotations,
         turnPositionRotations,
         driveVelocityRotPerSec,
+        turnVelocityRotPerSec,
         driveAppliedVolts,
         driveCurrent,
         driveTemp,
         turnAbsolutePositionRotations,
-        turnVelocityRotPerSec,
         turnAppliedVolts,
         turnCurrent,
         turnTemp,
@@ -160,9 +155,6 @@ public class ModuleIOTalonFX implements ModuleIO {
     voltageControl = new VoltageOut(0.0);
     velocityControl = new VelocityVoltage(0.0);
     positionControl = new PositionVoltage(0.0);
-
-    hasResetDrivePosition = false;
-    hasResetTurnPosition = false;
   }
 
   @Override
@@ -233,53 +225,23 @@ public class ModuleIOTalonFX implements ModuleIO {
   @Override
   public void setDriveVelocitySetpoint(
       double currentVelocityRadPerSec, double setpointVelocityRadsPerSec) {
-    if (!hasResetDrivePosition) {
-      hasResetDrivePosition = driveTalon.setPosition(0.0).isOK();
-    }
-    if (hasResetDrivePosition) {
-      driveTalon.setControl(
-          velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
-    }
+    driveTalon.setControl(
+        velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
   }
 
   @Override
   public void setTurnPositionSetpoint(Rotation2d currentPosition, Rotation2d setpointPosition) {
-    if (!hasResetTurnPosition) {
-      hasResetTurnPosition =
-          turnTalon
-              .setPosition(
-                  (turnAbsolutePositionRotations.getValueAsDouble()
-                      - absoluteEncoderOffset.getRotations()))
-              .isOK();
-    }
-    if (hasResetTurnPosition) {
-      turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
-    }
+    turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
   }
 
   @Override
   public void setDriveVoltage(double volts) {
-    if (!hasResetDrivePosition) {
-      hasResetDrivePosition = driveTalon.setPosition(0.0).isOK();
-    }
-    if (hasResetDrivePosition) {
-      driveTalon.setControl(voltageControl.withOutput(volts));
-    }
+    driveTalon.setControl(voltageControl.withOutput(volts));
   }
 
   @Override
   public void setTurnVoltage(double volts) {
-    if (!hasResetTurnPosition) {
-      hasResetTurnPosition =
-          turnTalon
-              .setPosition(
-                  (turnAbsolutePositionRotations.getValueAsDouble()
-                      - absoluteEncoderOffset.getRotations()))
-              .isOK();
-    }
-    if (hasResetTurnPosition) {
-      turnTalon.setControl(voltageControl.withOutput(volts));
-    }
+    turnTalon.setControl(voltageControl.withOutput(volts));
   }
 
   @Override
@@ -323,6 +285,16 @@ public class ModuleIOTalonFX implements ModuleIO {
             : InvertedValue.CounterClockwise_Positive;
     config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
     turnTalon.getConfigurator().apply(config);
+  }
+
+  @Override
+  public void setTurnPosition(Rotation2d position) {
+    turnTalon.setPosition(position.getRotations());
+  }
+
+  @Override
+  public void setDrivePosition(double position) {
+    driveTalon.setPosition(position);
   }
 
   @Override

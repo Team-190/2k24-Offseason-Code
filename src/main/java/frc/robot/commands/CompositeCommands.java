@@ -43,7 +43,15 @@ public class CompositeCommands {
     return Commands.sequence(
         Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-        intake.shoot());
+        intake.shoot(),
+        Commands.either(
+            Commands.sequence(
+                CompositeCommands.collect(intake, arm),
+                Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
+                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+                intake.shoot()),
+            Commands.none(),
+            () -> intake.hasNoteStaged()));
   }
 
   public static final Command shootFeed(Intake intake, Arm arm, Shooter shooter) {
