@@ -46,8 +46,8 @@ public final class DriveConstants {
       case ROBOT_SIM:
       default:
         MAX_LINEAR_VELOCITY.initDefault(Units.feetToMeters(5));
-        TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-        TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
+        TRACK_WIDTH_X = Units.inchesToMeters(20.75);
+        TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
         MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY.get() / DRIVE_BASE_RADIUS;
         KINEMATICS =
