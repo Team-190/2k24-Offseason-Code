@@ -43,9 +43,9 @@ public final class DriveConstants {
       case WHIPLASH:
       case ROBOT_SIM:
       default:
-        TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-        TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(17.5);
+        TRACK_WIDTH_X = Units.inchesToMeters(20.75);
+        TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
+        MAX_LINEAR_VELOCITY = Units.feetToMeters(19.5);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
         MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS;
         KINEMATICS =

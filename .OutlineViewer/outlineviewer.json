@@ -9,6 +9,9 @@
         "Arm": {
           "open": true
         },
+        "Drive": {
+          "open": true
+        },
         "open": true
       },
       "open": true
