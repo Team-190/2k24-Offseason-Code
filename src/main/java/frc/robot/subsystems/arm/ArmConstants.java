@@ -73,13 +73,13 @@ public class ArmConstants {
         ARM_LENGTH_METERS = 0.381;
         ARM_MIN_ANGLE = Units.degreesToRadians(18.75);
         ARM_MAX_ANGLE = Units.degreesToRadians(-114.0);
-        ARM_KP.initDefault(10.0);
-        ARM_KD.initDefault(0.2);
+        ARM_KP.initDefault(120.0);
+        ARM_KD.initDefault(0.0);
         ARM_KS.initDefault(0.14578);
         ARM_KG.initDefault(0.14124);
         ARM_KV.initDefault(0.9053);
-        ARM_MAX_VELOCITY.initDefault(40.0);
-        ARM_MAX_ACCELERATION.initDefault(40.0);
+        ARM_MAX_VELOCITY.initDefault(120.0);
+        ARM_MAX_ACCELERATION.initDefault(120.0);
         ARM_SUBWOOFER_ANGLE.initDefault(Units.degreesToRadians(57.0));
         ARM_EJECT_ANGLE = Rotation2d.fromDegrees(45.0);
         break;

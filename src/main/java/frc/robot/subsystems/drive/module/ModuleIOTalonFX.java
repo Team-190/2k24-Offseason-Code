@@ -16,7 +16,6 @@ package frc.robot.subsystems.drive.module;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -24,7 +23,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -61,7 +59,6 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final StatusSignal<Double> driveVelocityErrorRotationsPerSecond;
   private final StatusSignal<Double> turnPositionErrorRotations;
 
-  private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
 
   private final TalonFXConfiguration driveConfig;
@@ -130,9 +127,10 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnPositionErrorRotations = turnTalon.getClosedLoopError();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        ModuleConstants.ODOMETRY_FREQUENCY,
-        drivePositionRotations,
-        turnPositionRotations,
+        ModuleConstants.ODOMETRY_FREQUENCY, drivePositionRotations, turnPositionRotations);
+
+    BaseStatusSignal.setUpdateFrequencyForAll(
+        50.0,
         driveVelocityRotPerSec,
         turnVelocityRotPerSec,
         driveAppliedVolts,
@@ -269,32 +267,13 @@ public class ModuleIOTalonFX implements ModuleIO {
   }
 
   @Override
-  public void setDriveBrakeMode(boolean enable) {
-    var config = new MotorOutputConfigs();
-    config.Inverted = InvertedValue.Clockwise_Positive;
-    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    driveTalon.getConfigurator().apply(config);
-  }
-
-  @Override
-  public void setTurnBrakeMode(boolean enable) {
-    var config = new MotorOutputConfigs();
-    config.Inverted =
-        isTurnMotorInverted
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
-    config.NeutralMode = enable ? NeutralModeValue.Brake : NeutralModeValue.Coast;
-    turnTalon.getConfigurator().apply(config);
+  public void setDrivePosition(double position) {
+    driveTalon.setPosition(position);
   }
 
   @Override
   public void setTurnPosition(Rotation2d position) {
     turnTalon.setPosition(position.getRotations());
-  }
-
-  @Override
-  public void setDrivePosition(double position) {
-    driveTalon.setPosition(position);
   }
 
   @Override

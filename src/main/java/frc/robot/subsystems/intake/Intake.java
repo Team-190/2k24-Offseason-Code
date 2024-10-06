@@ -18,6 +18,10 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+
+    if (hasNoteLocked()) {
+      io.setTopVoltage(2.0);
+    }
   }
 
   public boolean hasNoteLocked() {

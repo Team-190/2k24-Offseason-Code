@@ -43,7 +43,6 @@ public interface ModuleIO {
     public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
   }
 
-  /** Updates the set of loggable inputs. */
   public default void updateInputs(ModuleIOInputs inputs) {}
 
   public default void setDriveVelocitySetpoint(
@@ -62,13 +61,9 @@ public interface ModuleIO {
 
   public default void setDriveFeedforward(double kS, double kV, double kA) {}
 
-  public default void setDriveBrakeMode(boolean enable) {}
-
-  public default void setTurnBrakeMode(boolean enable) {}
+  public default void setDrivePosition(double position) {}
 
   public default void setTurnPosition(Rotation2d position) {}
-
-  public default void setDrivePosition(double position) {}
 
   public default void stop() {}
 }

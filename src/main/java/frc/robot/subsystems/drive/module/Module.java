@@ -41,8 +41,6 @@ public class Module {
 
     this.io = io;
     this.index = index;
-
-    setBrakeMode(true);
   }
 
   public void updateInputs() {
@@ -121,11 +119,6 @@ public class Module {
 
     angleSetpoint = null;
     speedSetpoint = null;
-  }
-
-  public void setBrakeMode(boolean enabled) {
-    io.setDriveBrakeMode(enabled);
-    io.setTurnBrakeMode(enabled);
   }
 
   public double getPositionMeters() {

@@ -42,8 +42,9 @@ public class CompositeCommands {
                 CompositeCommands.collect(intake, arm),
                 Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-                intake.shoot()),
-            Commands.none(),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
             () -> intake.hasNoteStaged()));
   }
 
@@ -57,8 +58,9 @@ public class CompositeCommands {
                 CompositeCommands.collect(intake, arm),
                 Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-                intake.shoot()),
-            Commands.none(),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
             () -> intake.hasNoteStaged()));
   }
 
@@ -72,8 +74,9 @@ public class CompositeCommands {
                 CompositeCommands.collect(intake, arm),
                 Commands.parallel(shooter.setFeedVelocity(), arm.feedAngle()),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-                intake.shoot()),
-            Commands.none(),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
             () -> intake.hasNoteStaged()));
   }
 }

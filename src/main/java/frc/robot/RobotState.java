@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.vision.Camera;
@@ -152,15 +154,23 @@ public class RobotState {
             new Rotation2d(feedShotAngleMap.get(effectiveDistanceToAmp)),
             hasNote);
 
-    Logger.recordOutput("RobotState/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput(
-        "RobotState/Effective Speaker Aiming Pose",
+        "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
+    Logger.recordOutput(
+        "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingPose, new Rotation2d()));
     Logger.recordOutput(
-        "RobotState/Effective Feed Aiming Pose",
+        "RobotState/Pose Data/Effective Feed Aiming Pose",
         new Pose2d(effectiveFeedAmpAimingPose, new Rotation2d()));
-    Logger.recordOutput("RobotState/Effective Distance To Speaker", effectiveDistanceToSpeaker);
-    Logger.recordOutput("RobotState/Effective Distance To Amp", effectiveDistanceToAmp);
+    Logger.recordOutput(
+        "RobotState/Pose Data/Effective Distance To Speaker", effectiveDistanceToSpeaker);
+    Logger.recordOutput("RobotState/Pose Data/Effective Distance To Amp", effectiveDistanceToAmp);
+    Logger.recordOutput(
+        "RobotState/Signal Data/Rio Bus Utilization",
+        RobotController.getCANStatus().percentBusUtilization);
+    Logger.recordOutput(
+        "RobotState/Signal Data/CANivore Bus Utilization",
+        CANBus.getStatus(DriveConstants.CANIVORE).BusUtilization);
     Logger.recordOutput(
         "RobotState/ControlData/Speaker Robot Angle", controlData.speakerRobotAngle());
     Logger.recordOutput("RobotState/ControlData/Feed Robot Angle", controlData.feedRobotAngle());
