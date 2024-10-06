@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,9 +10,13 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs;
   private final IntakeIO io;
 
+  private final Timer doubleTimer;
+
   public Intake(IntakeIO io) {
     inputs = new IntakeIOInputsAutoLogged();
     this.io = io;
+
+    doubleTimer = new Timer();
   }
 
   @Override
@@ -19,9 +24,32 @@ public class Intake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
 
-    if (hasNoteLocked()) {
-      io.setTopVoltage(2.0);
+    if (hasNoteLocked() && !hasNoteStaged()) {
+      io.setTopVoltage(-3.0);
+      doubleTimer.stop();
+      doubleTimer.reset();
     }
+
+    if (hasNoteLocked() && hasNoteStaged() && doubleTimer.get() <= 3.0) {
+      io.setTopVoltage(-1.0);
+    }
+
+    if (hasNoteLocked() && hasNoteStaged() && doubleTimer.get() <= 0.0) {
+      io.setTopVoltage(0.0);
+      doubleTimer.start();
+    }
+
+    if (doubleTimer.get() >= 0.0 && !hasNoteStaged() && !hasNoteLocked()) {
+      io.setTopVoltage(0.0);
+      doubleTimer.stop();
+      doubleTimer.reset();
+    }
+
+    if (hasNoteLocked() && hasNoteStaged() && doubleTimer.get() >= 3.0) {
+      io.setTopVoltage(12.0);
+    }
+
+    Logger.recordOutput("Intake/Timer", doubleTimer.get());
   }
 
   public boolean hasNoteLocked() {
