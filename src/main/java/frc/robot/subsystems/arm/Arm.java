@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -25,20 +26,22 @@ public class Arm extends SubsystemBase {
     positionSetpoint = ArmConstants.ARM_STOW_CONSTANT;
     isClosedLoop = true;
 
-    characterizationRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.5).per(Seconds.of(1.0)),
-                Volts.of(3.5),
-                Seconds.of(10),
-                (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
-            new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
+    characterizationRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.of(0.5).per(Seconds.of(1.0)),
+            Volts.of(3.5),
+            Seconds.of(10),
+            (state) -> Logger.recordOutput("Arm/sysIDState", state.toString())),
+        new SysIdRoutine.Mechanism((volts) -> io.setArmVoltage(volts.in(Volts)), null, this));
   }
 
   /**
-   * This method is called periodically during the robot's main loop. It updates the arm's input
-   * values, processes the inputs for logging, and sets the arm position based on the desired angle
-   * if closed-loop control is enabled. Additionally, it updates the PID, feedforward, and profile
+   * This method is called periodically during the robot's main loop. It updates
+   * the arm's input
+   * values, processes the inputs for logging, and sets the arm position based on
+   * the desired angle
+   * if closed-loop control is enabled. Additionally, it updates the PID,
+   * feedforward, and profile
    * settings for the arm control.
    */
   @Override
@@ -75,8 +78,10 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the arm angle to the stow position. The arm angle is set to a constant
-   * value defined in the ArmConstants class. The command is executed only once, and the arm enters
+   * Creates a command to set the arm angle to the stow position. The arm angle is
+   * set to a constant
+   * value defined in the ArmConstants class. The command is executed only once,
+   * and the arm enters
    * closed-loop control.
    *
    * @return A command to set the arm angle to the stow position.
@@ -90,8 +95,10 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the arm angle to the intake position. The arm angle is set to a
-   * constant value defined in the ArmConstants class. The command is executed only once, and the
+   * Creates a command to set the arm angle to the intake position. The arm angle
+   * is set to a
+   * constant value defined in the ArmConstants class. The command is executed
+   * only once, and the
    * arm enters closed-loop control.
    *
    * @return A command to set the arm angle to the intake position.
@@ -105,8 +112,10 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the arm angle to the amplifier position. The arm angle is set to a
-   * constant value defined in the ArmConstants class. The command is executed only once, and the
+   * Creates a command to set the arm angle to the amplifier position. The arm
+   * angle is set to a
+   * constant value defined in the ArmConstants class. The command is executed
+   * only once, and the
    * arm enters closed-loop control.
    *
    * @return A command to set the arm angle to the amplifier position.
@@ -128,8 +137,10 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the arm angle to the shoot position. The arm angle is set to the value
-   * obtained from the control data's speaker arm angle. The command is executed only once, and the
+   * Creates a command to set the arm angle to the shoot position. The arm angle
+   * is set to the value
+   * obtained from the control data's speaker arm angle. The command is executed
+   * only once, and the
    * arm enters closed-loop control.
    *
    * @return A command to set the arm angle to the shoot position.
@@ -138,14 +149,15 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          positionSetpoint =
-              Rotation2d.fromRadians(RobotState.getControlData().speakerArmAngle().getRadians());
+          positionSetpoint = Rotation2d.fromRadians(RobotState.getControlData().speakerArmAngle().getRadians());
         });
   }
 
   /**
-   * Creates a command to set the arm angle to the feed position. The arm angle is set to the value
-   * obtained from the control data's feed arm angle. The command is executed only once, and the arm
+   * Creates a command to set the arm angle to the feed position. The arm angle is
+   * set to the value
+   * obtained from the control data's feed arm angle. The command is executed only
+   * once, and the arm
    * enters closed-loop control.
    *
    * @return A command to set the arm angle to the feed position.
@@ -154,8 +166,7 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          positionSetpoint =
-              Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
+          positionSetpoint = Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
         });
   }
 
@@ -163,8 +174,14 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          positionSetpoint = Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_ANGLE.get());
+          positionSetpoint = shootForward() ? Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_CONSTANT.get())
+              : Rotation2d.fromRadians(ArmConstants.ARM_AMP_CONSTANT.get());
         });
+  }
+
+  public boolean shootForward() {
+    double angle = AllianceFlipUtil.apply(RobotState.getRobotPose().getRotation()).getDegrees();
+    return !(angle > -90 && angle < 90);
   }
 
   public boolean atSetpoint() {

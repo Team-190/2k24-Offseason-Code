@@ -30,7 +30,7 @@ public class ArmConstants {
   public static final LoggedTunableNumber ARM_KV;
   public static final LoggedTunableNumber ARM_MAX_VELOCITY;
   public static final LoggedTunableNumber ARM_MAX_ACCELERATION;
-  public static final LoggedTunableNumber ARM_SUBWOOFER_ANGLE;
+  public static final LoggedTunableNumber ARM_SUBWOOFER_CONSTANT;
   public static final Rotation2d ARM_EJECT_ANGLE;
 
   static {
@@ -42,7 +42,7 @@ public class ArmConstants {
     ARM_MAX_VELOCITY = new LoggedTunableNumber("Arm/MAX_VELOCITY");
     ARM_MAX_ACCELERATION = new LoggedTunableNumber("Arm/MAX_ACCELERATION");
     ARM_AMP_CONSTANT = new LoggedTunableNumber("Arm/Amp Angle");
-    ARM_SUBWOOFER_ANGLE = new LoggedTunableNumber("Arm/Subwoofer Angle");
+    ARM_SUBWOOFER_CONSTANT = new LoggedTunableNumber("Arm/Subwoofer Angle");
     GOAL_TOLERANCE = new LoggedTunableNumber("Arm/Goal Tolerance");
 
     switch (Constants.ROBOT) {
@@ -80,7 +80,7 @@ public class ArmConstants {
         ARM_KV.initDefault(0.9053);
         ARM_MAX_VELOCITY.initDefault(120.0);
         ARM_MAX_ACCELERATION.initDefault(120.0);
-        ARM_SUBWOOFER_ANGLE.initDefault(Units.degreesToRadians(57.0));
+        ARM_SUBWOOFER_CONSTANT.initDefault(Units.degreesToRadians(57.0));
         ARM_EJECT_ANGLE = Rotation2d.fromDegrees(45.0);
         break;
     }
