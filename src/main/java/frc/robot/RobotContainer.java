@@ -201,6 +201,7 @@ public class RobotContainer {
         vision.getSecondaryVisionPoses(),
         vision.getFrameTimestamps(),
         intake.hasNoteLocked());
+    leds.periodic();
   }
 
   public Command getAutonomousCommand() {

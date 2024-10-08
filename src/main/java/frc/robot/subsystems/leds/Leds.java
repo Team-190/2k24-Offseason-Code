@@ -10,20 +10,11 @@ package frc.robot.subsystems.leds;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 
-public class Leds extends SubsystemBase {
-
-  // Robot state tracking
-  public int loopCycleCount = 0;
-  public boolean hasNote = false;
-
-  // LED IO
+public class Leds {
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-
-  // Constants
   private static final int length = 32;
 
   public Leds() {
@@ -34,10 +25,8 @@ public class Leds extends SubsystemBase {
     leds.start();
   }
 
-  @Override
   public void periodic() {
     solid(RobotState.getControlData().hasNote() ? Color.kGreen : Color.kBlack);
-    // Update LEDs
     leds.setData(buffer);
   }
 
