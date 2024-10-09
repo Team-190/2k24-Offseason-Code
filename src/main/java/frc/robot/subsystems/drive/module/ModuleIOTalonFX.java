@@ -224,12 +224,15 @@ public class ModuleIOTalonFX implements ModuleIO {
   public void setDriveVelocitySetpoint(
       double currentVelocityRadPerSec, double setpointVelocityRadsPerSec) {
     driveTalon.setControl(
-        velocityControl.withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec)));
+        velocityControl
+            .withVelocity(Units.radiansToRotations(setpointVelocityRadsPerSec))
+            .withUpdateFreqHz(1000));
   }
 
   @Override
   public void setTurnPositionSetpoint(Rotation2d currentPosition, Rotation2d setpointPosition) {
-    turnTalon.setControl(positionControl.withPosition(setpointPosition.getRotations()));
+    turnTalon.setControl(
+        positionControl.withPosition(setpointPosition.getRotations()).withUpdateFreqHz(1000));
   }
 
   @Override

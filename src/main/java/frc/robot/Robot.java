@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -104,8 +103,6 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit logger
     Logger.start();
-    SignalLogger.setPath("/U/logs/");
-    SignalLogger.start();
 
     // Start timers
     canErrorTimer.reset();

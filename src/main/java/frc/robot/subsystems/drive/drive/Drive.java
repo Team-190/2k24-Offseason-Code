@@ -89,9 +89,6 @@ public class Drive extends SubsystemBase {
     }
     DriveConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
-    for (var module : modules) {
-      module.periodic();
-    }
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
