@@ -15,7 +15,7 @@ import frc.robot.RobotState;
 public class Leds {
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-  private static final int length = 32;
+  private static final int length = 40;
 
   public Leds() {
     leds = new AddressableLED(0);
