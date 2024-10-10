@@ -41,6 +41,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -56,6 +57,7 @@ public class RobotContainer {
   private Climber climber;
   private Shooter shooter;
   private Arm arm;
+  private Leds leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -81,6 +83,7 @@ public class RobotContainer {
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
+          leds = new Leds();
           break;
         case ROBOT_SIM:
           drive =
@@ -95,6 +98,7 @@ public class RobotContainer {
           climber = new Climber(new ClimberIOSim());
           shooter = new Shooter(new ShooterIOSim());
           arm = new Arm(new ArmIOSim());
+          leds = new Leds();
           break;
       }
     }
@@ -194,6 +198,7 @@ public class RobotContainer {
         vision.getSecondaryVisionPoses(),
         vision.getFrameTimestamps(),
         intake.hasNoteLocked());
+    leds.periodic();
   }
 
   public Command getAutonomousCommand() {
