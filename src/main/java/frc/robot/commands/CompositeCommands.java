@@ -29,7 +29,8 @@ public class CompositeCommands {
   }
 
   public static final Command eject(Intake intake, Arm arm) {
-    return Commands.sequence(arm.ejectCommand(), intake.eject());
+    return Commands.sequence(
+        arm.ejectCommand(), Commands.waitUntil(() -> arm.atSetpoint()), intake.eject());
   }
 
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {

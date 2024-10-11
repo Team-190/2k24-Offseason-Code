@@ -18,7 +18,7 @@ public class Leds {
   private static final int length = 40;
 
   public Leds() {
-    leds = new AddressableLED(0);
+    leds = new AddressableLED(9);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
     leds.setData(buffer);

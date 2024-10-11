@@ -39,7 +39,7 @@ public class ClimberConstants {
         GRAVITY = false;
         RELEASE_POSITION = Rotation2d.fromRadians(3.0);
         CLIMB_POSITION = Rotation2d.fromRadians(53);
-        HOLD_VOLTAGE = 1.0;
+        HOLD_VOLTAGE = 0.5;
         break;
     }
   }

@@ -34,7 +34,12 @@ public class Climber extends SubsystemBase {
   public Command climb() {
     return Commands.runEnd(
             () -> io.setVoltage(12.0), () -> io.setVoltage(ClimberConstants.HOLD_VOLTAGE), this)
-        .until(() -> inputs.position.getRadians() >= ClimberConstants.CLIMB_POSITION.getRadians());
+        .until(() -> inputs.isClimbed);
+  }
+
+  public Command deClimb() {
+    return Commands.runEnd(() -> io.setVoltage(-12.0), () -> io.setVoltage(0.0), this)
+        .until(() -> inputs.position.getRadians() <= 0.0);
   }
 
   /**

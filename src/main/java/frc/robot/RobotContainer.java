@@ -15,7 +15,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -61,7 +60,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandPS4Controller operator = new CommandPS4Controller(1);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   // Dashboard Inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -183,6 +182,7 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
+    operator.y().whileTrue(climber.deClimb());
     driver.a().whileTrue(intake.shoot());
   }
 

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private final TalonFX motor;
@@ -24,6 +25,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final NeutralOut neutralControl;
 
   private boolean hasSetPosition;
+
+  private DigitalInput isClimbed;
 
   /**
    * Creates the TalonFX motor object and configures it. Sets the variables from the motor and
@@ -51,6 +54,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     voltageControl = new VoltageOut(0);
 
     hasSetPosition = false;
+
+    isClimbed = new DigitalInput(6);
   }
 
   /**
@@ -72,6 +77,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.velocityRadPerSec =
         velocityRadiansPerSecond.getValueAsDouble() / ClimberConstants.GEAR_RATIO;
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
+
+    inputs.isClimbed = !isClimbed.get();
   }
 
   /**

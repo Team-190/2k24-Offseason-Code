@@ -47,7 +47,7 @@ public final class DriveConstants {
         TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
         MAX_LINEAR_VELOCITY = Units.feetToMeters(19.5);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
-        MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS;
+        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
         KINEMATICS =
             new SwerveDriveKinematics(
                 new Translation2d[] {

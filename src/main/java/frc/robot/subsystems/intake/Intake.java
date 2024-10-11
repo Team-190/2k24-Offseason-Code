@@ -49,11 +49,20 @@ public class Intake extends SubsystemBase {
       io.setTopVoltage(12.0);
     }
 
+    if (inputs.middleSensor && !inputs.finalSensor) {
+      io.setTopVoltage(-1.0);
+      io.setBottomVoltage(1.0);
+      io.setAcceleratorVoltage(1.0);
+    } else if (inputs.finalSensor) {
+      io.setBottomVoltage(0.0);
+      io.setAcceleratorVoltage(0.0);
+    }
+
     Logger.recordOutput("Intake/Timer", doubleTimer.get());
   }
 
   public boolean hasNoteLocked() {
-    return inputs.middleSensor || inputs.finalSensor;
+    return inputs.finalSensor;
   }
 
   public boolean hasNoteStaged() {
@@ -70,10 +79,10 @@ public class Intake extends SubsystemBase {
                         () -> io.setAcceleratorVoltage(12.0), () -> io.setAcceleratorVoltage(0.0)))
                 .until(() -> inputs.middleSensor),
             Commands.parallel(
-                    Commands.runEnd(() -> io.setTopVoltage(-1.5), () -> io.setTopVoltage(0.0)),
-                    Commands.runEnd(() -> io.setBottomVoltage(1.5), () -> io.setBottomVoltage(0.0)),
+                    Commands.runEnd(() -> io.setTopVoltage(-1.0), () -> io.setTopVoltage(0.0)),
+                    Commands.runEnd(() -> io.setBottomVoltage(1.0), () -> io.setBottomVoltage(0.0)),
                     Commands.runEnd(
-                        () -> io.setAcceleratorVoltage(1.5), () -> io.setAcceleratorVoltage(0.0)))
+                        () -> io.setAcceleratorVoltage(1.0), () -> io.setAcceleratorVoltage(0.0)))
                 .until(() -> inputs.finalSensor))
         .until(() -> inputs.finalSensor);
   }
