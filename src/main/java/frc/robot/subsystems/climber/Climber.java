@@ -13,6 +13,8 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
+  private boolean isUnlocked;
+
   /** Creates a new Climber. */
   public Climber(ClimberIO io) {
     inputs = new ClimberIOInputsAutoLogged();
@@ -24,6 +26,10 @@ public class Climber extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
+  }
+
+  public boolean isClimbed() {
+    return inputs.isClimbed && isUnlocked;
   }
 
   /**
@@ -62,8 +68,8 @@ public class Climber extends SubsystemBase {
    */
   public Command unlock() {
     return Commands.runEnd(() -> io.setVoltage(12.0), () -> io.stop(), this)
-        .until(
-            () -> inputs.position.getRadians() >= ClimberConstants.RELEASE_POSITION.getRadians());
+        .until(() -> inputs.position.getRadians() >= ClimberConstants.RELEASE_POSITION.getRadians())
+        .finallyDo(() -> isUnlocked = true);
   }
 
   /**

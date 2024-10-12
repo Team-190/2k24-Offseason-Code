@@ -197,7 +197,9 @@ public class RobotContainer {
         vision.getPrimaryVisionPoses(),
         vision.getSecondaryVisionPoses(),
         vision.getFrameTimestamps(),
-        intake.hasNoteLocked());
+        intake.hasNoteLocked(),
+        intake.isIntaking(),
+        climber.isClimbed());
     leds.periodic();
   }
 

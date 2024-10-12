@@ -95,6 +95,7 @@ public final class AutoRoutines {
   public static final Command getBoatBattleAmpAuto(
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_Amp"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
             getInitialChoreoCommand(drive, "Auto_1_Amp"), CompositeCommands.collect(intake, arm)),
