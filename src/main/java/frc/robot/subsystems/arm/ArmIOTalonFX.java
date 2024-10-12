@@ -4,6 +4,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -12,10 +13,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 public class ArmIOTalonFX implements ArmIO {
@@ -32,12 +30,9 @@ public class ArmIOTalonFX implements ArmIO {
 
   private final StatusSignal<Double> absolutePosition;
 
-  // private final MotionMagicVoltage positionControl;
+  private final MotionMagicVoltage positionControl;
   private final VoltageOut voltageControl;
   private final NeutralOut neutralControl;
-
-  private final ProfiledPIDController rioPositionControl;
-  private ArmFeedforward rioFeedforward;
 
   private final TalonFXConfiguration motorConfig;
   private final CANcoderConfiguration cancoderConfig;
@@ -54,6 +49,7 @@ public class ArmIOTalonFX implements ArmIO {
     motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     motorConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    motorConfig.Feedback.SensorToMechanismRatio = ArmConstants.ARM_GEAR_RATIO;
     motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     motorConfig.MotionMagic.MotionMagicCruiseVelocity =
         Units.radiansToRotations(ArmConstants.ARM_MAX_VELOCITY.get());
@@ -81,20 +77,10 @@ public class ArmIOTalonFX implements ArmIO {
 
     absolutePosition = cancoder.getAbsolutePosition();
 
-    // positionControl = new MotionMagicVoltage(0.0).withUpdateFreqHz(0.0);
-    voltageControl = new VoltageOut(0.0).withUpdateFreqHz(0.0);
-    neutralControl = new NeutralOut().withUpdateFreqHz(0.0);
+    positionControl = new MotionMagicVoltage(0.0);
+    voltageControl = new VoltageOut(0.0);
+    neutralControl = new NeutralOut();
 
-    rioPositionControl =
-        new ProfiledPIDController(
-            ArmConstants.ARM_KP.get(),
-            0.0,
-            ArmConstants.ARM_KD.get(),
-            new Constraints(
-                ArmConstants.ARM_MAX_VELOCITY.get(), ArmConstants.ARM_MAX_ACCELERATION.get()));
-    rioFeedforward =
-        new ArmFeedforward(
-            ArmConstants.ARM_KS.get(), ArmConstants.ARM_KG.get(), ArmConstants.ARM_KV.get());
     positionGoal = new Rotation2d();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -128,12 +114,9 @@ public class ArmIOTalonFX implements ArmIO {
     positionSetpointRotations.refresh();
     positionErrorRotations.refresh();
 
-    inputs.armPosition =
-        Rotation2d.fromRotations(
-            positionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+    inputs.armPosition = Rotation2d.fromRotations(positionRotations.getValueAsDouble());
     inputs.armVelocityRadPerSec =
-        Units.rotationsToRadians(
-            velocityRotationsPerSecond.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+        Units.rotationsToRadians(velocityRotationsPerSecond.getValueAsDouble());
     inputs.armAppliedVolts = appliedVolts.getValueAsDouble();
     inputs.armCurrentAmps = currentAmps.getValueAsDouble();
     inputs.armTemperatureCelsius = temperatureCelcius.getValueAsDouble();
@@ -142,15 +125,10 @@ public class ArmIOTalonFX implements ArmIO {
         Rotation2d.fromRotations(absolutePosition.getValueAsDouble())
             .minus(ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET);
 
-    // inputs.positionSetpoint =
-    //     Rotation2d.fromRotations(
-    //         positionSetpointRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
-    // inputs.positionError =
-    //     Rotation2d.fromRotations(
-    //         positionErrorRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO);
+    inputs.positionSetpoint =
+        Rotation2d.fromRotations(positionSetpointRotations.getValueAsDouble());
+    inputs.positionError = Rotation2d.fromRotations(positionErrorRotations.getValueAsDouble());
 
-    inputs.positionSetpoint = Rotation2d.fromRadians(rioPositionControl.getSetpoint().position);
-    inputs.positionError = Rotation2d.fromRadians(rioPositionControl.getPositionError());
     inputs.positionGoal = positionGoal;
   }
 
@@ -167,7 +145,6 @@ public class ArmIOTalonFX implements ArmIO {
               .setPosition(
                   (absolutePosition.getValueAsDouble()
                           - ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET.getRotations())
-                      * ArmConstants.ARM_GEAR_RATIO
                       * -1.0)
               .isOK();
     }
@@ -182,19 +159,12 @@ public class ArmIOTalonFX implements ArmIO {
               .setPosition(
                   (absolutePosition.getValueAsDouble()
                           - ArmConstants.ARM_ABSOLUTE_ENCODER_OFFSET.getRotations())
-                      * ArmConstants.ARM_GEAR_RATIO
                       * -1.0)
               .isOK();
     }
     positionGoal = setpointPosition;
-    // motor.setControl(
-    //     positionControl.withPosition(position.getRotations() * ArmConstants.ARM_GEAR_RATIO));
     motor.setControl(
-        voltageControl.withOutput(
-            rioPositionControl.calculate(
-                    currentPosition.getRadians(), setpointPosition.getRadians())
-                + rioFeedforward.calculate(
-                    setpointPosition.getRadians(), rioPositionControl.getSetpoint().velocity)));
+        positionControl.withPosition(setpointPosition.getRotations()).withUpdateFreqHz(1000));
   }
 
   @Override
@@ -203,7 +173,6 @@ public class ArmIOTalonFX implements ArmIO {
     motorConfig.Slot0.kI = ki;
     motorConfig.Slot0.kD = kd;
     motor.getConfigurator().apply(motorConfig);
-    rioPositionControl.setPID(kp, ki, kd);
   }
 
   @Override
@@ -212,22 +181,18 @@ public class ArmIOTalonFX implements ArmIO {
     motorConfig.Slot0.kV = kv;
     motorConfig.Slot0.kG = kg;
     motor.getConfigurator().apply(motorConfig);
-    rioFeedforward = new ArmFeedforward(ks, kg, kv);
   }
 
   @Override
   public void setProfile(double maxVelocity, double maxAcceleration) {
-    motorConfig.MotionMagic.MotionMagicCruiseVelocity = maxVelocity;
-    motorConfig.MotionMagic.MotionMagicAcceleration = maxAcceleration;
+    motorConfig.MotionMagic.MotionMagicCruiseVelocity = Units.radiansToRotations(maxVelocity);
+    motorConfig.MotionMagic.MotionMagicAcceleration = Units.radiansToRotations(maxAcceleration);
     motor.getConfigurator().apply(motorConfig);
-    rioPositionControl.setConstraints(new Constraints(maxVelocity, maxAcceleration));
   }
 
   @Override
   public boolean atSetpoint() {
-    return Math.abs(
-            positionGoal.getRotations()
-                - positionRotations.getValueAsDouble() / ArmConstants.ARM_GEAR_RATIO)
+    return Math.abs(positionGoal.getRotations() - positionRotations.getValueAsDouble())
         <= Units.degreesToRotations(ArmConstants.GOAL_TOLERANCE.get());
   }
 }

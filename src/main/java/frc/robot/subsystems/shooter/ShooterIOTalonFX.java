@@ -45,8 +45,6 @@ public class ShooterIOTalonFX implements ShooterIO {
   private double topGoalRadiansPerSecond;
   private double bottomGoalRadiansPerSecond;
 
-  private boolean hasResetPosition;
-
   public ShooterIOTalonFX() {
 
     topMotor = new TalonFX(ShooterConstants.TOP_CAN_ID);
@@ -120,8 +118,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     voltageControl = new VoltageOut(0.0);
     topProfiledVelocityControl = new VelocityVoltage(0);
     bottomProfiledVelocityControl = new VelocityVoltage(0);
-
-    hasResetPosition = false;
   }
 
   @Override
@@ -171,51 +167,22 @@ public class ShooterIOTalonFX implements ShooterIO {
         Units.rotationsToRadians(bottomVelocityErrorRotationsPerSecond.getValueAsDouble());
   }
 
-  /**
-   * Sets a target value for the Top Motor's velocity in rotations per second.
-   *
-   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to
-   *     reach.
-   */
   @Override
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-    if (!hasResetPosition) {
-      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
-    }
     topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
-    if (hasResetPosition) {
-      topMotor.setControl(
-          topProfiledVelocityControl.withVelocity(
-              Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
-    }
+    topMotor.setControl(
+        topProfiledVelocityControl.withVelocity(
+            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
 
-  /**
-   * Sets a target value for the Bottom Motor's velocity in rotations per second.
-   *
-   * @param setPointVelocityRadiansPerSecond the target for the velocity, in radians per second, to
-   *     reach.
-   */
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
-    if (!hasResetPosition) {
-      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
-    }
     bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
-    if (hasResetPosition) {
-      bottomMotor.setControl(
-          bottomProfiledVelocityControl.withVelocity(
-              Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
-    }
+    bottomMotor.setControl(
+        bottomProfiledVelocityControl.withVelocity(
+            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
   }
 
-  /**
-   * Applies the S, V, and A gains to the Top Motor Feed Forward.
-   *
-   * @param kS the voltage gain
-   * @param kV the velocity gain
-   * @param kA the acceleration gain
-   */
   @Override
   public void setTopFeedForward(double kS, double kV, double kA) {
 
@@ -225,13 +192,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
 
-  /**
-   * Applies the S, V, and A gains to the Bottom Motor Feed Forward.
-   *
-   * @param kS the voltage gain
-   * @param kV the velocity gain
-   * @param kA the acceleration gain
-   */
   @Override
   public void setBottomFeedForward(double kS, double kV, double kA) {
 
@@ -241,11 +201,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig, 0.01);
   }
 
-  /**
-   * Calculates the upper and lower bounds of the top and bottom motor velocities (in radians per
-   * second) and then makes sure the current top and bottom motor velocities are within these bounds
-   * (i.e. at the target velocity).
-   */
   @Override
   public boolean atSetPoint() {
     return Math.abs(
@@ -258,12 +213,6 @@ public class ShooterIOTalonFX implements ShooterIO {
             <= Units.radiansToRotations(ShooterConstants.SPEED_TOLERANCE_RADIANS_PER_SECOND);
   }
 
-  /**
-   * Sets the acceleration of the Top Motor in rotations per second squared.
-   *
-   * @param maxAccelerationRadiansPerSecondSquared the acceleration, in radians per second squared,
-   *     that will be applied to the Top Motor.
-   */
   @Override
   public void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
 
@@ -272,12 +221,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     topMotor.getConfigurator().apply(topConfig);
   }
 
-  /**
-   * Sets the acceleration of the Bottom Motor in rotations per second squared.
-   *
-   * @param maxAccelerationRadiansPerSecondSquared the acceleration, in radians per second squared,
-   *     that will be applied to the Bottom Motor.
-   */
   @Override
   public void setBottomProfile(double maxAccelerationRadiansPerSecondSquared) {
 
@@ -286,13 +229,6 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomMotor.getConfigurator().apply(bottomConfig);
   }
 
-  /**
-   * Applies the P, I, and D gains to the Top Motor PID.
-   *
-   * @param kP the proportional gain
-   * @param kI the integral gain
-   * @param kD the derivative gain
-   */
   @Override
   public void setTopPID(double kP, double kI, double kD) {
 
@@ -311,21 +247,10 @@ public class ShooterIOTalonFX implements ShooterIO {
     bottomMotor.getConfigurator().apply(bottomConfig, 0.001);
   }
 
-  /**
-   * Takes in a value volts, and sets the voltage of both the top and bottom motors to this value.
-   *
-   * @param volts the voltage that will be inputted as the input voltage for the top and bottom
-   *     motors.
-   */
   @Override
   public void setVoltage(double volts) {
-    if (!hasResetPosition) {
-      hasResetPosition = topMotor.setPosition(0.0).isOK() && bottomMotor.setPosition(0.0).isOK();
-    }
-    if (hasResetPosition) {
-      topMotor.setControl(voltageControl.withOutput(volts));
-      bottomMotor.setControl(voltageControl.withOutput(volts));
-    }
+    topMotor.setControl(voltageControl.withOutput(volts));
+    bottomMotor.setControl(voltageControl.withOutput(volts));
   }
 
   @Override

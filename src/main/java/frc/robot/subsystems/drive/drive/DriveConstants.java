@@ -43,11 +43,11 @@ public final class DriveConstants {
       case WHIPLASH:
       case ROBOT_SIM:
       default:
-        TRACK_WIDTH_X = Units.inchesToMeters(25.0);
-        TRACK_WIDTH_Y = Units.inchesToMeters(25.0);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(17.5);
+        TRACK_WIDTH_X = Units.inchesToMeters(20.75);
+        TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
+        MAX_LINEAR_VELOCITY = Units.feetToMeters(19.5);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
-        MAX_ANGULAR_VELOCITY = MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS;
+        MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
         KINEMATICS =
             new SwerveDriveKinematics(
                 new Translation2d[] {
@@ -59,7 +59,7 @@ public final class DriveConstants {
         CANIVORE = "drive";
         PIGEON_2_DEVICE_ID = 1;
         ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
-        DRIVER_DEADBAND = 0.25;
+        DRIVER_DEADBAND = 0.025;
         ODOMETRY_LOCK = new ReentrantLock();
 
         AUTO_X_KP.initDefault(1.0);

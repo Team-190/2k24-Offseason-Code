@@ -15,7 +15,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -41,6 +40,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
@@ -56,10 +56,11 @@ public class RobotContainer {
   private Climber climber;
   private Shooter shooter;
   private Arm arm;
+  private Leds leds;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandPS4Controller operator = new CommandPS4Controller(1);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   // Dashboard Inputs
   private LoggedDashboardChooser<Command> autoChooser;
@@ -81,6 +82,7 @@ public class RobotContainer {
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
+          leds = new Leds();
           break;
         case ROBOT_SIM:
           drive =
@@ -95,6 +97,7 @@ public class RobotContainer {
           climber = new Climber(new ClimberIOSim());
           shooter = new Shooter(new ShooterIOSim());
           arm = new Arm(new ArmIOSim());
+          leds = new Leds();
           break;
       }
     }
@@ -159,9 +162,9 @@ public class RobotContainer {
         .withPosition(0, 0)
         .withSize(2, 2);
     Shuffleboard.getTab("Teleoperated")
-        .addBoolean("Note?", intake::hasNote)
+        .addBoolean("Note?", intake::hasNoteLocked)
         .withPosition(0, 0)
-        .withSize(5, 5);
+        .withSize(8, 5);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -170,10 +173,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
-            () -> Math.copySign(Math.pow(-driver.getLeftY(), 2), -driver.getLeftY()),
-            () -> Math.copySign(Math.pow(-driver.getLeftX(), 2), -driver.getLeftX()),
-            () -> Math.copySign(Math.pow(driver.getRightX(), 2), driver.getRightX())));
+            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
@@ -182,6 +182,7 @@ public class RobotContainer {
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
+    operator.y().whileTrue(climber.deClimb());
     driver.a().whileTrue(intake.shoot());
   }
 
@@ -196,7 +197,10 @@ public class RobotContainer {
         vision.getPrimaryVisionPoses(),
         vision.getSecondaryVisionPoses(),
         vision.getFrameTimestamps(),
-        intake.hasNote());
+        intake.hasNoteLocked(),
+        intake.isIntaking(),
+        climber.isClimbed());
+    leds.periodic();
   }
 
   public Command getAutonomousCommand() {

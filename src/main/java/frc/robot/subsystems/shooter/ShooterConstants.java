@@ -51,7 +51,6 @@ public class ShooterConstants {
         KP.initDefault(0.325);
         KD.initDefault(0.0);
         KS.initDefault(0.090597);
-        // KV.initDefault(0.017284);
         KV.initDefault(12.0 / 103.4508);
         KA.initDefault(0.0014107);
         SPEED_TOLERANCE_RADIANS_PER_SECOND = 15.0;

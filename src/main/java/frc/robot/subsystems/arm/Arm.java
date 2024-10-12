@@ -3,12 +3,14 @@ package frc.robot.subsystems.arm;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -163,8 +165,17 @@ public class Arm extends SubsystemBase {
     return Commands.runOnce(
         () -> {
           isClosedLoop = true;
-          positionSetpoint = Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_ANGLE.get());
+          positionSetpoint =
+              shootForward()
+                  ? Rotation2d.fromRadians(ArmConstants.ARM_SUBWOOFER_CONSTANT.get())
+                  : Rotation2d.fromRadians(
+                      ArmConstants.ARM_AMP_CONSTANT.get() + Units.degreesToRadians(3.5));
         });
+  }
+
+  public boolean shootForward() {
+    double angle = AllianceFlipUtil.apply(RobotState.getRobotPose().getRotation()).getDegrees();
+    return !(angle > -90 && angle < 90);
   }
 
   public boolean atSetpoint() {

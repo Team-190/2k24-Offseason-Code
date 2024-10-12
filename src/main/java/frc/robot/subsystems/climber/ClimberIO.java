@@ -11,6 +11,8 @@ public interface ClimberIO {
     public double currentAmps = 0;
     public double appliedVolts = 0;
     public double tempCelsius = 0;
+
+    public boolean isClimbed = false;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}

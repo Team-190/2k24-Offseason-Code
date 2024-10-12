@@ -54,6 +54,12 @@ public final class AutoRoutines {
             drive));
   }
 
+  public static final Command resetToInitialHeading(Drive drive, String trajectory) {
+    ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
+    return Commands.runOnce(
+        () -> RobotState.resetRobotPose(AllianceFlipUtil.apply(choreoTrajectory.getInitialPose())));
+  }
+
   /**
    * This function generates a command sequence for autonomous driving using the Choreo library. The
    * command sequence includes executing a trajectory from the Choreo library, and running the
@@ -89,6 +95,7 @@ public final class AutoRoutines {
   public static final Command getBoatBattleAmpAuto(
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_Amp"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
             getInitialChoreoCommand(drive, "Auto_1_Amp"), CompositeCommands.collect(intake, arm)),
@@ -99,6 +106,7 @@ public final class AutoRoutines {
   public static final Command getBoatBattleSourceAuto(
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
             getInitialChoreoCommand(drive, "Auto_1_Source"),

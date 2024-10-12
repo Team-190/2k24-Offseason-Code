@@ -13,6 +13,8 @@ public class Climber extends SubsystemBase {
   private final ClimberIO io;
   private final ClimberIOInputsAutoLogged inputs;
 
+  private boolean isUnlocked;
+
   /** Creates a new Climber. */
   public Climber(ClimberIO io) {
     inputs = new ClimberIOInputsAutoLogged();
@@ -26,6 +28,10 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
   }
 
+  public boolean isClimbed() {
+    return inputs.isClimbed && isUnlocked;
+  }
+
   /**
    * Runs the climber motor at 12 volts until max height is reached. Then stops the motor.
    *
@@ -34,7 +40,12 @@ public class Climber extends SubsystemBase {
   public Command climb() {
     return Commands.runEnd(
             () -> io.setVoltage(12.0), () -> io.setVoltage(ClimberConstants.HOLD_VOLTAGE), this)
-        .until(() -> inputs.position.getRadians() >= ClimberConstants.CLIMB_POSITION.getRadians());
+        .until(() -> inputs.isClimbed);
+  }
+
+  public Command deClimb() {
+    return Commands.runEnd(() -> io.setVoltage(-12.0), () -> io.setVoltage(0.0), this)
+        .until(() -> inputs.position.getRadians() <= 0.0);
   }
 
   /**
@@ -57,8 +68,8 @@ public class Climber extends SubsystemBase {
    */
   public Command unlock() {
     return Commands.runEnd(() -> io.setVoltage(12.0), () -> io.stop(), this)
-        .until(
-            () -> inputs.position.getRadians() >= ClimberConstants.RELEASE_POSITION.getRadians());
+        .until(() -> inputs.position.getRadians() >= ClimberConstants.RELEASE_POSITION.getRadians())
+        .finallyDo(() -> isUnlocked = true);
   }
 
   /**

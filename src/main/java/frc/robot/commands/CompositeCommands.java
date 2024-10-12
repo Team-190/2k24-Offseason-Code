@@ -29,27 +29,55 @@ public class CompositeCommands {
   }
 
   public static final Command eject(Intake intake, Arm arm) {
-    return Commands.sequence(arm.ejectCommand(), intake.eject());
+    return Commands.sequence(
+        arm.ejectCommand(), Commands.waitUntil(() -> arm.atSetpoint()), intake.eject());
   }
 
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-        intake.shoot());
+        intake.shoot(),
+        Commands.either(
+            Commands.sequence(
+                CompositeCommands.collect(intake, arm),
+                Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
+                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
+            () -> intake.hasNoteStaged()));
   }
 
   public static final Command shootAmp(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-        intake.shoot());
+        intake.shoot(),
+        Commands.either(
+            Commands.sequence(
+                CompositeCommands.collect(intake, arm),
+                Commands.parallel(shooter.setAmpVelocity(), arm.ampAngle()),
+                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
+            () -> intake.hasNoteStaged()));
   }
 
   public static final Command shootFeed(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         Commands.parallel(shooter.setFeedVelocity(), arm.stowAngle()),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
-        intake.shoot());
+        intake.shoot(),
+        Commands.either(
+            Commands.sequence(
+                CompositeCommands.collect(intake, arm),
+                Commands.parallel(shooter.setFeedVelocity(), arm.feedAngle()),
+                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
+            () -> intake.hasNoteStaged()));
   }
 }
