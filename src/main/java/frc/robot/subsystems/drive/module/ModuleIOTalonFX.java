@@ -23,6 +23,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -78,6 +79,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.StatorCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Feedback.SensorToMechanismRatio = ModuleConstants.DRIVE_GEAR_RATIO;
     driveConfig.Slot0.kS = ModuleConstants.DRIVE_KS.get();
@@ -88,8 +92,11 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig = new TalonFXConfiguration();
     turnConfig.CurrentLimits.SupplyCurrentLimit = ModuleConstants.TURN_CURRENT_LIMIT;
     turnConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turnConfig.CurrentLimits.StatorCurrentLimit = ModuleConstants.TURN_CURRENT_LIMIT;
+    turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    turnConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     turnConfig.Feedback.SensorToMechanismRatio = ModuleConstants.TURN_GEAR_RATIO;
     turnConfig.Slot0.kP = ModuleConstants.TURN_KP.get();
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();

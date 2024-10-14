@@ -35,7 +35,15 @@ public class RobotState {
   @Getter
   private static ControlData controlData =
       new ControlData(
-          new Rotation2d(), 0.0, new Rotation2d(), new Rotation2d(), 0.0, new Rotation2d(), false);
+          new Rotation2d(),
+          0.0,
+          new Rotation2d(),
+          new Rotation2d(),
+          0.0,
+          new Rotation2d(),
+          false,
+          false,
+          false);
 
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
   @Getter @Setter private static double speakerAngleCompensation = 0.0;
@@ -84,7 +92,9 @@ public class RobotState {
       Optional<Pose3d>[] visionPrimaryPoses,
       Optional<Pose3d>[] visionSecondaryPoses,
       double[] visionFrameTimestamps,
-      boolean hasNote) {
+      boolean hasNote,
+      boolean isIntaking,
+      boolean isClimbed) {
 
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
@@ -152,7 +162,9 @@ public class RobotState {
             feedAmpRobotAngle,
             feedShotSpeedMap.get(effectiveDistanceToAmp),
             new Rotation2d(feedShotAngleMap.get(effectiveDistanceToAmp)),
-            hasNote);
+            hasNote,
+            isIntaking,
+            isClimbed);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
@@ -196,5 +208,7 @@ public class RobotState {
       Rotation2d feedRobotAngle,
       double feedShotSpeed,
       Rotation2d feedArmAngle,
-      boolean hasNote) {}
+      boolean hasNote,
+      boolean isIntaking,
+      boolean isClimbed) {}
 }

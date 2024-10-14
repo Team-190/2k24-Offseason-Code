@@ -11,12 +11,14 @@ public class Intake extends SubsystemBase {
   private final IntakeIO io;
 
   private final Timer doubleTimer;
+  private boolean isIntaking;
 
   public Intake(IntakeIO io) {
     inputs = new IntakeIOInputsAutoLogged();
     this.io = io;
 
     doubleTimer = new Timer();
+    isIntaking = false;
   }
 
   @Override
@@ -69,8 +71,13 @@ public class Intake extends SubsystemBase {
     return inputs.intakeSensor;
   }
 
+  public boolean isIntaking() {
+    return isIntaking;
+  }
+
   public Command intake() {
     return Commands.sequence(
+            Commands.runOnce(() -> isIntaking = true),
             Commands.parallel(
                     Commands.runEnd(() -> io.setTopVoltage(-12.0), () -> io.setTopVoltage(0.0)),
                     Commands.runEnd(
@@ -84,7 +91,8 @@ public class Intake extends SubsystemBase {
                     Commands.runEnd(
                         () -> io.setAcceleratorVoltage(1.0), () -> io.setAcceleratorVoltage(0.0)))
                 .until(() -> inputs.finalSensor))
-        .until(() -> inputs.finalSensor);
+        .until(() -> inputs.finalSensor)
+        .finallyDo(() -> isIntaking = false);
   }
 
   public Command eject() {
