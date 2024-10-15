@@ -24,6 +24,7 @@ public final class DriveConstants {
   public static final Matrix<N3, N1> ODOMETRY_STANDARD_DEVIATIONS;
   public static final double DRIVER_DEADBAND;
   public static final Lock ODOMETRY_LOCK;
+  public static final double AUTO_AIM_FIELD_VELOCITY_DEADBAND;
 
   public static final LoggedTunableNumber AUTO_X_KP;
   public static final LoggedTunableNumber AUTO_Y_KP;
@@ -61,14 +62,15 @@ public final class DriveConstants {
         ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
         DRIVER_DEADBAND = 0.025;
         ODOMETRY_LOCK = new ReentrantLock();
+        AUTO_AIM_FIELD_VELOCITY_DEADBAND = 0.1;
 
         AUTO_X_KP.initDefault(1.0);
         AUTO_Y_KP.initDefault(1.0);
-        AUTO_THETA_KP.initDefault(0.0);
+        AUTO_THETA_KP.initDefault(3);
 
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);
-        AUTO_THETA_KD.initDefault(0.0);
+        AUTO_THETA_KD.initDefault(0.002);
         break;
     }
   }

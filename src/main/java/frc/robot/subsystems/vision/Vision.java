@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Arrays;
 import java.util.Optional;
@@ -30,14 +30,14 @@ public class Vision extends SubsystemBase {
   }
 
   @SuppressWarnings("unchecked")
-  public Optional<Pose3d>[] getPrimaryVisionPoses() {
+  public Optional<Pose2d>[] getPrimaryVisionPoses() {
     return Arrays.stream(cameras)
         .map((Camera camera) -> Optional.of(camera.getPrimaryPose()))
         .toArray(Optional[]::new);
   }
 
   @SuppressWarnings("unchecked")
-  public Optional<Pose3d>[] getSecondaryVisionPoses() {
+  public Optional<Pose2d>[] getSecondaryVisionPoses() {
     return Arrays.stream(cameras)
         .map((Camera camera) -> Optional.of(camera.getSecondaryPose()))
         .toArray(Optional[]::new);

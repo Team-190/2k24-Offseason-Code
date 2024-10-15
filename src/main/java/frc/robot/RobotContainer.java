@@ -45,6 +45,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -78,7 +79,10 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
           intake = new Intake(new IntakeIOTalonFX());
-          vision = new Vision();
+          vision =
+              new Vision(
+                  CameraConstants.RobotCameras.LEFT_CAMERA,
+                  CameraConstants.RobotCameras.RIGHT_CAMERA);
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
@@ -193,10 +197,6 @@ public class RobotContainer {
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
         vision.getCameras(),
-        vision.getValidTarget(),
-        vision.getPrimaryVisionPoses(),
-        vision.getSecondaryVisionPoses(),
-        vision.getFrameTimestamps(),
         intake.hasNoteLocked(),
         intake.isIntaking(),
         climber.isClimbed());

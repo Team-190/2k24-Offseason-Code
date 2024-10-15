@@ -1,6 +1,6 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
@@ -62,11 +62,11 @@ public class Camera {
     return inputs.frameTimestamp;
   }
 
-  public Pose3d getPrimaryPose() {
+  public Pose2d getPrimaryPose() {
     return inputs.primaryPose;
   }
 
-  public Pose3d getSecondaryPose() {
+  public Pose2d getSecondaryPose() {
     return inputs.secondaryPose;
   }
 
