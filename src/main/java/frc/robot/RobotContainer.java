@@ -181,8 +181,7 @@ public class RobotContainer {
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
-    // driver.rightBumper().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
-    driver.rightBumper().whileTrue(DriveCommands.aimTowardsSpeaker(drive));
+    driver.rightBumper().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
     driver.rightTrigger().whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
