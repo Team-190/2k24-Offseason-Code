@@ -137,8 +137,7 @@ public class RobotState {
             .getTranslation()
             .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToSpeaker)));
     double effectiveDistanceToSpeaker = effectiveSpeakerAimingPose.getDistance(speakerPose);
-    Rotation2d speakerRobotAngle =
-        speakerPose.minus(effectiveSpeakerAimingPose).getAngle().minus(robotHeading);
+    Rotation2d speakerRobotAngle = speakerPose.minus(effectiveSpeakerAimingPose).getAngle();
     double speakerTangentialVelocity =
         -robotFieldRelativeVelocity.rotateBy(speakerRobotAngle.unaryMinus()).getY();
     double speakerRadialVelocity = speakerTangentialVelocity / effectiveDistanceToSpeaker;
