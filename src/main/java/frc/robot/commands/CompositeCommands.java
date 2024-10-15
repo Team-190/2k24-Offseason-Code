@@ -33,6 +33,25 @@ public class CompositeCommands {
         arm.ejectCommand(), Commands.waitUntil(() -> arm.atSetpoint()), intake.eject());
   }
 
+  public static final Command shootSpeaker(Drive drive, Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+        Commands.waitUntil(
+            () -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
+        Commands.waitSeconds(0.125),
+        intake.shoot(),
+        Commands.either(
+            Commands.sequence(
+                CompositeCommands.collect(intake, arm),
+                Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
+                Commands.waitSeconds(0.125),
+                intake.shoot(),
+                arm.stowAngle()),
+            arm.stowAngle(),
+            () -> intake.hasNoteStaged()));
+  }
+
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
         Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),

@@ -26,8 +26,10 @@ public class Leds {
   }
 
   public void periodic() {
-    if (RobotState.getControlData().hasNote()) {
+    if (RobotState.getControlData().hasNoteLocked()) {
       solid(Color.kGreen);
+    } else if (RobotState.getControlData().hasNoteStaged()) {
+      solid(Color.kGold);
     } else if (RobotState.getControlData().isIntaking()) {
       solid(Color.kDarkBlue);
     } else {

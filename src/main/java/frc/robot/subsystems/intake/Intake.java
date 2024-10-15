@@ -68,7 +68,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean hasNoteStaged() {
-    return inputs.intakeSensor;
+    return inputs.intakeSensor || inputs.middleSensor;
   }
 
   public boolean isIntaking() {

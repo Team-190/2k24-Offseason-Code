@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -177,12 +178,20 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> driver.getRightX(),
+            driver.rightBumper(),
+            driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05)));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
-    driver.rightBumper().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
-    driver.rightTrigger().whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
+    driver.rightBumper().whileTrue(CompositeCommands.shootSpeaker(drive, intake, arm, shooter));
+    driver.x().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
+    driver
+        .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.95)
+        .whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
@@ -198,6 +207,7 @@ public class RobotContainer {
         drive.getModulePositions(),
         vision.getCameras(),
         intake.hasNoteLocked(),
+        intake.hasNoteStaged(),
         intake.isIntaking(),
         climber.isClimbed());
     leds.periodic();

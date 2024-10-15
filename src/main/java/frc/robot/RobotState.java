@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
@@ -43,6 +44,7 @@ public class RobotState {
           new Rotation2d(),
           false,
           false,
+          false,
           false);
 
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
@@ -61,7 +63,14 @@ public class RobotState {
     feedShotSpeedMap.put(0.0, 0.0);
 
     // Units: radians
-    speakerShotAngleMap.put(0.0, 0.0);
+    speakerShotAngleMap.put(1.0051382994805276, Units.degreesToRadians(57.0));
+    speakerShotAngleMap.put(1.5116749958699147, Units.degreesToRadians(45.8366));
+    speakerShotAngleMap.put(2.0190578380502866, Units.degreesToRadians(40.107));
+    speakerShotAngleMap.put(2.4902075857788795, Units.degreesToRadians(37.24226));
+    speakerShotAngleMap.put(2.9496336444802624, Units.degreesToRadians(32.372115));
+    speakerShotAngleMap.put(3.559494194140593, Units.degreesToRadians(28.6479));
+    speakerShotAngleMap.put(3.9738787048488335, Units.degreesToRadians(26.92902));
+    speakerShotAngleMap.put(4.590536757726377, Units.degreesToRadians(25.21014));
 
     // Units: radians
     feedShotAngleMap.put(0.0, 0.0);
@@ -88,7 +97,8 @@ public class RobotState {
       Translation2d robotFieldRelativeVelocity,
       SwerveModulePosition[] modulePositions,
       Camera[] cameras,
-      boolean hasNote,
+      boolean hasNoteLocked,
+      boolean hasNoteStaged,
       boolean isIntaking,
       boolean isClimbed) {
 
@@ -164,7 +174,8 @@ public class RobotState {
             feedAmpRobotAngle,
             feedShotSpeedMap.get(effectiveDistanceToAmp),
             new Rotation2d(feedShotAngleMap.get(effectiveDistanceToAmp)),
-            hasNote,
+            hasNoteLocked,
+            hasNoteStaged,
             isIntaking,
             isClimbed);
 
@@ -211,7 +222,8 @@ public class RobotState {
       Rotation2d feedRobotAngle,
       double feedShotSpeed,
       Rotation2d feedArmAngle,
-      boolean hasNote,
+      boolean hasNoteLocked,
+      boolean hasNoteStaged,
       boolean isIntaking,
       boolean isClimbed) {}
 }

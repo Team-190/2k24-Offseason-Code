@@ -32,11 +32,17 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public final class DriveCommands {
-  private DriveCommands() {}
+  private static PIDController aimController =
+      new PIDController(
+          DriveConstants.AUTO_THETA_KP.get(),
+          0,
+          DriveConstants.AUTO_THETA_KD.get(),
+          Constants.LOOP_PERIOD_SECONDS);
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
@@ -45,10 +51,13 @@ public final class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
-
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier speakerAim,
+      BooleanSupplier ampAim) {
     return Commands.run(
         () -> {
+          aimController.enableContinuousInput(-Math.PI, Math.PI);
+
           // Apply deadband
           double linearMagnitude =
               MathUtil.applyDeadband(
@@ -76,11 +85,29 @@ public final class DriveCommands {
           double robotRelativeXVel = linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY;
           double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_ANGULAR_VELOCITY;
 
+          double angular = 0.0;
+
+          if (speakerAim.getAsBoolean()) {
+            angular =
+                RobotState.getControlData().speakerRadialVelocity()
+                    - (aimController.calculate(
+                        RobotState.getRobotPose().getRotation().getRadians(),
+                        RobotState.getControlData().speakerRobotAngle().getRadians()));
+          } else if (ampAim.getAsBoolean()) {
+            angular =
+                RobotState.getControlData().speakerRadialVelocity()
+                    - (aimController.calculate(
+                        RobotState.getRobotPose().getRotation().getRadians(),
+                        Rotation2d.fromDegrees(-90.0).getRadians()));
+          } else {
+            angular = omega * DriveConstants.MAX_ANGULAR_VELOCITY;
+          }
+
           ChassisSpeeds chassisSpeeds =
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   robotRelativeXVel,
                   robotRelativeYVel,
-                  omega * DriveConstants.MAX_ANGULAR_VELOCITY,
+                  angular,
                   isFlipped
                       ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
                       : RobotState.getRobotPose().getRotation());
@@ -89,50 +116,6 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
-  }
-
-  public static final Command aimTowardsSpeaker(Drive drive) {
-    @SuppressWarnings({"resource"})
-    PIDController aimController =
-        new PIDController(
-            DriveConstants.AUTO_THETA_KP.get(),
-            0,
-            DriveConstants.AUTO_THETA_KD.get(),
-            Constants.LOOP_PERIOD_SECONDS);
-    aimController.enableContinuousInput(-Math.PI, Math.PI);
-
-    return Commands.run(
-            () -> {
-              aimController.setD(DriveConstants.AUTO_THETA_KD.get());
-              aimController.setP(DriveConstants.AUTO_THETA_KP.get());
-
-              // Get robot relative vel
-              boolean isFlipped =
-                  DriverStation.getAlliance().isPresent()
-                      && DriverStation.getAlliance().get() == Alliance.Red;
-
-              ChassisSpeeds chassisSpeeds =
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      0,
-                      0,
-                      RobotState.getControlData().speakerRadialVelocity()
-                          - (aimController.calculate(
-                              RobotState.getRobotPose().getRotation().getRadians(),
-                              RobotState.getControlData().speakerRobotAngle().getRadians())),
-                      isFlipped
-                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                          : drive.getRotation());
-
-              // Convert to field relative speeds & send command
-              drive.runVelocity(chassisSpeeds);
-            },
-            drive)
-        .until(() -> aimController.atSetpoint())
-        .finallyDo(
-            () -> {
-              drive.stop();
-              aimController.reset();
-            });
   }
 
   public static final Command stop(Drive drive) {
@@ -161,5 +144,9 @@ public final class DriveCommands {
             new SysIdRoutine.Mechanism(
                 (volts) -> drive.runCharacterizationVolts(volts.in(Volts)), null, drive))
         .dynamic(direction);
+  }
+
+  public static final boolean atAimSetpoint() {
+    return aimController.atSetpoint();
   }
 }
