@@ -112,7 +112,7 @@ public class RobotState {
             camera.getName(), getRobotPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       }
 
-      if (camera.getTargetAquired()) {
+      if (camera.getTargetAquired() && robotYawVelocity <= Units.degreesToRadians(180.0)) {
         double xyStddevSecondary =
             camera.getSecondaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
@@ -123,10 +123,12 @@ public class RobotState {
                 * Math.pow(camera.getAverageDistance(), 2.0)
                 / camera.getTotalTargets()
                 * camera.getHorizontalFOV();
-        poseEstimator.addVisionMeasurement(
-            camera.getSecondaryPose(),
-            camera.getFrameTimestamp(),
-            VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+        if (camera.getAverageDistance() <= 1.5) {
+          poseEstimator.addVisionMeasurement(
+              camera.getSecondaryPose(),
+              camera.getFrameTimestamp(),
+              VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
+        }
         poseEstimator.addVisionMeasurement(
             camera.getPrimaryPose(),
             camera.getFrameTimestamp(),

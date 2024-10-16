@@ -25,6 +25,8 @@ public final class DriveConstants {
   public static final double DRIVER_DEADBAND;
   public static final Lock ODOMETRY_LOCK;
   public static final double AUTO_AIM_FIELD_VELOCITY_DEADBAND;
+  public static final double ROBOT_MASS_KG;
+  public static final double ROBOT_MOMENT_OF_INERTIA;
 
   public static final LoggedTunableNumber AUTO_X_KP;
   public static final LoggedTunableNumber AUTO_Y_KP;
@@ -59,7 +61,7 @@ public final class DriveConstants {
                 });
         CANIVORE = "drive";
         PIGEON_2_DEVICE_ID = 1;
-        ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.0, 0.0, 0.0);
+        ODOMETRY_STANDARD_DEVIATIONS = VecBuilder.fill(0.1, 0.1, 0.1);
         DRIVER_DEADBAND = 0.025;
         ODOMETRY_LOCK = new ReentrantLock();
         AUTO_AIM_FIELD_VELOCITY_DEADBAND = 0.1;
@@ -70,7 +72,10 @@ public final class DriveConstants {
 
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);
-        AUTO_THETA_KD.initDefault(0.0);
+        AUTO_THETA_KD.initDefault(0.01);
+
+        ROBOT_MASS_KG = 51.2559;
+        ROBOT_MOMENT_OF_INERTIA = 3.72559543;
         break;
     }
   }

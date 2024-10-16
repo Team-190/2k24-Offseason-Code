@@ -13,9 +13,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -140,6 +142,7 @@ public class RobotContainer {
         "Amp Side", AutoRoutines.getBoatBattleAmpAuto(drive, intake, arm, shooter));
     autoChooser.addOption(
         "Source Side", AutoRoutines.getBoatBattleSourceAuto(drive, intake, arm, shooter));
+    autoChooser.addOption("Seven Piece", AutoRoutines.get7PieceAuto(drive, intake, arm, shooter));
     if (Constants.TUNING_MODE) {
       autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
       autoChooser.addOption(
@@ -192,6 +195,16 @@ public class RobotContainer {
     driver
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.95)
         .whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
+    driver
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        RobotState.resetRobotPose(
+                            new Pose2d(
+                                FieldConstants.Subwoofer.centerFace.getTranslation(),
+                                RobotState.getRobotPose().getRotation())))
+                .ignoringDisable(true));
     driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());

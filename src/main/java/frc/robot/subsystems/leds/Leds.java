@@ -9,6 +9,7 @@ package frc.robot.subsystems.leds;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotState;
 
@@ -26,7 +27,10 @@ public class Leds {
   }
 
   public void periodic() {
-    if (RobotState.getControlData().hasNoteLocked()) {
+    if (RobotState.getControlData().hasNoteLocked()
+        && RobotState.getControlData().hasNoteStaged()) {
+      strobe(Color.kGreen, Color.kBlack, 1.0);
+    } else if (RobotState.getControlData().hasNoteLocked()) {
       solid(Color.kGreen);
     } else if (RobotState.getControlData().hasNoteStaged()) {
       solid(Color.kGold);
@@ -37,6 +41,11 @@ public class Leds {
     }
 
     leds.setData(buffer);
+  }
+
+  private void strobe(Color c1, Color c2, double duration) {
+    boolean c1On = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
+    solid(c1On ? c1 : c2);
   }
 
   private void solid(Color color) {

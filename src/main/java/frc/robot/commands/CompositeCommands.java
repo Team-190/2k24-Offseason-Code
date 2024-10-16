@@ -42,9 +42,11 @@ public class CompositeCommands {
         intake.shoot(),
         Commands.either(
             Commands.sequence(
-                CompositeCommands.collect(intake, arm),
+                intake.intake(),
                 Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
-                Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
+                Commands.waitUntil(
+                    () ->
+                        shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
                 Commands.waitSeconds(0.125),
                 intake.shoot(),
                 arm.stowAngle()),

@@ -29,7 +29,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.drive.drive.PhoenixOdometryThread;
-import frc.robot.subsystems.drive.module.ModuleConstants.ModuleConfig;
+import frc.robot.subsystems.drive.module.ModuleConstants.ModuleConfiguration;
 import java.util.Queue;
 
 public class ModuleIOTalonFX implements ModuleIO {
@@ -70,7 +70,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final VelocityVoltage velocityControl;
   private final PositionVoltage positionControl;
 
-  public ModuleIOTalonFX(ModuleConfig moduleConfig) {
+  public ModuleIOTalonFX(ModuleConfiguration moduleConfig) {
     driveTalon = new TalonFX(moduleConfig.drive(), DriveConstants.CANIVORE);
     turnTalon = new TalonFX(moduleConfig.turn(), DriveConstants.CANIVORE);
     cancoder = new CANcoder(moduleConfig.encoder(), DriveConstants.CANIVORE);
