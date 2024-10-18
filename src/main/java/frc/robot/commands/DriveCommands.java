@@ -90,15 +90,15 @@ public final class DriveCommands {
           if (speakerAim.getAsBoolean()) {
             angular =
                 RobotState.getControlData().speakerRadialVelocity()
-                    - (aimController.calculate(
+                    + (aimController.calculate(
                         RobotState.getRobotPose().getRotation().getRadians(),
                         RobotState.getControlData().speakerRobotAngle().getRadians()));
           } else if (ampAim.getAsBoolean()) {
             angular =
                 RobotState.getControlData().speakerRadialVelocity()
-                    - (aimController.calculate(
+                    + (aimController.calculate(
                         RobotState.getRobotPose().getRotation().getRadians(),
-                        Rotation2d.fromDegrees(-90.0).getRadians()));
+                        Rotation2d.fromDegrees(90.0).getRadians()));
           } else {
             angular = omega * DriveConstants.MAX_ANGULAR_VELOCITY;
           }
@@ -116,6 +116,36 @@ public final class DriveCommands {
           drive.runVelocity(chassisSpeeds);
         },
         drive);
+  }
+
+  public static final Command aimTowardSpeaker(Drive drive) {
+    return Commands.run(
+            () -> {
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+
+              ChassisSpeeds chassisSpeeds =
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      0,
+                      0,
+                      RobotState.getControlData().speakerRadialVelocity()
+                          + (aimController.calculate(
+                              RobotState.getRobotPose().getRotation().getRadians(),
+                              RobotState.getControlData().speakerRobotAngle().getRadians())),
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation());
+
+              // Convert to field relative speeds & send command
+              drive.runVelocity(chassisSpeeds);
+            },
+            drive)
+        .until(() -> aimController.atSetpoint())
+        .finallyDo(
+            () -> {
+              drive.stop();
+            });
   }
 
   public static final Command stop(Drive drive) {

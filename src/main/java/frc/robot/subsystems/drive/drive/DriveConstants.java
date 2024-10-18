@@ -48,7 +48,7 @@ public final class DriveConstants {
       default:
         TRACK_WIDTH_X = Units.inchesToMeters(20.75);
         TRACK_WIDTH_Y = Units.inchesToMeters(20.75);
-        MAX_LINEAR_VELOCITY = Units.feetToMeters(19.5);
+        MAX_LINEAR_VELOCITY = Units.feetToMeters(15.0);
         DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2, TRACK_WIDTH_Y / 2);
         MAX_ANGULAR_VELOCITY = (MAX_LINEAR_VELOCITY / DRIVE_BASE_RADIUS) * 0.6;
         KINEMATICS =
@@ -68,11 +68,11 @@ public final class DriveConstants {
 
         AUTO_X_KP.initDefault(1.0);
         AUTO_Y_KP.initDefault(1.0);
-        AUTO_THETA_KP.initDefault(6.0);
+        AUTO_THETA_KP.initDefault(5.0);
 
         AUTO_X_KD.initDefault(0.0);
         AUTO_Y_KD.initDefault(0.0);
-        AUTO_THETA_KD.initDefault(0.01);
+        AUTO_THETA_KD.initDefault(0.05);
 
         ROBOT_MASS_KG = 51.2559;
         ROBOT_MOMENT_OF_INERTIA = 3.72559543;

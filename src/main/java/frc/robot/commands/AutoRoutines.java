@@ -116,11 +116,6 @@ public final class AutoRoutines {
   }
 
   public static final Command get7PieceAuto(Drive drive, Intake intake, Arm arm, Shooter shooter) {
-    return Commands.sequence(
-        resetToInitialHeading(drive, "Auto_1_7"),
-        CompositeCommands.shootSubwoofer(intake, arm, shooter),
-        Commands.race(
-            getInitialChoreoCommand(drive, "Auto_1_7"), CompositeCommands.collect(intake, arm)),
-        CompositeCommands.shootSpeaker(drive, intake, arm, shooter));
+    return getInitialChoreoCommand(drive, "New Path");
   }
 }

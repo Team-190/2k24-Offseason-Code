@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
+import lombok.Getter;
+import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -20,6 +22,7 @@ public class Shooter extends SubsystemBase {
   private double bottomVelocitySetPointRadiansPerSecond;
 
   private boolean isClosedLoop;
+  @Getter @Setter private boolean isShooting;
   private final SysIdRoutine characterizationRoutine;
 
   public Shooter(ShooterIO io) {

@@ -45,6 +45,7 @@ public class RobotState {
           false,
           false,
           false,
+          false,
           false);
 
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
@@ -64,13 +65,16 @@ public class RobotState {
 
     // Units: radians
     speakerShotAngleMap.put(1.0051382994805276, Units.degreesToRadians(57.0));
-    speakerShotAngleMap.put(1.5116749958699147, Units.degreesToRadians(45.8366));
-    speakerShotAngleMap.put(2.0190578380502866, Units.degreesToRadians(40.107));
-    speakerShotAngleMap.put(2.4902075857788795, Units.degreesToRadians(37.24226));
-    speakerShotAngleMap.put(2.9496336444802624, Units.degreesToRadians(32.372115));
-    speakerShotAngleMap.put(3.559494194140593, Units.degreesToRadians(28.6479));
-    speakerShotAngleMap.put(3.9738787048488335, Units.degreesToRadians(26.92902));
-    speakerShotAngleMap.put(4.590536757726377, Units.degreesToRadians(25.21014));
+    speakerShotAngleMap.put(1.4924089439984491, 0.84);
+    speakerShotAngleMap.put(2.0188748058905883, 0.74);
+    speakerShotAngleMap.put(2.494223768158363, 0.66);
+    speakerShotAngleMap.put(2.997906851949344, 0.57);
+    speakerShotAngleMap.put(3.481117210151285, 0.5);
+    speakerShotAngleMap.put(3.992798130214426, 0.46);
+    speakerShotAngleMap.put(4.590536757726377, 0.44);
+    speakerShotAngleMap.put(4.9909464332643125, 0.42);
+    speakerShotAngleMap.put(5.508818126964896, 0.4);
+    speakerShotAngleMap.put(6.067253283488031, 0.37);
 
     // Units: radians
     feedShotAngleMap.put(0.0, 0.0);
@@ -100,7 +104,8 @@ public class RobotState {
       boolean hasNoteLocked,
       boolean hasNoteStaged,
       boolean isIntaking,
-      boolean isClimbed) {
+      boolean isClimbed,
+      boolean isShooting) {
 
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
@@ -112,27 +117,27 @@ public class RobotState {
             camera.getName(), getRobotPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       }
 
-      if (camera.getTargetAquired() && robotYawVelocity <= Units.degreesToRadians(180.0)) {
-        double xyStddevSecondary =
-            camera.getSecondaryXYStandardDeviationCoefficient()
-                * Math.pow(camera.getAverageDistance(), 2.0)
-                / camera.getTotalTargets()
-                * camera.getHorizontalFOV();
+      if (camera.getTargetAquired() && Math.abs(robotYawVelocity) <= Units.degreesToRadians(0.5)) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
                 / camera.getTotalTargets()
                 * camera.getHorizontalFOV();
-        if (camera.getAverageDistance() <= 1.5) {
+        poseEstimator.addVisionMeasurement(
+            camera.getPrimaryPose(),
+            camera.getFrameTimestamp(),
+            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
+        if (camera.getAverageDistance() <= 1.0) {
+          double xyStddevSecondary =
+              camera.getSecondaryXYStandardDeviationCoefficient()
+                  * Math.pow(camera.getAverageDistance(), 2.0)
+                  / camera.getTotalTargets()
+                  * camera.getHorizontalFOV();
           poseEstimator.addVisionMeasurement(
               camera.getSecondaryPose(),
               camera.getFrameTimestamp(),
               VecBuilder.fill(xyStddevSecondary, xyStddevSecondary, Double.POSITIVE_INFINITY));
         }
-        poseEstimator.addVisionMeasurement(
-            camera.getPrimaryPose(),
-            camera.getFrameTimestamp(),
-            VecBuilder.fill(xyStddevPrimary, xyStddevPrimary, Double.POSITIVE_INFINITY));
       }
     }
 
@@ -149,7 +154,11 @@ public class RobotState {
             .getTranslation()
             .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToSpeaker)));
     double effectiveDistanceToSpeaker = effectiveSpeakerAimingPose.getDistance(speakerPose);
-    Rotation2d speakerRobotAngle = speakerPose.minus(effectiveSpeakerAimingPose).getAngle();
+    Rotation2d speakerRobotAngle =
+        speakerPose
+            .minus(effectiveSpeakerAimingPose)
+            .getAngle()
+            .minus(Rotation2d.fromDegrees(180.0 + 3.5));
     double speakerTangentialVelocity =
         -robotFieldRelativeVelocity.rotateBy(speakerRobotAngle.unaryMinus()).getY();
     double speakerRadialVelocity = speakerTangentialVelocity / effectiveDistanceToSpeaker;
@@ -179,7 +188,8 @@ public class RobotState {
             hasNoteLocked,
             hasNoteStaged,
             isIntaking,
-            isClimbed);
+            isClimbed,
+            isShooting);
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
@@ -227,5 +237,6 @@ public class RobotState {
       boolean hasNoteLocked,
       boolean hasNoteStaged,
       boolean isIntaking,
-      boolean isClimbed) {}
+      boolean isClimbed,
+      boolean isShooting) {}
 }

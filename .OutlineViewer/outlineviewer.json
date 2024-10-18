@@ -6,7 +6,10 @@
   "transitory": {
     "SmartDashboard": {
       "TunableNumbers": {
-        "Drive": {
+        "Arm": {
+          "open": true
+        },
+        "Shooter": {
           "open": true
         },
         "open": true

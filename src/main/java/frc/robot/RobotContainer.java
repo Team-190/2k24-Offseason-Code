@@ -184,13 +184,15 @@ public class RobotContainer {
             drive,
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
-            () -> driver.getRightX(),
+            () -> -driver.getRightX(),
             driver.rightBumper(),
             driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05)));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
-    driver.rightBumper().whileTrue(CompositeCommands.shootSpeaker(drive, intake, arm, shooter));
+    driver
+        .rightBumper()
+        .whileTrue(CompositeCommands.shootSpeaker(drive, intake, arm, shooter, driver.getHID()));
     driver.x().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
     driver
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.95)
@@ -210,6 +212,7 @@ public class RobotContainer {
     operator.povDown().whileTrue(climber.climb());
     operator.y().whileTrue(climber.deClimb());
     driver.a().whileTrue(intake.shoot());
+    operator.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
   }
 
   public void robotPeriodic() {
@@ -222,7 +225,8 @@ public class RobotContainer {
         intake.hasNoteLocked(),
         intake.hasNoteStaged(),
         intake.isIntaking(),
-        climber.isClimbed());
+        climber.isClimbed(),
+        shooter.isShooting());
     leds.periodic();
   }
 

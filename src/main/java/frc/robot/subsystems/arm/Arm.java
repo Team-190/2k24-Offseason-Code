@@ -175,7 +175,7 @@ public class Arm extends SubsystemBase {
 
   public boolean shootForward() {
     double angle = AllianceFlipUtil.apply(RobotState.getRobotPose().getRotation()).getDegrees();
-    return !(angle > -90 && angle < 90);
+    return (angle > -90 && angle < 90);
   }
 
   public boolean atSetpoint() {

@@ -27,7 +27,9 @@ public class Leds {
   }
 
   public void periodic() {
-    if (RobotState.getControlData().hasNoteLocked()
+    if (RobotState.getControlData().isShooting()) {
+      strobe(Color.kWhite, Color.kBlack, 0.125);
+    } else if (RobotState.getControlData().hasNoteLocked()
         && RobotState.getControlData().hasNoteStaged()) {
       strobe(Color.kGreen, Color.kBlack, 1.0);
     } else if (RobotState.getControlData().hasNoteLocked()) {

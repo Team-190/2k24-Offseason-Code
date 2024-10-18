@@ -2,6 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotState;
@@ -33,25 +36,47 @@ public class CompositeCommands {
         arm.ejectCommand(), Commands.waitUntil(() -> arm.atSetpoint()), intake.eject());
   }
 
-  public static final Command shootSpeaker(Drive drive, Intake intake, Arm arm, Shooter shooter) {
+  public static final Command shootSpeaker(
+      Drive drive, Intake intake, Arm arm, Shooter shooter, XboxController driver) {
     return Commands.sequence(
-        Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+            Commands.runOnce(() -> shooter.setShooting(true)),
+            Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+            Commands.waitUntil(
+                () ->
+                    shooter.atSetPoint()
+                        && arm.atSetpoint()
+                        && DriveCommands.atAimSetpoint()
+                        && drive.getYawVelocity() <= Units.degreesToRadians(1)),
+            Commands.waitSeconds(0.125),
+            intake.shoot(),
+            Commands.either(
+                Commands.sequence(
+                    intake.intake(),
+                    Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+                    Commands.waitUntil(
+                        () ->
+                            shooter.atSetPoint()
+                                && arm.atSetpoint()
+                                && DriveCommands.atAimSetpoint()),
+                    Commands.waitSeconds(0.125),
+                    intake.shoot(),
+                    arm.stowAngle()),
+                arm.stowAngle(),
+                () -> intake.hasNoteStaged()),
+            Commands.runOnce(() -> shooter.setShooting(false)),
+            Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
+            Commands.waitSeconds(0.25))
+        .finallyDo(() -> driver.setRumble(RumbleType.kBothRumble, 0));
+  }
+
+  public static final Command shootSpeakerAuto(
+      Drive drive, Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        Commands.deadline(shooter.setSubwooferVelocity(), arm.shootAngle()),
         Commands.waitUntil(
             () -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
         Commands.waitSeconds(0.125),
-        intake.shoot(),
-        Commands.either(
-            Commands.sequence(
-                intake.intake(),
-                Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
-                Commands.waitUntil(
-                    () ->
-                        shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
-                Commands.waitSeconds(0.125),
-                intake.shoot(),
-                arm.stowAngle()),
-            arm.stowAngle(),
-            () -> intake.hasNoteStaged()));
+        intake.shoot());
   }
 
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {
