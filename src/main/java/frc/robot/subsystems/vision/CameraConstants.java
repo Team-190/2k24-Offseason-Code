@@ -47,6 +47,7 @@ public class CameraConstants {
     public static final Camera LEFT_CAMERA =
         new Camera(
             new CameraIO() {},
+            RobotCameras.LEFT_CAMERA.getName(),
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
@@ -54,6 +55,7 @@ public class CameraConstants {
     public static final Camera RIGHT_CAMERA =
         new Camera(
             new CameraIO() {},
+            RobotCameras.RIGHT_CAMERA.getName(),
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,

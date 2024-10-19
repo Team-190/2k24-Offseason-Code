@@ -33,9 +33,27 @@ public class Camera {
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
   }
 
+    public Camera(
+      CameraIO io,
+      String name,
+      double horizontalFOV,
+      double verticalFOV,
+      double primaryXYStandardDeviationCoefficient,
+      double secondaryXYStandardDeviationCoefficient) {
+    inputs = new CameraIOInputsAutoLogged();
+
+    this.io = io;
+    this.name = name;
+    this.cameraType = io.getCameraType();
+    this.horizontalFOV = horizontalFOV;
+    this.verticalFOV = verticalFOV;
+    this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
+    this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
+  }
+
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Vision/Cameras/" + io.toString(), inputs);
+    Logger.processInputs("Vision/Cameras/" + name, inputs);
   }
 
   public Rotation2d getXOffset() {
