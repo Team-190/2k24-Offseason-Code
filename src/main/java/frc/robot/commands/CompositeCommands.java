@@ -62,7 +62,8 @@ public class CompositeCommands {
                     arm.stowAngle()),
                 arm.stowAngle(),
                 () -> intake.hasNoteStaged()),
-            Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)))
+            Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
+            Commands.waitSeconds(1))
         .finallyDo(() -> driver.setRumble(RumbleType.kBothRumble, 0));
   }
 
