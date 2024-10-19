@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotState;
 import frc.robot.util.LoggedTunableNumber;
-import lombok.Getter;
-import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,7 +20,6 @@ public class Shooter extends SubsystemBase {
   private double bottomVelocitySetPointRadiansPerSecond;
 
   private boolean isClosedLoop;
-  @Getter @Setter private boolean isShooting;
   private final SysIdRoutine characterizationRoutine;
 
   public Shooter(ShooterIO io) {
@@ -91,24 +88,6 @@ public class Shooter extends SubsystemBase {
   }
 
   /**
-   * Sets the shooter's velocity to the dynamic speaker shot speed. This command will run once and
-   * set the velocity setpoint to the speaker shot speed obtained from the {@link
-   * RobotState#getControlData()} method. It will also enable the closed-loop control of the shooter
-   * motors.
-   *
-   * @return a command to set the shooter's velocity to the speaker shot speed
-   */
-  public Command setSpeakerVelocity() {
-
-    return Commands.runOnce(
-        () -> {
-          topVelocitySetPointRadiansPerSecond = RobotState.getControlData().speakerShotSpeed();
-          bottomVelocitySetPointRadiansPerSecond = topVelocitySetPointRadiansPerSecond;
-          isClosedLoop = true;
-        });
-  }
-
-  /**
    * Sets the shooter's velocity to the dynamic feed speed. This command will run once and set the
    * velocity setpoint to the feed speed obtained from the {@link RobotState#getControlData()}
    * method. It will also enable the closed-loop control of the shooter motors.
@@ -149,10 +128,10 @@ public class Shooter extends SubsystemBase {
    *
    * @return a command to set the shooter's velocity to the subwoofer speed
    */
-  public Command setSubwooferVelocity() {
+  public Command setSpeakerVelocity() {
     return Commands.runOnce(
         () -> {
-          topVelocitySetPointRadiansPerSecond = ShooterConstants.SUBWOOFER_SPEED.get();
+          topVelocitySetPointRadiansPerSecond = ShooterConstants.SPEAKER_SPEED.get();
           bottomVelocitySetPointRadiansPerSecond = topVelocitySetPointRadiansPerSecond;
           isClosedLoop = true;
         });

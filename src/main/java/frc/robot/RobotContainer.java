@@ -186,7 +186,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05)));
+            driver.b()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
@@ -207,11 +207,10 @@ public class RobotContainer {
                                 FieldConstants.Subwoofer.centerFace.getTranslation(),
                                 RobotState.getRobotPose().getRotation())))
                 .ignoringDisable(true));
-    driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
     operator.y().whileTrue(climber.deClimb());
-    driver.a().whileTrue(intake.shoot());
+    driver.a().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
     operator.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
   }
 
@@ -225,8 +224,7 @@ public class RobotContainer {
         intake.hasNoteLocked(),
         intake.hasNoteStaged(),
         intake.isIntaking(),
-        climber.isClimbed(),
-        shooter.isShooting());
+        climber.isClimbed());
     leds.periodic();
   }
 

@@ -39,8 +39,7 @@ public class CompositeCommands {
   public static final Command shootSpeaker(
       Drive drive, Intake intake, Arm arm, Shooter shooter, XboxController driver) {
     return Commands.sequence(
-            Commands.runOnce(() -> shooter.setShooting(true)),
-            Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()),
             Commands.waitUntil(
                 () ->
                     shooter.atSetPoint()
@@ -52,7 +51,7 @@ public class CompositeCommands {
             Commands.either(
                 Commands.sequence(
                     intake.intake(),
-                    Commands.parallel(shooter.setSubwooferVelocity(), arm.shootAngle()),
+                    Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()),
                     Commands.waitUntil(
                         () ->
                             shooter.atSetPoint()
@@ -63,16 +62,14 @@ public class CompositeCommands {
                     arm.stowAngle()),
                 arm.stowAngle(),
                 () -> intake.hasNoteStaged()),
-            Commands.runOnce(() -> shooter.setShooting(false)),
-            Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
-            Commands.waitSeconds(0.25))
+            Commands.runOnce(() -> driver.setRumble(RumbleType.kBothRumble, 1)))
         .finallyDo(() -> driver.setRumble(RumbleType.kBothRumble, 0));
   }
 
   public static final Command shootSpeakerAuto(
       Drive drive, Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
-        Commands.deadline(shooter.setSubwooferVelocity(), arm.shootAngle()),
+        Commands.deadline(shooter.setSpeakerVelocity(), arm.shootAngle()),
         Commands.waitUntil(
             () -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
         Commands.waitSeconds(0.125),
@@ -81,13 +78,13 @@ public class CompositeCommands {
 
   public static final Command shootSubwoofer(Intake intake, Arm arm, Shooter shooter) {
     return Commands.sequence(
-        Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
+        Commands.parallel(shooter.setSpeakerVelocity(), arm.subwooferAngle()),
         Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
         intake.shoot(),
         Commands.either(
             Commands.sequence(
                 CompositeCommands.collect(intake, arm),
-                Commands.parallel(shooter.setSubwooferVelocity(), arm.subwooferAngle()),
+                Commands.parallel(shooter.setSpeakerVelocity(), arm.subwooferAngle()),
                 Commands.waitUntil(() -> shooter.atSetPoint() && arm.atSetpoint()),
                 intake.shoot(),
                 arm.stowAngle()),

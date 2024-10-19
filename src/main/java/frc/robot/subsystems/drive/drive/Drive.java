@@ -82,16 +82,19 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
+    double startTime = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
       module.updateInputs();
     }
+    double endUpdateInputs = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
+    double endModulePeriodic = System.currentTimeMillis();
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
@@ -105,6 +108,7 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints Optimized", new SwerveModuleState[] {});
     }
 
+    double startOdometryUpdate = System.currentTimeMillis();
     // Update odometry
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -132,7 +136,6 @@ public class Drive extends SubsystemBase {
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
         rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
       }
-
       // Apply update
 
       ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
@@ -143,6 +146,11 @@ public class Drive extends SubsystemBase {
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
+    double endOdometryUpdate = System.currentTimeMillis();
+
+    Logger.recordOutput("Drive/Time/Update Module Inputs", endUpdateInputs - startTime);
+    Logger.recordOutput("Drive/Time/Update Module Periodic", endModulePeriodic - endUpdateInputs);
+    Logger.recordOutput("Drive/Time/Update Module Inputs", endOdometryUpdate - startOdometryUpdate);
   }
 
   /**
