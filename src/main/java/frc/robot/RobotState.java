@@ -89,7 +89,7 @@ public class RobotState {
             camera.getName(), getRobotPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       }
 
-      if (camera.getTargetAquired() && Math.abs(robotYawVelocity) <= Units.degreesToRadians(0.5)) {
+      if (camera.getTargetAquired()) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
