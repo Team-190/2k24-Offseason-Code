@@ -123,7 +123,10 @@ public class RobotContainer {
       intake = new Intake(new IntakeIO() {});
     }
     if (vision == null) {
-      vision = new Vision();
+      vision =
+          new Vision(
+              CameraConstants.ReplayCameras.LEFT_CAMERA,
+              CameraConstants.ReplayCameras.RIGHT_CAMERA);
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
@@ -133,6 +136,9 @@ public class RobotContainer {
     }
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
+    }
+    if (leds == null) {
+      leds = new Leds();
     }
 
     // Configure auto choices.

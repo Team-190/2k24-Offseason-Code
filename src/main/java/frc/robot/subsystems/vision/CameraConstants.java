@@ -42,4 +42,21 @@ public class CameraConstants {
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
   }
+
+  public static class ReplayCameras {
+    public static final Camera LEFT_CAMERA =
+        new Camera(
+            new CameraIO() {},
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+    public static final Camera RIGHT_CAMERA =
+        new Camera(
+            new CameraIO() {},
+            Limelight3GConstants.HORIZONTAL_FOV,
+            Limelight3GConstants.VERTICAL_FOV,
+            Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+  }
 }
