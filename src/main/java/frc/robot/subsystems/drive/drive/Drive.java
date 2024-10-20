@@ -150,7 +150,7 @@ public class Drive extends SubsystemBase {
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
     double endOdometryUpdate = System.currentTimeMillis();
-    latestRobotHeadingTimestamp = NetworkTablesJNI.now();
+    latestRobotHeadingTimestamp = gyroInputs.odometryNTJNITimestamps;
 
     Logger.recordOutput("Drive/Time/Update Module Inputs", endUpdateInputs - startTime);
     Logger.recordOutput("Drive/Time/Update Module Periodic", endModulePeriodic - endUpdateInputs);
