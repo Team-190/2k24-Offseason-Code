@@ -35,7 +35,7 @@ public class CameraConstants {
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-left").publish());
+            NetworkTableInstance.getDefault().getTable("limelight-left").getDoubleArrayTopic("robot_orientation_set").publish());
     public static final Camera RIGHT_CAMERA =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
@@ -43,7 +43,7 @@ public class CameraConstants {
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-right").publish());
+            NetworkTableInstance.getDefault().getTable("limelight-right").getDoubleArrayTopic("robot_orientation_set").publish());
   }
 
   public static class ReplayCameras {
@@ -55,7 +55,7 @@ public class CameraConstants {
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-left").publish());
+            RobotCameras.LEFT_CAMERA.getRobotHeadingPublisher());
     public static final Camera RIGHT_CAMERA =
         new Camera(
             new CameraIO() {},
@@ -64,6 +64,6 @@ public class CameraConstants {
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
             Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
-            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-right").publish());
+            RobotCameras.RIGHT_CAMERA.getRobotHeadingPublisher());
   }
 }
