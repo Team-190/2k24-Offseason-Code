@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 
@@ -15,13 +16,15 @@ public class Camera {
   @Getter private final double verticalFOV;
   @Getter private final double primaryXYStandardDeviationCoefficient;
   @Getter private final double secondaryXYStandardDeviationCoefficient;
+  @Getter private final DoubleArrayPublisher robotHeadingPublisher;
 
   public Camera(
       CameraIO io,
       double horizontalFOV,
       double verticalFOV,
       double primaryXYStandardDeviationCoefficient,
-      double secondaryXYStandardDeviationCoefficient) {
+      double secondaryXYStandardDeviationCoefficient,
+      DoubleArrayPublisher robotHeadingPublisher) {
     inputs = new CameraIOInputsAutoLogged();
 
     this.io = io;
@@ -31,6 +34,7 @@ public class Camera {
     this.verticalFOV = verticalFOV;
     this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
+    this.robotHeadingPublisher = robotHeadingPublisher;
   }
 
   public Camera(
@@ -39,7 +43,8 @@ public class Camera {
       double horizontalFOV,
       double verticalFOV,
       double primaryXYStandardDeviationCoefficient,
-      double secondaryXYStandardDeviationCoefficient) {
+      double secondaryXYStandardDeviationCoefficient,
+      DoubleArrayPublisher robotHeadingPublisher) {
     inputs = new CameraIOInputsAutoLogged();
 
     this.io = io;
@@ -49,6 +54,7 @@ public class Camera {
     this.verticalFOV = verticalFOV;
     this.primaryXYStandardDeviationCoefficient = primaryXYStandardDeviationCoefficient;
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
+    this.robotHeadingPublisher = robotHeadingPublisher;
   }
 
   public void periodic() {

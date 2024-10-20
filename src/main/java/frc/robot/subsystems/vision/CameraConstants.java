@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class CameraConstants {
   public static final double BLINK_TIME = 0.067;
@@ -33,14 +34,16 @@ public class CameraConstants {
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-left").publish());
     public static final Camera RIGHT_CAMERA =
         new Camera(
             new CameraIOLimelight("right", CameraType.LIMELIGHT_3G),
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-right").publish());
   }
 
   public static class ReplayCameras {
@@ -51,7 +54,8 @@ public class CameraConstants {
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-left").publish());
     public static final Camera RIGHT_CAMERA =
         new Camera(
             new CameraIO() {},
@@ -59,6 +63,7 @@ public class CameraConstants {
             Limelight3GConstants.HORIZONTAL_FOV,
             Limelight3GConstants.VERTICAL_FOV,
             Limelight3GConstants.MEGATAG_XY_STANDARD_DEVIATION_COEFFICIENT,
-            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT);
+            Limelight3GConstants.MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT,
+            NetworkTableInstance.getDefault().getDoubleArrayTopic("limelight-right").publish());
   }
 }

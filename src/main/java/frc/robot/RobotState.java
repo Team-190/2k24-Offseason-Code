@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleArrayTopic;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
@@ -39,9 +37,6 @@ public class RobotState {
 
   private static Rotation2d robotHeading;
   private static SwerveModulePosition[] modulePositions;
-
-  private static DoubleArrayTopic limelightLeftData;
-  private static DoubleArrayTopic limelightRightData;
 
   static {
     // Units: radians
@@ -96,11 +91,7 @@ public class RobotState {
         double[] limelightHeadingData = {
           RobotState.getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
         };
-        NetworkTableInstance.getDefault()
-            .getTable(camera.getName())
-            .getDoubleArrayTopic("robot_orientation_set")
-            .publish()
-            .set(limelightHeadingData, latestRobotHeadingTimestamp);
+        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
 
       if (camera.getTargetAquired()
