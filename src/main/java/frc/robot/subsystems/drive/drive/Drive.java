@@ -245,10 +245,6 @@ public class Drive extends SubsystemBase {
     return rawGyroRotation;
   }
 
-  public void setRotation(Rotation2d rotation) {
-    rawGyroRotation = rotation;
-  }
-
   /** Returns the current yaw velocity */
   public double getYawVelocity() {
     return gyroInputs.yawVelocityRadPerSec;
