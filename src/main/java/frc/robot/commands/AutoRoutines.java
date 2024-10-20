@@ -21,7 +21,8 @@ public final class AutoRoutines {
 
   public static final Command resetToInitialHeading(Drive drive, String trajectory) {
     ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
-    return CompositeCommands.resetHeading(drive, (AllianceFlipUtil.apply(choreoTrajectory.getInitialPose())));
+    return CompositeCommands.resetHeading(
+        drive, (AllianceFlipUtil.apply(choreoTrajectory.getInitialPose())));
   }
 
   /**
@@ -73,8 +74,7 @@ public final class AutoRoutines {
         resetToInitialHeading(drive, "Auto_1_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
-            getChoreoCommand(drive, "Auto_1_Source"),
-            CompositeCommands.collect(intake, arm)),
+            getChoreoCommand(drive, "Auto_1_Source"), CompositeCommands.collect(intake, arm)),
         getChoreoCommand(drive, "Auto_2_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
   }
