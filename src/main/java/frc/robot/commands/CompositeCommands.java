@@ -22,6 +22,17 @@ public class CompositeCommands {
                   new Pose2d(
                       RobotState.getRobotPose().getTranslation(),
                       AllianceFlipUtil.apply(new Rotation2d())));
+            drive.setRotation(AllianceFlipUtil.apply(new Rotation2d()));
+            })
+        .ignoringDisable(true);
+  }
+
+  public static final Command resetHeading(Drive drive, Pose2d pose) {
+    return Commands.runOnce(
+            () -> {
+              RobotState.resetRobotPose(
+              pose);
+            drive.setRotation(pose.getRotation());
             })
         .ignoringDisable(true);
   }

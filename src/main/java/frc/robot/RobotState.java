@@ -85,14 +85,11 @@ public class RobotState {
     RobotState.modulePositions = modulePositions;
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
-    long timestamp = NetworkTablesJNI.now();
 
     for (Camera camera : cameras) {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
           || camera.getCameraType() == CameraType.LIMELIGHT_3) {
-        double[] limelightHeadingData = {
-          robotHeading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
-        };
+        double[] limelightHeadingData = {robotHeading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0};
         camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
 

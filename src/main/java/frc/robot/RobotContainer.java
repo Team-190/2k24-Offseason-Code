@@ -148,7 +148,6 @@ public class RobotContainer {
         "Amp Side", AutoRoutines.getBoatBattleAmpAuto(drive, intake, arm, shooter));
     autoChooser.addOption(
         "Source Side", AutoRoutines.getBoatBattleSourceAuto(drive, intake, arm, shooter));
-    autoChooser.addOption("Seven Piece", AutoRoutines.get7PieceAuto(drive, intake, arm, shooter));
     if (Constants.TUNING_MODE) {
       autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
       autoChooser.addOption(
