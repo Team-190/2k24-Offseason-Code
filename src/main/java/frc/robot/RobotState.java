@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
@@ -84,6 +85,7 @@ public class RobotState {
     RobotState.modulePositions = modulePositions;
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+    long timestamp = NetworkTablesJNI.now();
 
     for (Camera camera : cameras) {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
@@ -91,7 +93,7 @@ public class RobotState {
         double[] limelightHeadingData = {
           RobotState.getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
         };
-        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
+        camera.getRobotHeadingPublisher().set(limelightHeadingData, timestamp);
       }
 
       if (camera.getTargetAquired()
