@@ -33,7 +33,7 @@ public class Camera {
     this.secondaryXYStandardDeviationCoefficient = secondaryXYStandardDeviationCoefficient;
   }
 
-    public Camera(
+  public Camera(
       CameraIO io,
       String name,
       double horizontalFOV,

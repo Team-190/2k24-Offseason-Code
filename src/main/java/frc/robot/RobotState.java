@@ -15,6 +15,7 @@ import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraType;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.GeometryUtil;
 import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,6 +83,8 @@ public class RobotState {
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
+
     for (Camera camera : cameras) {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
           || camera.getCameraType() == CameraType.LIMELIGHT_3) {
@@ -89,7 +92,10 @@ public class RobotState {
             camera.getName(), getRobotPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       }
 
-      if (camera.getTargetAquired()) {
+      if (camera.getTargetAquired()
+          && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
+          && !GeometryUtil.isZero(camera.getPrimaryPose())
+          && !GeometryUtil.isZero(camera.getSecondaryPose())) {
         double xyStddevPrimary =
             camera.getPrimaryXYStandardDeviationCoefficient()
                 * Math.pow(camera.getAverageDistance(), 2.0)
@@ -112,8 +118,6 @@ public class RobotState {
         }
       }
     }
-
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
 
     // Speaker Shot Calculations
     Translation2d speakerPose =
