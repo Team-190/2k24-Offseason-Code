@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
@@ -16,7 +17,6 @@ import frc.robot.subsystems.vision.Camera;
 import frc.robot.subsystems.vision.CameraType;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
-import frc.robot.util.LimelightHelpers;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.Logger;
@@ -71,6 +71,7 @@ public class RobotState {
 
   public static void periodic(
       Rotation2d robotHeading,
+      long latestRobotHeadingTimestamp,
       double robotYawVelocity,
       Translation2d robotFieldRelativeVelocity,
       SwerveModulePosition[] modulePositions,
@@ -88,12 +89,17 @@ public class RobotState {
     for (Camera camera : cameras) {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
           || camera.getCameraType() == CameraType.LIMELIGHT_3) {
-        LimelightHelpers.SetRobotOrientation(
-            camera.getName(), getRobotPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        double[] limelightHeadingData = {
+          RobotState.getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
+        };
+        NetworkTableInstance.getDefault()
+            .getTable(camera.getName())
+            .getDoubleArrayTopic("robot_orientation_set")
+            .getEntry(limelightHeadingData)
+            .set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
 
       if (camera.getTargetAquired()
-          && Math.abs(robotYawVelocity) <= Units.degreesToRadians(15.0)
           && !GeometryUtil.isZero(camera.getPrimaryPose())
           && !GeometryUtil.isZero(camera.getSecondaryPose())) {
         double xyStddevPrimary =

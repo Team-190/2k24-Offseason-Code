@@ -223,6 +223,7 @@ public class RobotContainer {
   public void robotPeriodic() {
     RobotState.periodic(
         drive.getRotation(),
+        drive.getLatestRobotHeadingTimestamp(),
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),

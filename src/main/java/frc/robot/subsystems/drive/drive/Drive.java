@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,6 +45,7 @@ public class Drive extends SubsystemBase {
 
   private final GyroIOInputsAutoLogged gyroInputs;
   private final GyroIO gyroIO;
+  @Getter private long latestRobotHeadingTimestamp;
 
   private final Module[] modules; // FL, FR, BL, BR
 
@@ -79,6 +81,7 @@ public class Drive extends SubsystemBase {
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
+    latestRobotHeadingTimestamp = NetworkTablesJNI.now();
   }
 
   public void periodic() {
@@ -147,6 +150,7 @@ public class Drive extends SubsystemBase {
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
     double endOdometryUpdate = System.currentTimeMillis();
+    latestRobotHeadingTimestamp = NetworkTablesJNI.now();
 
     Logger.recordOutput("Drive/Time/Update Module Inputs", endUpdateInputs - startTime);
     Logger.recordOutput("Drive/Time/Update Module Periodic", endModulePeriodic - endUpdateInputs);
