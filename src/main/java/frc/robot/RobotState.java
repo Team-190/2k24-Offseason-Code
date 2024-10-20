@@ -91,9 +91,9 @@ public class RobotState {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
           || camera.getCameraType() == CameraType.LIMELIGHT_3) {
         double[] limelightHeadingData = {
-          RobotState.getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
+          robotHeading.getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
         };
-        camera.getRobotHeadingPublisher().set(limelightHeadingData, timestamp);
+        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
 
       if (camera.getTargetAquired()
