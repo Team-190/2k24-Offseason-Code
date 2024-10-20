@@ -91,7 +91,7 @@ public class RobotState {
         double[] limelightHeadingData = {
           getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
         };
-        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
+        camera.getRobotHeadingPublisher().set(limelightHeadingData, 0);
       }
 
       if (camera.getTargetAquired()
