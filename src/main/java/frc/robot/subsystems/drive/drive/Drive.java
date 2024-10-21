@@ -91,13 +91,11 @@ public class Drive extends SubsystemBase {
     for (var module : modules) {
       module.updateInputs();
     }
-    double endUpdateInputs = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
-    double endModulePeriodic = System.currentTimeMillis();
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
@@ -111,7 +109,7 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints Optimized", new SwerveModuleState[] {});
     }
 
-    double startOdometryUpdate = System.currentTimeMillis();
+    double startOdomUpdate = System.currentTimeMillis();
     // Update odometry
     double[] sampleTimestamps =
         modules[0].getOdometryTimestamps(); // All signals are sampled together
@@ -149,12 +147,12 @@ public class Drive extends SubsystemBase {
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
-    double endOdometryUpdate = System.currentTimeMillis();
-    latestRobotHeadingTimestamp = NetworkTablesJNI.now();
+    double endOdomUpdate = System.currentTimeMillis();
 
-    Logger.recordOutput("Drive/Time/Update Module Inputs", endUpdateInputs - startTime);
-    Logger.recordOutput("Drive/Time/Update Module Periodic", endModulePeriodic - endUpdateInputs);
-    Logger.recordOutput("Drive/Time/Update Module Inputs", endOdometryUpdate - startOdometryUpdate);
+    latestRobotHeadingTimestamp = gyroInputs.odometryNTJNITimestamps;
+    double endTime = System.currentTimeMillis();
+    Logger.recordOutput("Drive/Time/Update Odometry", endOdomUpdate - startOdomUpdate);
+    Logger.recordOutput("Drive/Time/Drive Periodic", endTime - startTime);
   }
 
   /**
