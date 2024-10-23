@@ -159,7 +159,7 @@ public class RobotState {
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput(
-        "RobotState/Pose Data/Estimated Pose", odometry.getPoseMeters());
+        "RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingPose, new Rotation2d()));
