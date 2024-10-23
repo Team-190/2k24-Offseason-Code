@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -33,7 +34,8 @@ public class RobotState {
   @Getter @Setter private static double speakerFlywheelCompensation = 0.0;
   @Getter @Setter private static double speakerAngleCompensation = 0.0;
 
-  private static SwerveDrivePoseEstimator poseEstimator;
+  private static final SwerveDrivePoseEstimator poseEstimator;
+  private static final SwerveDriveOdometry odometry;
 
   private static Rotation2d robotHeading;
   private static SwerveModulePosition[] modulePositions;
@@ -64,6 +66,7 @@ public class RobotState {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.KINEMATICS, new Rotation2d(), modulePositions, new Pose2d());
+    odometry = new SwerveDriveOdometry(DriveConstants.KINEMATICS, new Rotation2d(), modulePositions);
   }
 
   public RobotState() {}
@@ -83,6 +86,7 @@ public class RobotState {
     RobotState.robotHeading = robotHeading;
     RobotState.modulePositions = modulePositions;
 
+    odometry.update(robotHeading, modulePositions);
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
@@ -155,6 +159,8 @@ public class RobotState {
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput(
+        "RobotState/Pose Data/Estimated Pose", odometry.getPoseMeters());
+    Logger.recordOutput(
         "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingPose, new Rotation2d()));
     Logger.recordOutput(
@@ -174,8 +180,13 @@ public class RobotState {
     return poseEstimator.getEstimatedPosition();
   }
 
+  public static Pose2d getOdometryPose() {
+    return odometry.getPoseMeters();
+  }
+
   public static void resetRobotPose(Pose2d pose) {
     poseEstimator.resetPosition(robotHeading, modulePositions, pose);
+    odometry.resetPosition(robotHeading, modulePositions, pose);
   }
 
   public static record ControlData(
