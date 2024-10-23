@@ -22,6 +22,7 @@ public class CompositeCommands {
                   new Pose2d(
                       RobotState.getRobotPose().getTranslation(),
                       AllianceFlipUtil.apply(new Rotation2d())));
+              drive.setGyroRotation(new Rotation2d());
             })
         .ignoringDisable(true);
   }
@@ -30,6 +31,7 @@ public class CompositeCommands {
     return Commands.runOnce(
             () -> {
               RobotState.resetRobotPose(pose);
+              drive.setGyroRotation(pose.getRotation());
             })
         .ignoringDisable(true);
   }
@@ -47,8 +49,7 @@ public class CompositeCommands {
   public static final Command shootSpeaker(
       Drive drive, Intake intake, Arm arm, Shooter shooter, XboxController driver) {
     return Commands.sequence(
-            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()),
-            Commands.waitUntil(
+            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()).until(
                 () ->
                     shooter.atSetPoint()
                         && arm.atSetpoint()
