@@ -148,6 +148,8 @@ public class RobotContainer {
         "Amp Side", AutoRoutines.getBoatBattleAmpAuto(drive, intake, arm, shooter));
     autoChooser.addOption(
         "Source Side", AutoRoutines.getBoatBattleSourceAuto(drive, intake, arm, shooter));
+    autoChooser.addOption("4 Piece", AutoRoutines.get4PieceAuto(drive, intake, arm, shooter));
+    autoChooser.addOption("6 Piece", AutoRoutines.get6PieceAuto(drive, intake, arm, shooter));
     if (Constants.TUNING_MODE) {
       autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
       autoChooser.addOption(
@@ -191,7 +193,7 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.b()));
+            driver.b().or(driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05))));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));

@@ -106,6 +106,8 @@ public class Module {
     Logger.recordOutput("Drive/Time/Module " + index + "/Run IO", endRunIO - endSetPosition);
     Logger.recordOutput(
         "Drive/Time/Module " + index + "/Odometry Update", endUpdateOdom - endSetPosition);
+    Logger.recordOutput(
+        "Drive/Module" + Integer.toString(index) + "/position", inputs.drivePosition.getRadians());
   }
 
   public SwerveModuleState runSetpoint(SwerveModuleState state) {

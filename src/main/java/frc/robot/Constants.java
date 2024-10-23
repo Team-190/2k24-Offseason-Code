@@ -16,9 +16,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
-  public static final boolean TUNING_MODE = true;
+  public static final boolean TUNING_MODE = false;
   public static final double LOOP_PERIOD_SECONDS = 0.02;
-  public static final RobotType ROBOT = RobotType.WHIPLASH;
+  public static final RobotType ROBOT = RobotType.ROBOT_SIM;
 
   public static Mode getMode() {
     switch (ROBOT) {

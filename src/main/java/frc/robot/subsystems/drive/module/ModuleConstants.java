@@ -50,10 +50,10 @@ public class ModuleConstants {
         WHEEL_RADIUS.initDefault(Units.inchesToMeters(2.0));
         DRIVE_KP.initDefault(2.0);
         DRIVE_KD.initDefault(0.0);
-        DRIVE_KS.initDefault(0.13333);
-        DRIVE_KV.initDefault(0.10108);
-        TURN_KP.initDefault(50.0);
-        TURN_KD.initDefault(0.05);
+        DRIVE_KS.initDefault(0.21831);
+        DRIVE_KV.initDefault(0.095366);
+        TURN_KP.initDefault(80.0);
+        TURN_KD.initDefault(0.8);
 
         FRONT_LEFT =
             new ModuleConfiguration(

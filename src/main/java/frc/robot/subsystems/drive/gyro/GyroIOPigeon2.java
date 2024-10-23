@@ -69,6 +69,7 @@ public class GyroIOPigeon2 implements GyroIO {
             .map((Double value) -> Rotation2d.fromDegrees(value))
             .toArray(Rotation2d[]::new);
     inputs.odometryNTJNITimestamps = NetworkTablesJNI.now();
+    inputs.yawPositionCANLatency = yaw.getTimestamp().getLatency();
     yawTimestampQueue.clear();
     yawPositionQueue.clear();
   }

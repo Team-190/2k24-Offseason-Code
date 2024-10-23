@@ -66,8 +66,8 @@ public final class DriveConstants {
         ODOMETRY_LOCK = new ReentrantLock();
         AUTO_AIM_FIELD_VELOCITY_DEADBAND = 0.1;
 
-        AUTO_X_KP.initDefault(1.0);
-        AUTO_Y_KP.initDefault(1.0);
+        AUTO_X_KP.initDefault(4.0);
+        AUTO_Y_KP.initDefault(4.0);
         AUTO_THETA_KP.initDefault(5.0);
 
         AUTO_X_KD.initDefault(0.0);

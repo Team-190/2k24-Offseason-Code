@@ -149,7 +149,8 @@ public class Drive extends SubsystemBase {
     }
     double endOdomUpdate = System.currentTimeMillis();
 
-    latestRobotHeadingTimestamp = gyroInputs.odometryNTJNITimestamps;
+    latestRobotHeadingTimestamp =
+        (long) (gyroInputs.odometryNTJNITimestamps - gyroInputs.yawPositionCANLatency);
     double endTime = System.currentTimeMillis();
     Logger.recordOutput("Drive/Time/Update Odometry", endOdomUpdate - startOdomUpdate);
     Logger.recordOutput("Drive/Time/Drive Periodic", endTime - startTime);

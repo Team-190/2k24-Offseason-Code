@@ -78,4 +78,50 @@ public final class AutoRoutines {
         getChoreoCommand(drive, "Auto_2_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
   }
+
+  public static final Command get4PieceAuto(Drive drive, Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_4"),
+        CompositeCommands.shootSubwoofer(intake, arm, shooter),
+        Commands.race(getChoreoCommand(drive, "Auto_1_4"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_2_4"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_3_4"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)));
+  }
+
+  public static final Command get6PieceAuto(Drive drive, Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_6"),
+        CompositeCommands.shootSubwoofer(intake, arm, shooter),
+        Commands.race(getChoreoCommand(drive, "Auto_1_6"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_2_6"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_3_6"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.deadline(
+            getChoreoCommand(drive, "Auto_4_6"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.deadline(
+            getChoreoCommand(drive, "Auto_5_6"), CompositeCommands.collect(intake, arm)),
+        Commands.parallel(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)));
+  }
 }
