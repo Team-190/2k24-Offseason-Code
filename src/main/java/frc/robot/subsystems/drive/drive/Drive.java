@@ -37,7 +37,7 @@ public class Drive extends SubsystemBase {
   private final LinearFilter yFilter;
   private double filteredX;
   private double filteredY = 0;
-  private Rotation2d rawGyroRotation;
+  @Getter private Rotation2d gyroRotation;
 
   @Getter private SwerveDriveKinematics kinematics;
   private SwerveModulePosition[] lastModulePositions;
@@ -58,7 +58,7 @@ public class Drive extends SubsystemBase {
     yFilter = LinearFilter.movingAverage(10);
     filteredX = 0;
     filteredY = 0;
-    rawGyroRotation = new Rotation2d();
+    gyroRotation = new Rotation2d();
 
     kinematics = new SwerveDriveKinematics(getModuleTranslations());
     lastModulePositions =
@@ -80,7 +80,8 @@ public class Drive extends SubsystemBase {
 
     // Start threads (no-op for each if no signals have been created)
     PhoenixOdometryThread.getInstance().start();
-    latestRobotHeadingTimestamp = (long)(gyroInputs.odometryNTJNITimestamps - gyroInputs.yawPositionCANLatency);
+    latestRobotHeadingTimestamp =
+        gyroInputs.odometryNTJNITimestamps - (long) (gyroInputs.yawPositionCANLatency * 1e6);
   }
 
   public void periodic() {
@@ -130,26 +131,26 @@ public class Drive extends SubsystemBase {
       // Update gyro angle
       if (gyroInputs.connected) {
         // Use the real gyro angle
-        rawGyroRotation = gyroInputs.odometryYawPositions[i];
+        gyroRotation = gyroInputs.odometryYawPositions[i];
       } else {
         // Use the angle delta from the kinematics and module deltas
         Twist2d twist = kinematics.toTwist2d(moduleDeltas);
-        rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+        gyroRotation = gyroRotation.plus(new Rotation2d(twist.dtheta));
       }
-      // Apply update
+      latestRobotHeadingTimestamp =
+          gyroInputs.odometryNTJNITimestamps - (long) (gyroInputs.yawPositionCANLatency * 1e6);
 
+      // Apply update
       ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
       Translation2d rawFieldRelativeVelocity =
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-              .rotateBy(getRotation());
+              .rotateBy(getGyroRotation());
 
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
     }
     double endOdomUpdate = System.currentTimeMillis();
 
-    latestRobotHeadingTimestamp =
-        (long) (gyroInputs.odometryNTJNITimestamps - gyroInputs.yawPositionCANLatency);
     double endTime = System.currentTimeMillis();
     Logger.recordOutput("Drive/Time/Update Odometry", endOdomUpdate - startOdomUpdate);
     Logger.recordOutput("Drive/Time/Drive Periodic", endTime - startTime);
@@ -236,11 +237,6 @@ public class Drive extends SubsystemBase {
   @AutoLogOutput
   public Translation2d getFieldRelativeVelocity() {
     return new Translation2d(filteredX, filteredY);
-  }
-
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return rawGyroRotation;
   }
 
   /** Returns the current yaw velocity */

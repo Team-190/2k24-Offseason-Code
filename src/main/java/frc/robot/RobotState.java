@@ -38,6 +38,7 @@ public class RobotState {
   private static final SwerveDriveOdometry odometry;
 
   private static Rotation2d robotHeading;
+  private static Rotation2d headingOffset;
   private static SwerveModulePosition[] modulePositions;
 
   static {
@@ -66,7 +67,9 @@ public class RobotState {
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.KINEMATICS, new Rotation2d(), modulePositions, new Pose2d());
-    odometry = new SwerveDriveOdometry(DriveConstants.KINEMATICS, new Rotation2d(), modulePositions);
+    odometry =
+        new SwerveDriveOdometry(DriveConstants.KINEMATICS, new Rotation2d(), modulePositions);
+    headingOffset = new Rotation2d();
   }
 
   public RobotState() {}
@@ -93,9 +96,9 @@ public class RobotState {
       if (camera.getCameraType() == CameraType.LIMELIGHT_3G
           || camera.getCameraType() == CameraType.LIMELIGHT_3) {
         double[] limelightHeadingData = {
-          getRobotPose().getRotation().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
+          robotHeading.minus(headingOffset).getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
         };
-        camera.getRobotHeadingPublisher().set(limelightHeadingData, 0);
+        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
 
       if (camera.getTargetAquired()
@@ -131,15 +134,15 @@ public class RobotState {
         AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.toTranslation2d());
     double distanceToSpeaker =
         poseEstimator.getEstimatedPosition().getTranslation().getDistance(speakerPose);
-    Translation2d effectiveSpeakerAimingPose =
+    Translation2d effectiveSpeakerAimingTranslation =
         poseEstimator
             .getEstimatedPosition()
             .getTranslation()
             .plus(robotFieldRelativeVelocity.times(timeOfFlightMap.get(distanceToSpeaker)));
-    double effectiveDistanceToSpeaker = effectiveSpeakerAimingPose.getDistance(speakerPose);
+    double effectiveDistanceToSpeaker = effectiveSpeakerAimingTranslation.getDistance(speakerPose);
     Rotation2d speakerRobotAngle =
         speakerPose
-            .minus(effectiveSpeakerAimingPose)
+            .minus(effectiveSpeakerAimingTranslation)
             .getAngle()
             .minus(Rotation2d.fromDegrees(180.0 + 3.5));
     double speakerTangentialVelocity =
@@ -158,11 +161,11 @@ public class RobotState {
 
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
-    Logger.recordOutput(
-        "RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
+    Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
+    Logger.recordOutput("Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Speaker Aiming Pose",
-        new Pose2d(effectiveSpeakerAimingPose, new Rotation2d()));
+        new Pose2d(effectiveSpeakerAimingTranslation, speakerRobotAngle));
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Distance To Speaker", effectiveDistanceToSpeaker);
     Logger.recordOutput(
@@ -185,6 +188,7 @@ public class RobotState {
   }
 
   public static void resetRobotPose(Pose2d pose) {
+    headingOffset = robotHeading.minus(pose.getRotation());
     poseEstimator.resetPosition(robotHeading, modulePositions, pose);
     odometry.resetPosition(robotHeading, modulePositions, pose);
   }

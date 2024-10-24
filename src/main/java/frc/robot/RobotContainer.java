@@ -149,7 +149,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Source Side", AutoRoutines.getBoatBattleSourceAuto(drive, intake, arm, shooter));
     autoChooser.addOption("4 Piece", AutoRoutines.get4PieceAuto(drive, intake, arm, shooter));
-    autoChooser.addOption("6 Piece", AutoRoutines.get6PieceAuto(drive, intake, arm, shooter));
     if (Constants.TUNING_MODE) {
       autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
       autoChooser.addOption(
@@ -223,7 +222,7 @@ public class RobotContainer {
 
   public void robotPeriodic() {
     RobotState.periodic(
-        drive.getRotation(),
+        drive.getGyroRotation(),
         drive.getLatestRobotHeadingTimestamp(),
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),

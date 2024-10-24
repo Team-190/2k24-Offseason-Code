@@ -22,16 +22,6 @@ public class CompositeCommands {
                   new Pose2d(
                       RobotState.getRobotPose().getTranslation(),
                       AllianceFlipUtil.apply(new Rotation2d())));
-              drive.setGyroRotation(new Rotation2d());
-            })
-        .ignoringDisable(true);
-  }
-
-  public static final Command resetHeading(Drive drive, Pose2d pose) {
-    return Commands.runOnce(
-            () -> {
-              RobotState.resetRobotPose(pose);
-              drive.setGyroRotation(pose.getRotation());
             })
         .ignoringDisable(true);
   }
@@ -49,23 +39,24 @@ public class CompositeCommands {
   public static final Command shootSpeaker(
       Drive drive, Intake intake, Arm arm, Shooter shooter, XboxController driver) {
     return Commands.sequence(
-            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()).until(
-                () ->
-                    shooter.atSetPoint()
-                        && arm.atSetpoint()
-                        && DriveCommands.atAimSetpoint()
-                        && drive.getYawVelocity() <= Units.degreesToRadians(1)),
+            Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle())
+                .until(
+                    () ->
+                        shooter.atSetPoint()
+                            && arm.atSetpoint()
+                            && DriveCommands.atAimSetpoint()
+                            && drive.getYawVelocity() <= Units.degreesToRadians(1)),
             Commands.waitSeconds(0.125),
             intake.shoot(),
             Commands.either(
                 Commands.sequence(
                     intake.intake(),
-                    Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle()),
-                    Commands.waitUntil(
-                        () ->
-                            shooter.atSetPoint()
-                                && arm.atSetpoint()
-                                && DriveCommands.atAimSetpoint()),
+                    Commands.parallel(shooter.setSpeakerVelocity(), arm.shootAngle())
+                        .until(
+                            () ->
+                                shooter.atSetPoint()
+                                    && arm.atSetpoint()
+                                    && DriveCommands.atAimSetpoint()),
                     Commands.waitSeconds(0.125),
                     intake.shoot(),
                     arm.stowAngle()),

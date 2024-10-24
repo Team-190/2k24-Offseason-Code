@@ -137,7 +137,7 @@ public class Arm extends SubsystemBase {
    * @return A command to set the arm angle to the shoot position.
    */
   public Command shootAngle() {
-    return Commands.runOnce(
+    return Commands.run(
         () -> {
           isClosedLoop = true;
           positionSetpoint =
