@@ -10,6 +10,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
@@ -100,6 +101,9 @@ public class RobotState {
         };
         camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
       }
+    }
+    NetworkTableInstance.getDefault().flush();
+    for (Camera camera : cameras) {
 
       if (camera.getTargetAquired()
           && !GeometryUtil.isZero(camera.getPrimaryPose())
@@ -162,7 +166,7 @@ public class RobotState {
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
-    Logger.recordOutput("Pose Data/Heading Offset", headingOffset);
+    Logger.recordOutput("Robot State/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingTranslation, speakerRobotAngle));

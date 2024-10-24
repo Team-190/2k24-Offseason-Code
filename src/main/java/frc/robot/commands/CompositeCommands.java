@@ -73,6 +73,7 @@ public class CompositeCommands {
         Commands.deadline(shooter.setSpeakerVelocity(), arm.shootAngle()),
         Commands.waitUntil(
             () -> shooter.atSetPoint() && arm.atSetpoint() && DriveCommands.atAimSetpoint()),
+        Commands.runOnce(() -> drive.stop()),
         Commands.waitSeconds(0.125),
         intake.shoot());
   }
