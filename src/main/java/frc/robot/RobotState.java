@@ -166,7 +166,7 @@ public class RobotState {
     Logger.recordOutput(
         "RobotState/Pose Data/Estimated Pose", poseEstimator.getEstimatedPosition());
     Logger.recordOutput("RobotState/Pose Data/Odometry Pose", odometry.getPoseMeters());
-    Logger.recordOutput("Robot State/Pose Data/Heading Offset", headingOffset);
+    Logger.recordOutput("RobotState/Pose Data/Heading Offset", headingOffset);
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Speaker Aiming Pose",
         new Pose2d(effectiveSpeakerAimingTranslation, speakerRobotAngle));
@@ -179,8 +179,10 @@ public class RobotState {
         "RobotState/Signal Data/CANivore Bus Utilization",
         CANBus.getStatus(DriveConstants.CANIVORE).BusUtilization);
     Logger.recordOutput(
-        "RobotState/ControlData/Speaker Robot Angle", controlData.speakerRobotAngle());
-    Logger.recordOutput("RobotState/ControlData/Speaker Arm Angle", controlData.speakerArmAngle());
+        "RobotState/Control Data/Speaker Robot Angle", controlData.speakerRobotAngle());
+    Logger.recordOutput("RobotState/Control Data/Speaker Arm Angle", controlData.speakerArmAngle());
+    Logger.recordOutput(
+        "RobotState/Control Data/Speaker Radial Velocity", controlData.speakerRadialVelocity());
   }
 
   public static Pose2d getRobotPose() {
