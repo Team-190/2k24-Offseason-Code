@@ -137,7 +137,7 @@ public class Arm extends SubsystemBase {
    * @return A command to set the arm angle to the shoot position.
    */
   public Command shootAngle() {
-    return Commands.runOnce(
+    return Commands.run(
         () -> {
           isClosedLoop = true;
           positionSetpoint =
@@ -153,12 +153,13 @@ public class Arm extends SubsystemBase {
    * @return A command to set the arm angle to the feed position.
    */
   public Command feedAngle() {
-    return Commands.runOnce(
-        () -> {
-          isClosedLoop = true;
-          positionSetpoint =
-              Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
-        });
+    // return Commands.runOnce(
+    //     () -> {
+    //       isClosedLoop = true;
+    //       positionSetpoint =
+    //           Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
+    //     });
+    return Commands.none();
   }
 
   public Command subwooferAngle() {
@@ -175,7 +176,7 @@ public class Arm extends SubsystemBase {
 
   public boolean shootForward() {
     double angle = AllianceFlipUtil.apply(RobotState.getRobotPose().getRotation()).getDegrees();
-    return !(angle > -90 && angle < 90);
+    return (angle > -90 && angle < 90);
   }
 
   public boolean atSetpoint() {

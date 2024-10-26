@@ -171,16 +171,18 @@ public class ShooterIOTalonFX implements ShooterIO {
   public void setTopVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
     topGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     topMotor.setControl(
-        topProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+        topProfiledVelocityControl
+            .withVelocity(Units.radiansToRotations(setPointVelocityRadiansPerSecond))
+            .withEnableFOC(false));
   }
 
   @Override
   public void setBottomVelocitySetPoint(double setPointVelocityRadiansPerSecond) {
     bottomGoalRadiansPerSecond = setPointVelocityRadiansPerSecond;
     bottomMotor.setControl(
-        bottomProfiledVelocityControl.withVelocity(
-            Units.radiansToRotations(setPointVelocityRadiansPerSecond)));
+        bottomProfiledVelocityControl
+            .withVelocity(Units.radiansToRotations(setPointVelocityRadiansPerSecond))
+            .withEnableFOC(false));
   }
 
   @Override

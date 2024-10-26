@@ -148,7 +148,7 @@ public class ArmIOTalonFX implements ArmIO {
                       * -1.0)
               .isOK();
     }
-    motor.setControl(voltageControl.withOutput(volts));
+    motor.setControl(voltageControl.withOutput(volts).withEnableFOC(false));
   }
 
   @Override
@@ -164,7 +164,10 @@ public class ArmIOTalonFX implements ArmIO {
     }
     positionGoal = setpointPosition;
     motor.setControl(
-        positionControl.withPosition(setpointPosition.getRotations()).withUpdateFreqHz(1000));
+        positionControl
+            .withPosition(setpointPosition.getRotations())
+            .withUpdateFreqHz(1000)
+            .withEnableFOC(false));
   }
 
   @Override

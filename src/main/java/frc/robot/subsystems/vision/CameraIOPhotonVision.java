@@ -1,7 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.Optional;
@@ -29,8 +29,8 @@ public class CameraIOPhotonVision implements CameraIO {
   @Getter private int totalTargets;
   @Getter private double averageDistance;
   @Getter private double frameTimestamp;
-  @Getter private Pose3d primaryPose;
-  @Getter Pose3d secondaryPose;
+  @Getter private Pose2d primaryPose;
+  @Getter private Pose2d secondaryPose;
 
   public CameraIOPhotonVision(
       String cameraName,
@@ -66,10 +66,10 @@ public class CameraIOPhotonVision implements CameraIO {
       Optional<EstimatedRobotPose> secondaryEstimatedPose =
           secondaryPhotonPoseEstimator.update(result);
       if (primaryEstimatedPose.isPresent()) {
-        inputs.primaryPose = new Pose3d(primaryEstimatedPose.get().estimatedPose.toPose2d());
+        inputs.primaryPose = primaryEstimatedPose.get().estimatedPose.toPose2d();
       }
       if (secondaryEstimatedPose.isPresent()) {
-        inputs.secondaryPose = new Pose3d(secondaryEstimatedPose.get().estimatedPose.toPose2d());
+        inputs.secondaryPose = secondaryEstimatedPose.get().estimatedPose.toPose2d();
       }
     }
 

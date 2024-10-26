@@ -19,41 +19,6 @@ public final class AutoRoutines {
     return Commands.none();
   }
 
-  /**
-   * This function generates a command sequence for autonomous driving using Choreo library. The
-   * command sequence includes resetting the robot's pose based on the alliance color, executing a
-   * trajectory from the Choreo library, and running the trajectory using a Swerve drive.
-   *
-   * @param drive The drive subsystem instance.
-   * @param trajectory The name of the trajectory to be executed.
-   * @return A command sequence for autonomous driving.
-   */
-  public static final Command getInitialChoreoCommand(Drive drive, String trajectory) {
-    PIDController xFeedback =
-        new PIDController(DriveConstants.AUTO_X_KP.get(), 0.0, DriveConstants.AUTO_X_KD.get());
-    PIDController yFeedback =
-        new PIDController(DriveConstants.AUTO_Y_KP.get(), 0.0, DriveConstants.AUTO_Y_KD.get());
-    PIDController thetaFeedback =
-        new PIDController(
-            DriveConstants.AUTO_THETA_KP.get(), 0.0, DriveConstants.AUTO_THETA_KD.get());
-    thetaFeedback.enableContinuousInput(-Math.PI, Math.PI);
-    ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
-    return Commands.sequence(
-        Commands.runOnce(
-            () ->
-                RobotState.resetRobotPose(
-                    AllianceFlipUtil.apply(choreoTrajectory.getInitialPose()))),
-        Choreo.choreoSwerveCommand(
-            choreoTrajectory,
-            RobotState::getRobotPose,
-            xFeedback,
-            yFeedback,
-            thetaFeedback,
-            (ChassisSpeeds speeds) -> drive.runVelocity(speeds),
-            () -> AllianceFlipUtil.shouldFlip(),
-            drive));
-  }
-
   public static final Command resetToInitialHeading(Drive drive, String trajectory) {
     ChoreoTrajectory choreoTrajectory = Choreo.getTrajectory(trajectory);
     return Commands.runOnce(
@@ -98,7 +63,7 @@ public final class AutoRoutines {
         resetToInitialHeading(drive, "Auto_1_Amp"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
-            getInitialChoreoCommand(drive, "Auto_1_Amp"), CompositeCommands.collect(intake, arm)),
+            getChoreoCommand(drive, "Auto_1_Amp"), CompositeCommands.collect(intake, arm)),
         getChoreoCommand(drive, "Auto_2_Amp"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
   }
@@ -109,9 +74,26 @@ public final class AutoRoutines {
         resetToInitialHeading(drive, "Auto_1_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter),
         Commands.race(
-            getInitialChoreoCommand(drive, "Auto_1_Source"),
-            CompositeCommands.collect(intake, arm)),
+            getChoreoCommand(drive, "Auto_1_Source"), CompositeCommands.collect(intake, arm)),
         getChoreoCommand(drive, "Auto_2_Source"),
         CompositeCommands.shootSubwoofer(intake, arm, shooter));
+  }
+
+  public static final Command get4PieceAuto(Drive drive, Intake intake, Arm arm, Shooter shooter) {
+    return Commands.sequence(
+        resetToInitialHeading(drive, "Auto_1_4"),
+        CompositeCommands.shootSubwoofer(intake, arm, shooter),
+        Commands.race(getChoreoCommand(drive, "Auto_1_4"), CompositeCommands.collect(intake, arm)),
+        Commands.race(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_2_4"), CompositeCommands.collect(intake, arm)),
+        Commands.race(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
+        Commands.race(getChoreoCommand(drive, "Auto_3_4"), CompositeCommands.collect(intake, arm)),
+        Commands.race(
+            DriveCommands.aimTowardSpeaker(drive),
+            CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)));
   }
 }

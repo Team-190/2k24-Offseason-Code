@@ -1,0 +1,17 @@
+{
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "10.99.90.2"
+  },
+  "transitory": {
+    "SmartDashboard": {
+      "TunableNumbers": {
+        "Drive": {
+          "open": true
+        },
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

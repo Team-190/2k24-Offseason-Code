@@ -13,8 +13,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.Mode;
@@ -45,6 +48,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -78,7 +82,10 @@ public class RobotContainer {
                   new ModuleIOTalonFX(ModuleConstants.REAR_LEFT),
                   new ModuleIOTalonFX(ModuleConstants.REAR_RIGHT));
           intake = new Intake(new IntakeIOTalonFX());
-          vision = new Vision();
+          vision =
+              new Vision(
+                  CameraConstants.RobotCameras.LEFT_CAMERA,
+                  CameraConstants.RobotCameras.RIGHT_CAMERA);
           climber = new Climber(new ClimberIOTalonFX());
           shooter = new Shooter(new ShooterIOTalonFX());
           arm = new Arm(new ArmIOTalonFX());
@@ -116,7 +123,10 @@ public class RobotContainer {
       intake = new Intake(new IntakeIO() {});
     }
     if (vision == null) {
-      vision = new Vision();
+      vision =
+          new Vision(
+              CameraConstants.ReplayCameras.LEFT_CAMERA,
+              CameraConstants.ReplayCameras.RIGHT_CAMERA);
     }
     if (climber == null) {
       climber = new Climber(new ClimberIO() {});
@@ -127,6 +137,9 @@ public class RobotContainer {
     if (arm == null) {
       arm = new Arm(new ArmIO() {});
     }
+    if (leds == null) {
+      leds = new Leds();
+    }
 
     // Configure auto choices.
     autoChooser = new LoggedDashboardChooser<>("Auto Routines");
@@ -135,6 +148,7 @@ public class RobotContainer {
         "Amp Side", AutoRoutines.getBoatBattleAmpAuto(drive, intake, arm, shooter));
     autoChooser.addOption(
         "Source Side", AutoRoutines.getBoatBattleSourceAuto(drive, intake, arm, shooter));
+    autoChooser.addOption("4 Piece", AutoRoutines.get4PieceAuto(drive, intake, arm, shooter));
     if (Constants.TUNING_MODE) {
       autoChooser.addOption("Shooter Characterization", shooter.runCharacterization());
       autoChooser.addOption(
@@ -173,31 +187,49 @@ public class RobotContainer {
   private void configureButtonBindings() {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive, () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> driver.getRightX()));
+            drive,
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX(),
+            driver.rightBumper(),
+            driver.b().or(driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05))));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
-    driver.rightBumper().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
-    driver.rightTrigger().whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
-    driver.b().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
+    driver
+        .rightBumper()
+        .whileTrue(CompositeCommands.shootSpeaker(drive, intake, arm, shooter, driver.getHID()));
+    driver.x().whileTrue(CompositeCommands.shootSubwoofer(intake, arm, shooter));
+    driver
+        .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.95)
+        .whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
+    driver
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        RobotState.resetRobotPose(
+                            new Pose2d(
+                                FieldConstants.Subwoofer.centerFace.getTranslation(),
+                                RobotState.getRobotPose().getRotation())))
+                .ignoringDisable(true));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
     operator.y().whileTrue(climber.deClimb());
-    driver.a().whileTrue(intake.shoot());
+    driver.a().whileTrue(CompositeCommands.shootFeed(intake, arm, shooter));
+    operator.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
   }
 
   public void robotPeriodic() {
     RobotState.periodic(
-        drive.getRotation(),
+        drive.getGyroRotation(),
+        drive.getLatestRobotHeadingTimestamp(),
         drive.getYawVelocity(),
         drive.getFieldRelativeVelocity(),
         drive.getModulePositions(),
         vision.getCameras(),
-        vision.getValidTarget(),
-        vision.getPrimaryVisionPoses(),
-        vision.getSecondaryVisionPoses(),
-        vision.getFrameTimestamps(),
         intake.hasNoteLocked(),
+        intake.hasNoteStaged(),
         intake.isIntaking(),
         climber.isClimbed());
     leds.periodic();
