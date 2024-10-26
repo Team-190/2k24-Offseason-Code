@@ -91,9 +91,9 @@ public final class AutoRoutines {
         Commands.race(
             DriveCommands.aimTowardSpeaker(drive),
             CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)),
-        getChoreoCommand(drive, "Auto_3_4"), CompositeCommands.collect(intake, arm));
-        // Commands.race(
-        //     DriveCommands.aimTowardSpeaker(drive),
-        //     CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)));
+        getChoreoCommand(drive, "Auto_3_4"));
+    // Commands.race(
+    //     DriveCommands.aimTowardSpeaker(drive),
+    //     CompositeCommands.shootSpeakerAuto(drive, intake, arm, shooter)));
   }
 }
