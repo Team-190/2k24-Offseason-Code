@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.vision.Camera;
-import frc.robot.subsystems.vision.CameraType;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.GeometryUtil;
 import lombok.Getter;
@@ -94,13 +93,10 @@ public class RobotState {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), robotHeading, modulePositions);
 
     for (Camera camera : cameras) {
-      if (camera.getCameraType() == CameraType.LIMELIGHT_3G
-          || camera.getCameraType() == CameraType.LIMELIGHT_3) {
-        double[] limelightHeadingData = {
-          robotHeading.minus(headingOffset).getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
-        };
-        camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
-      }
+      double[] limelightHeadingData = {
+        robotHeading.minus(headingOffset).getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0
+      };
+      camera.getRobotHeadingPublisher().set(limelightHeadingData, latestRobotHeadingTimestamp);
     }
     NetworkTableInstance.getDefault().flush();
     for (Camera camera : cameras) {
@@ -172,17 +168,19 @@ public class RobotState {
         new Pose2d(effectiveSpeakerAimingTranslation, speakerRobotAngle));
     Logger.recordOutput(
         "RobotState/Pose Data/Effective Distance To Speaker", effectiveDistanceToSpeaker);
+
+    Logger.recordOutput(
+        "RobotState/Control Data/Speaker Robot Angle", controlData.speakerRobotAngle());
+    Logger.recordOutput("RobotState/Control Data/Speaker Arm Angle", controlData.speakerArmAngle());
+    Logger.recordOutput(
+        "RobotState/Control Data/Speaker Radial Velocity", controlData.speakerRadialVelocity());
+
     Logger.recordOutput(
         "RobotState/Signal Data/Rio Bus Utilization",
         RobotController.getCANStatus().percentBusUtilization);
     Logger.recordOutput(
         "RobotState/Signal Data/CANivore Bus Utilization",
         CANBus.getStatus(DriveConstants.CANIVORE).BusUtilization);
-    Logger.recordOutput(
-        "RobotState/Control Data/Speaker Robot Angle", controlData.speakerRobotAngle());
-    Logger.recordOutput("RobotState/Control Data/Speaker Arm Angle", controlData.speakerArmAngle());
-    Logger.recordOutput(
-        "RobotState/Control Data/Speaker Radial Velocity", controlData.speakerRadialVelocity());
   }
 
   public static Pose2d getRobotPose() {
