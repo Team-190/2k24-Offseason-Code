@@ -121,6 +121,7 @@ public final class DriveCommands {
 
   public static final Command aimTowardSpeaker(Drive drive) {
     aimController.setTolerance(Units.degreesToRadians(1.0));
+    aimController.enableContinuousInput(-Math.PI, Math.PI);
     return Commands.run(
             () -> {
               boolean isFlipped =

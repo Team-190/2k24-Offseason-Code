@@ -20,13 +20,6 @@ public class CameraConstants {
     public static final double MEGATAG_2_XY_STANDARD_DEVIATION_COEFFICIENT = 0.00015;
   }
 
-  public static class ArducamOV9281 {
-    public static final double HORIZONTAL_FOV = Units.degreesToRadians(62.5);
-    public static final double VERTICAL_FOV = Units.degreesToRadians(48.9);
-    public static final double MULTITAG_XY_STANDARD_DEVIATION_COEFFICIENT = 0.1;
-    public static final double AVERAGE_BEST_XY_STANDARD_DEVIATION_COEFFICIENT = 0.1;
-  }
-
   public static class RobotCameras {
     public static final Camera LEFT_CAMERA =
         new Camera(
