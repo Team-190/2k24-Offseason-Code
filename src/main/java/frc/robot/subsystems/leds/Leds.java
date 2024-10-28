@@ -33,7 +33,7 @@ public class Leds {
     } else if (RobotState.getControlData().hasNoteLocked()) {
       solid(Color.kGreen);
     } else if (RobotState.getControlData().hasNoteStaged()) {
-      solid(Color.kGold);
+      solid(Color.kDarkMagenta);
     } else if (RobotState.getControlData().isIntaking()) {
       solid(Color.kDarkBlue);
     } else {
