@@ -152,9 +152,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocityErrorRotationsPerSecond,
         turnPositionErrorRotations);
 
-    driveTalon.optimizeBusUtilization();
-    turnTalon.optimizeBusUtilization();
-    cancoder.optimizeBusUtilization();
+    driveTalon.optimizeBusUtilization(50.0, 1.0);
+    turnTalon.optimizeBusUtilization(50.0, 1.0);
+    cancoder.optimizeBusUtilization(50.0, 1.0);
 
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0.0);

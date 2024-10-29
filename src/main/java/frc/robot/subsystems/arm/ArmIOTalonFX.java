@@ -94,8 +94,8 @@ public class ArmIOTalonFX implements ArmIO {
         positionErrorRotations,
         absolutePosition);
 
-    motor.optimizeBusUtilization(50.0, 1);
-    cancoder.optimizeBusUtilization(50.0, 1);
+    motor.optimizeBusUtilization(50.0, 1.0);
+    cancoder.optimizeBusUtilization(50.0, 1.0);
 
     hasResetPosition = false;
   }
