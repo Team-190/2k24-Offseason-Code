@@ -84,7 +84,7 @@ public final class DriveCommands {
                   && DriverStation.getAlliance().get() == Alliance.Red;
 
           double robotRelativeXVel = linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY;
-          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_ANGULAR_VELOCITY;
+          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY;
 
           double angular = 0.0;
 

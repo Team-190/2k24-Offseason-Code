@@ -146,8 +146,10 @@ public class Drive extends SubsystemBase {
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
               .rotateBy(getGyroRotation());
 
+      double startFilterTime = System.currentTimeMillis();
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
+      Logger.recordOutput("Filter Time", System.currentTimeMillis() - startFilterTime);
     }
     double endOdomUpdate = System.currentTimeMillis();
 
