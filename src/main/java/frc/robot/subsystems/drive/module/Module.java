@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -52,6 +51,7 @@ public class Module {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
     // Adjust models based on tunable numbers
+    double startTunableCheck = System.currentTimeMillis();
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> io.setDrivePID(pid[0], 0.0, pid[1]),
@@ -68,7 +68,7 @@ public class Module {
         ModuleConstants.DRIVE_KS,
         ModuleConstants.DRIVE_KV);
 
-    double startSetPosition = Timer.getFPGATimestamp();
+    double startSetPosition = System.currentTimeMillis();
     if (turnRelativeOffset == null
         && inputs.turnAbsolutePosition.getRadians() != 0.0
         && inputs.turnPosition.getRadians() != 0.0) {
@@ -76,7 +76,7 @@ public class Module {
       io.setTurnPosition(inputs.turnAbsolutePosition);
       io.setDrivePosition(0.0);
     }
-    double endSetPosition = Timer.getFPGATimestamp();
+    double endSetPosition = System.currentTimeMillis();
 
     if (angleSetpoint != null && DriverStation.isEnabled()) {
       io.setTurnPositionSetpoint(inputs.turnAbsolutePosition, angleSetpoint);
@@ -88,7 +88,7 @@ public class Module {
         io.setDriveVelocitySetpoint(inputs.driveVelocityRadPerSec, velocityRadPerSec);
       }
     }
-    double endRunIO = Timer.getFPGATimestamp();
+    double endRunIO = System.currentTimeMillis();
 
     int sampleCount = inputs.odometryTimestamps.length;
     odometryPositions = new SwerveModulePosition[sampleCount];
@@ -100,8 +100,10 @@ public class Module {
               turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
-    double endUpdateOdom = Timer.getFPGATimestamp();
+    double endUpdateOdom = System.currentTimeMillis();
 
+    Logger.recordOutput(
+        "Drive/Time/Module " + index + "/Change Constants", startSetPosition - startTunableCheck);
     Logger.recordOutput(
         "Drive/Time/Module " + index + "/Set Position", endSetPosition - startSetPosition);
     Logger.recordOutput("Drive/Time/Module " + index + "/Run IO", endRunIO - endSetPosition);

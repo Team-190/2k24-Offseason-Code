@@ -91,20 +91,19 @@ public class Drive extends SubsystemBase {
     for (var module : modules) {
       module.updateInputs();
     }
+    double startModulePeriodic = System.currentTimeMillis();
     DriveConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
 
+    double startDisabledChecks = System.currentTimeMillis();
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       for (var module : modules) {
         module.stop();
       }
-    }
-    // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/Setpoints Optimized", new SwerveModuleState[] {});
     }
@@ -146,14 +145,15 @@ public class Drive extends SubsystemBase {
           new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
               .rotateBy(getGyroRotation());
 
-      double startFilterTime = System.currentTimeMillis();
       filteredX = xFilter.calculate(rawFieldRelativeVelocity.getX());
       filteredY = yFilter.calculate(rawFieldRelativeVelocity.getY());
-      Logger.recordOutput("Filter Time", System.currentTimeMillis() - startFilterTime);
     }
     double endOdomUpdate = System.currentTimeMillis();
 
     double endTime = System.currentTimeMillis();
+    Logger.recordOutput("Drive/Time/Update Module Inputs", startModulePeriodic - startTime);
+    Logger.recordOutput("Drive/Time/Module Periodic", startDisabledChecks - startModulePeriodic);
+    Logger.recordOutput("Drive/Time/Disabled Tasks", startOdomUpdate - startDisabledChecks);
     Logger.recordOutput("Drive/Time/Update Odometry", endOdomUpdate - startOdomUpdate);
     Logger.recordOutput("Drive/Time/Drive Periodic", endTime - startTime);
   }

@@ -32,6 +32,7 @@ public class ArmConstants {
   public static final LoggedTunableNumber ARM_MAX_ACCELERATION;
   public static final LoggedTunableNumber ARM_SUBWOOFER_CONSTANT;
   public static final Rotation2d ARM_EJECT_ANGLE;
+  public static final LoggedTunableNumber FEED_ANGLE;
 
   static {
     ARM_KP = new LoggedTunableNumber("Arm/KP");
@@ -44,6 +45,7 @@ public class ArmConstants {
     ARM_AMP_CONSTANT = new LoggedTunableNumber("Arm/Amp Angle");
     ARM_SUBWOOFER_CONSTANT = new LoggedTunableNumber("Arm/Subwoofer Angle");
     GOAL_TOLERANCE = new LoggedTunableNumber("Arm/Goal Tolerance");
+    FEED_ANGLE = new LoggedTunableNumber("Arm/Feed Angle");
 
     switch (Constants.ROBOT) {
       case WHIPLASH:
@@ -82,6 +84,7 @@ public class ArmConstants {
         ARM_MAX_ACCELERATION.initDefault(120.0);
         ARM_SUBWOOFER_CONSTANT.initDefault(Units.degreesToRadians(57.0));
         ARM_EJECT_ANGLE = Rotation2d.fromDegrees(45.0);
+        FEED_ANGLE.initDefault(Units.degreesToRadians(40.0));
         break;
     }
   }
