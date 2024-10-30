@@ -13,11 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -38,7 +33,6 @@ import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.drive.Drive;
-import frc.robot.subsystems.drive.drive.DriveConstants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.module.ModuleConstants;
@@ -56,9 +50,6 @@ import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.vision.CameraConstants;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.AllianceFlipUtil;
-import frc.robot.util.LocalADStarAK;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -189,29 +180,6 @@ public class RobotContainer {
         .withPosition(0, 0)
         .withSize(8, 5);
 
-    // Configure Autobuilder
-    AutoBuilder.configureHolonomic(
-        RobotState::getRobotPose,
-        RobotState::resetRobotPose,
-        () -> DriveConstants.KINEMATICS.toChassisSpeeds(drive.getModuleStates()),
-        drive::runVelocity,
-        new HolonomicPathFollowerConfig(
-            DriveConstants.MAX_LINEAR_VELOCITY,
-            DriveConstants.DRIVE_BASE_RADIUS,
-            new ReplanningConfig()),
-        AllianceFlipUtil::shouldFlip,
-        drive);
-    Pathfinding.setPathfinder(new LocalADStarAK());
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-        });
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Logger.recordOutput("Odometry/Trajectory Setpoint", targetPose);
-        });
-
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -247,7 +215,6 @@ public class RobotContainer {
                                 FieldConstants.Subwoofer.centerFace.getTranslation(),
                                 RobotState.getRobotPose().getRotation())))
                 .ignoringDisable(true));
-    driver.start().whileTrue(DriveCommands.ampAutoDrive(drive));
     operator.povUp().whileTrue(climber.unlock());
     operator.povDown().whileTrue(climber.climb());
     operator.y().whileTrue(climber.deClimb());

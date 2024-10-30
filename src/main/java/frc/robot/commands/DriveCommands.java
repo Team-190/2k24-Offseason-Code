@@ -15,11 +15,6 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -38,7 +33,6 @@ import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
-import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -161,21 +155,6 @@ public final class DriveCommands {
             () -> {
               drive.stop();
             });
-  }
-
-  public static final Command ampAutoDrive(Drive drive) {
-    return new PathfindThenFollowPathHolonomic(
-        PathPlannerPath.fromPathFile("Amp Auto Align"),
-        new PathConstraints(3.0, 3.0, Math.PI, Math.PI),
-        RobotState::getRobotPose,
-        () -> DriveConstants.KINEMATICS.toChassisSpeeds(drive.getModuleStates()),
-        drive::runVelocity,
-        new HolonomicPathFollowerConfig(
-            DriveConstants.MAX_LINEAR_VELOCITY,
-            DriveConstants.DRIVE_BASE_RADIUS,
-            new ReplanningConfig()),
-        AllianceFlipUtil::shouldFlip,
-        drive);
   }
 
   public static final Command stop(Drive drive) {

@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathfindHolonomic;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -122,7 +121,6 @@ public class Robot extends LoggedRobot {
     if (!DriverStation.isFMSAttached()) {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-    PathfindHolonomic.warmupCommand().schedule();
   }
 
   /** This function is called periodically during all modes. */
