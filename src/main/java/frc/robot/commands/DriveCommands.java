@@ -15,9 +15,8 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic;
+import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.MathUtil;
@@ -35,10 +34,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.drive.Drive;
 import frc.robot.subsystems.drive.drive.DriveConstants;
-import frc.robot.util.AllianceFlipUtil;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -163,10 +162,39 @@ public final class DriveCommands {
             });
   }
 
-  public static final Command ampAutoDrive(Drive drive) {
-    return new PathfindThenFollowPathHolonomic(
-        PathPlannerPath.fromPathFile("Amp Auto Align"),
+  public static final Command aimTowardAmp(Drive drive) {
+    aimController.setTolerance(Units.degreesToRadians(15.0));
+    aimController.enableContinuousInput(-Math.PI, Math.PI);
+    return Commands.run(
+            () -> {
+              boolean isFlipped =
+                  DriverStation.getAlliance().isPresent()
+                      && DriverStation.getAlliance().get() == Alliance.Red;
+
+              ChassisSpeeds chassisSpeeds =
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      0,
+                      0,
+                      RobotState.getControlData().speakerRadialVelocity()
+                          + (aimController.calculate(
+                              RobotState.getRobotPose().getRotation().getRadians(),
+                              Rotation2d.fromDegrees(90.0).getRadians())),
+                      isFlipped
+                          ? RobotState.getRobotPose().getRotation().plus(new Rotation2d(Math.PI))
+                          : RobotState.getRobotPose().getRotation());
+
+              // Convert to field relative speeds & send command
+              drive.runVelocity(chassisSpeeds);
+            },
+            drive)
+        .until(() -> atAimSetpoint());
+  }
+
+  public static final Command driveToPose(Drive drive, Pose2d blueAlliancePose) {
+    return new PathfindHolonomic(
+        blueAlliancePose,
         new PathConstraints(3.0, 3.0, Math.PI, Math.PI),
+        0.0,
         RobotState::getRobotPose,
         () -> DriveConstants.KINEMATICS.toChassisSpeeds(drive.getModuleStates()),
         drive::runVelocity,
@@ -174,8 +202,13 @@ public final class DriveCommands {
             DriveConstants.MAX_LINEAR_VELOCITY,
             DriveConstants.DRIVE_BASE_RADIUS,
             new ReplanningConfig()),
-        AllianceFlipUtil::shouldFlip,
         drive);
+  }
+
+  public static final Command ampAutoDrive(Drive drive) {
+    return Commands.sequence(
+        aimTowardAmp(drive),
+        driveToPose(drive, new Pose2d(FieldConstants.ampCenter, Rotation2d.fromDegrees(90.0))));
   }
 
   public static final Command stop(Drive drive) {
