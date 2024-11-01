@@ -55,18 +55,12 @@ public class ModuleConstants {
         TURN_KP.initDefault(80.0);
         TURN_KD.initDefault(0.8);
 
-        FRONT_LEFT =
-            new ModuleConfiguration(
-                1, 2, 20, Rotation2d.fromRadians(2.405281875404685 - 0.015339807878856172));
+        FRONT_LEFT = new ModuleConfiguration(1, 2, 20, Rotation2d.fromRadians(2.380738182798515));
         FRONT_RIGHT =
             new ModuleConfiguration(
-                3, 4, 21, Rotation2d.fromRadians(2.4221556640714272 - 0.0030679615757711457));
-        REAR_LEFT =
-            new ModuleConfiguration(
-                5, 6, 22, Rotation2d.fromRadians(1.6582332317043784 + 0.024543692606169964));
-        REAR_RIGHT =
-            new ModuleConfiguration(
-                7, 8, 23, Rotation2d.fromRadians(2.6875343403756435 - 0.015339807878856726));
+                3, 4, 21, Rotation2d.fromRadians(-0.7240389318820226 + Math.PI));
+        REAR_LEFT = new ModuleConfiguration(5, 6, 22, Rotation2d.fromRadians(1.6060778849162662));
+        REAR_RIGHT = new ModuleConfiguration(7, 8, 23, Rotation2d.fromRadians(2.6614566669815876));
 
         ODOMETRY_FREQUENCY = 250.0;
         OUT_OF_SYNC_THRESHOLD = Units.degreesToRadians(30.0);
