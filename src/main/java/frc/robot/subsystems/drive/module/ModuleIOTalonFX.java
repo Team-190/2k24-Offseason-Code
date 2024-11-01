@@ -81,7 +81,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveConfig.CurrentLimits.StatorCurrentLimit = ModuleConstants.DRIVE_CURRENT_LIMIT;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    driveConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     driveConfig.Feedback.SensorToMechanismRatio = ModuleConstants.DRIVE_GEAR_RATIO;
     driveConfig.Slot0.kS = ModuleConstants.DRIVE_KS.get();
@@ -102,9 +102,9 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnConfig.Slot0.kD = ModuleConstants.TURN_KD.get();
 
     for (int i = 0; i < 4; i++) {
-      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 0.1).isOK();
-      error = error || driveTalon.getConfigurator().apply(driveConfig, 0.1).isOK();
-      error = error || (turnTalon.getConfigurator().apply(turnConfig, 0.1).isOK());
+      boolean error = cancoder.getConfigurator().apply(new CANcoderConfiguration(), 1.0).isOK();
+      error = error || driveTalon.getConfigurator().apply(driveConfig, 1.0).isOK();
+      error = error || (turnTalon.getConfigurator().apply(turnConfig, 1.0).isOK());
       if (!error) break;
     }
 
@@ -152,9 +152,9 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveVelocityErrorRotationsPerSecond,
         turnPositionErrorRotations);
 
-    driveTalon.optimizeBusUtilization(50.0, 1.0);
-    turnTalon.optimizeBusUtilization(50.0, 1.0);
-    cancoder.optimizeBusUtilization(50.0, 1.0);
+    driveTalon.optimizeBusUtilization();
+    turnTalon.optimizeBusUtilization();
+    cancoder.optimizeBusUtilization();
 
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0.0);
