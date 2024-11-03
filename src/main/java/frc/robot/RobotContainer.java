@@ -192,7 +192,8 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX(),
             driver.rightBumper(),
-            driver.b().or(driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05))));
+            driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05),
+            driver.b()));
     driver.y().onTrue(CompositeCommands.resetHeading(drive));
     driver.leftBumper().whileTrue(CompositeCommands.collect(intake, arm));
     driver.leftTrigger().whileTrue(CompositeCommands.eject(intake, arm));
@@ -203,6 +204,7 @@ public class RobotContainer {
     driver
         .axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.95)
         .whileTrue(CompositeCommands.shootAmp(intake, arm, shooter));
+    driver.axisGreaterThan(XboxController.Axis.kRightTrigger.value, 0.05).whileTrue(arm.ampAngle());
     driver
         .povUp()
         .onTrue(

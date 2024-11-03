@@ -153,13 +153,11 @@ public class Arm extends SubsystemBase {
    * @return A command to set the arm angle to the feed position.
    */
   public Command feedAngle() {
-    // return Commands.runOnce(
-    //     () -> {
-    //       isClosedLoop = true;
-    //       positionSetpoint =
-    //           Rotation2d.fromRadians(RobotState.getControlData().feedArmAngle().getRadians());
-    //     });
-    return Commands.none();
+    return Commands.runOnce(
+        () -> {
+          isClosedLoop = true;
+          positionSetpoint = Rotation2d.fromRadians(ArmConstants.FEED_ANGLE.get());
+        });
   }
 
   public Command subwooferAngle() {

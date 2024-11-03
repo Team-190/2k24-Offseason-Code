@@ -54,7 +54,8 @@ public final class DriveCommands {
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
       BooleanSupplier speakerAim,
-      BooleanSupplier ampAim) {
+      BooleanSupplier ampAim,
+      BooleanSupplier feedAim) {
     return Commands.run(
         () -> {
           aimController.enableContinuousInput(-Math.PI, Math.PI);
@@ -84,7 +85,7 @@ public final class DriveCommands {
                   && DriverStation.getAlliance().get() == Alliance.Red;
 
           double robotRelativeXVel = linearVelocity.getX() * DriveConstants.MAX_LINEAR_VELOCITY;
-          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_ANGULAR_VELOCITY;
+          double robotRelativeYVel = linearVelocity.getY() * DriveConstants.MAX_LINEAR_VELOCITY;
 
           double angular = 0.0;
 
@@ -100,6 +101,12 @@ public final class DriveCommands {
                     + (aimController.calculate(
                         RobotState.getRobotPose().getRotation().getRadians(),
                         Rotation2d.fromDegrees(90.0).getRadians()));
+          } else if (feedAim.getAsBoolean()) {
+            angular =
+                RobotState.getControlData().speakerRadialVelocity()
+                    + (aimController.calculate(
+                        RobotState.getRobotPose().getRotation().getRadians(),
+                        Rotation2d.fromDegrees(-35.5).getRadians()));
           } else {
             angular = omega * DriveConstants.MAX_ANGULAR_VELOCITY;
           }

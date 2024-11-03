@@ -111,8 +111,8 @@ public class ShooterIOTalonFX implements ShooterIO {
         topVelocityErrorRotationsPerSecond,
         bottomVelocityErrorRotationsPerSecond);
 
-    topMotor.optimizeBusUtilization();
-    bottomMotor.optimizeBusUtilization();
+    topMotor.optimizeBusUtilization(50.0, 1.0);
+    bottomMotor.optimizeBusUtilization(50.0, 1.0);
 
     neutralControl = new NeutralOut();
     voltageControl = new VoltageOut(0.0);
@@ -187,7 +187,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTopFeedForward(double kS, double kV, double kA) {
-
     topConfig.Slot0.kS = kS;
     topConfig.Slot0.kV = kV;
     topConfig.Slot0.kA = kA;
@@ -196,7 +195,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setBottomFeedForward(double kS, double kV, double kA) {
-
     topConfig.Slot0.kS = kS;
     topConfig.Slot0.kV = kV;
     topConfig.Slot0.kA = kA;
@@ -217,7 +215,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTopProfile(double maxAccelerationRadiansPerSecondSquared) {
-
     topConfig.MotionMagic.MotionMagicAcceleration =
         Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
     topMotor.getConfigurator().apply(topConfig);
@@ -225,7 +222,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setBottomProfile(double maxAccelerationRadiansPerSecondSquared) {
-
     bottomConfig.MotionMagic.MotionMagicAcceleration =
         Units.radiansToRotations(maxAccelerationRadiansPerSecondSquared);
     bottomMotor.getConfigurator().apply(bottomConfig);
@@ -233,7 +229,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setTopPID(double kP, double kI, double kD) {
-
     topConfig.Slot0.kP = kP;
     topConfig.Slot0.kI = kI;
     topConfig.Slot0.kD = kD;
@@ -242,7 +237,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void setBottomPID(double kP, double kI, double kD) {
-
     bottomConfig.Slot0.kP = kP;
     bottomConfig.Slot0.kI = kI;
     bottomConfig.Slot0.kD = kD;
@@ -257,7 +251,6 @@ public class ShooterIOTalonFX implements ShooterIO {
 
   @Override
   public void stop() {
-
     topMotor.setControl(neutralControl);
     bottomMotor.setControl(neutralControl);
   }

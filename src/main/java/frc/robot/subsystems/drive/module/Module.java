@@ -51,6 +51,7 @@ public class Module {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
     // Adjust models based on tunable numbers
+    double startTunableCheck = System.currentTimeMillis();
     LoggedTunableNumber.ifChanged(
         hashCode(),
         pid -> io.setDrivePID(pid[0], 0.0, pid[1]),
@@ -102,10 +103,12 @@ public class Module {
     double endUpdateOdom = System.currentTimeMillis();
 
     Logger.recordOutput(
+        "Drive/Time/Module " + index + "/Change Constants", startSetPosition - startTunableCheck);
+    Logger.recordOutput(
         "Drive/Time/Module " + index + "/Set Position", endSetPosition - startSetPosition);
     Logger.recordOutput("Drive/Time/Module " + index + "/Run IO", endRunIO - endSetPosition);
     Logger.recordOutput(
-        "Drive/Time/Module " + index + "/Odometry Update", endUpdateOdom - endSetPosition);
+        "Drive/Time/Module " + index + "/Odometry Update", endUpdateOdom - endRunIO);
     Logger.recordOutput(
         "Drive/Module" + Integer.toString(index) + "/position", inputs.drivePosition.getRadians());
   }

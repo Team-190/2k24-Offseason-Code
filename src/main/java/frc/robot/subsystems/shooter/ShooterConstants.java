@@ -57,7 +57,7 @@ public class ShooterConstants {
         TOP_AMP_SPEED.initDefault(80.0);
         BOTTOM_AMP_SPEED.initDefault(20.0);
         SPEAKER_SPEED.initDefault(600.0);
-        FEED_SPEED.initDefault(400);
+        FEED_SPEED.initDefault(300);
         break;
     }
   }
